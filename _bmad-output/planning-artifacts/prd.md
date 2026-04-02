@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ["step-01-init", "step-02-discovery", "step-03-success", "step-04-journeys"]
+stepsCompleted: ["step-01-init", "step-02-discovery", "step-03-success", "step-04-journeys", "step-05-domain"]
 inputDocuments: ["_bmad-output/planning-artifacts/product-brief-Everypay-2026-04-01.md"]
 documentCounts:
   briefCount: 1
@@ -343,5 +343,89 @@ Everypay must be **licensed** to operate as an enforceable trade payment platfor
 - Additional licenses as required by buyer-seller jurisdictions
 
 The agreement is **legally binding** between buyer and seller through Everypay's licensed framework, digital signatures, and immutable audit log.
+
+## Domain-Specific Requirements
+
+### Per-Corridor Compliance Framework
+
+Everypay operates across multiple jurisdictions with different legal and regulatory frameworks. The compliance architecture must be designed per corridor from inception:
+
+| Corridor | Regulatory Authority | Key Requirements |
+|----------|----------------------|------------------|
+| Brazil (MVP) | BCB (Central Bank of Brazil) | Payment institution authorization, LGPD data privacy, CMN Resolution 4.966 |
+| Argentina (Phase 2) | BCRA (Central Bank of Argentina) | FX control regulations, USDT usage restrictions |
+| Colombia (Phase 2) | SFC / BanRep | Payment institution licensing, AML requirements |
+| Peru (Phase 2) | SBS / BCRP | Payment service provider regulations |
+
+**Architecture Implication:** Compliance logic must be corridor-aware. When a settlement moves between corridors (e.g., Carlos pays in BRL, but over-escrow involves USDT on Dubai/Cregis rail), the applicable rules from each jurisdiction apply at each leg.
+
+### Licensing Stack
+
+Everypay requires a multi-jurisdiction license structure to operate legally:
+
+| Entity | License | Jurisdiction | Purpose |
+|--------|---------|--------------|---------|
+| Everypay HK | Payment Service Provider (PSP) license | Hong Kong | FX conversion engine, USDT → CNY |
+| Cregis | Custody license | Dubai | USDT escrow, reserve management |
+| Brazil Partner | Payment Institution (IP) / Payment Arranger | Brazil (BCB) | BRL collection, local rails |
+| Everypay HK | SAFE/CBIRC compliance | Cross-border CNY delivery | Legal transfer to mainland China |
+
+### KYC + KYB Requirements
+
+Everypay is a B2B platform requiring dual verification:
+
+| Verification | What | Who | Purpose |
+|--------------|------|-----|---------|
+| **KYC** (Know Your Customer) | Individual identity verification | All platform users | Anti-money laundering, fraud prevention |
+| **KYB** (Know Your Business) | Business entity verification | Companies creating invoices or making large payments | Compliance with AML/CTF regulations, beneficial ownership |
+
+**KYC Requirements:**
+- Government-issued ID verification
+- Facial recognition/liveness check
+- Address verification
+- Sanctions screening (OFAC, UN, EU, local lists)
+
+**KYB Requirements:**
+- Business registration verification (national ID, certificates)
+- Beneficial ownership declaration (>10% shareholders)
+- Authorized signatories list
+- Business activity declaration
+- AML/CTF risk classification
+
+### AML Freeze Order Integration
+
+**Critical Requirement:** Cregis must support regulatory freeze orders from competent authorities (FATF-aligned countries, G20 members). When a freeze order is issued:
+1. Affected USDT is immediately frozen in Cregis escrow
+2. No release until freeze lifted by issuing authority
+3. Full audit trail: freeze order ID, issuer, timestamp, amount frozen
+4. Notification to Everypay compliance team within 15 minutes
+
+**Implementation:** Cregis Seal X policy engine must enforce freeze orders as hard blocks — no override capability even by Cregis administrators.
+
+### Audit and Reporting Obligations
+
+Everypay operates under strict audit requirements:
+
+- **Evidence Pack Completeness:** 100% — every settlement must produce a complete, timestamped evidence pack
+- **Document Retention:** 7 years minimum (aligned with financial record-keeping requirements)
+- **Regulatory Reporting:** Ad-hoc report production within 48 hours of authority request
+- **Audit Trail Immutability:** All settlement events logged with timestamp, actor, action, hash reference
+- **Internal Audit:** Quarterly review of settlement records, freeze order handling, KYC/KYB compliance
+
+### Data Classification and RBAC
+
+| Data Class | Examples | Access Control |
+|------------|----------|----------------|
+| **Public** | Invoice number, settlement status | All authenticated users |
+| **Internal** | FX rates, fee structure | Platform operations |
+| **Confidential** | User identities, business details | Authorized personnel only |
+| **Restricted** | KYC documents, freeze orders, audit logs | Compliance, legal, CTO only |
+
+**Role-Based Access Control (RBAC):**
+- **Viewer:** Read-only access to own settlements
+- **Operator:** Create invoices, initiate payments
+- **Approver:** Treasury/CFO review for high-value settlements
+- **Compliance:** Access to KYC/KYB documents, freeze orders, audit logs
+- **Admin:** Platform configuration, user management
 
 <!-- Content will be appended sequentially through collaborative workflow steps -->
