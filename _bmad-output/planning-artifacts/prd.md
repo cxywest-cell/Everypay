@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ["step-01-init", "step-02-discovery", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation", "step-07-project-type", "step-08-scoping", "step-09-functional"]
+stepsCompleted: ["step-01-init", "step-02-discovery", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation", "step-07-project-type", "step-08-scoping", "step-09-functional", "step-10-nonfunctional"]
 inputDocuments: ["_bmad-output/planning-artifacts/product-brief-Everypay-2026-04-01.md"]
 documentCounts:
   briefCount: 1
@@ -661,5 +661,57 @@ No tiered pricing in MVP. Future (post-MVP): per-seat pricing or volume-based ti
 ### Settlement Success Definition
 
 - FR65: Settlement success is defined as: SETTLED state reached in system AND Wei confirms CNY received in mainland account. Success metric tracked as SETTLED + CNY_CONFIRMED.
+
+## Non-Functional Requirements
+
+### Performance
+
+- **Settlement Processing:** Stablecoin leg (USDT conversion) completes T+0; CNY cross-border transfer completes T+1
+- **Real-Time Status:** Settlement status updates visible to both parties within 30 seconds of state change
+- **Evidence Pack Retrieval:** Complete evidence pack retrievable within 48 hours of regulator request
+- **System Response:** UI operations (invoice creation, payment initiation, status check) complete within 3 seconds
+- **Concurrent Users:** System supports 100 concurrent active settlements per corridor without performance degradation
+
+### Security
+
+- **Data Encryption:** All KYC/KYB documents encrypted at rest (AES-256); all data encrypted in transit (TLS 1.3)
+- **Access Control:** RBAC enforced at API level; no cross-tenant data access possible
+- **Sanctions Screening:** All users screened against OFAC, UN, EU, and local sanctions lists in real-time
+- **Audit Logging:** All settlement events logged with timestamp, actor, action, and hash reference; immutable
+- **Freeze Order Enforcement:** Cregis enforces freeze orders as hard blocks within 15 minutes of receipt
+- **Penetration Testing:** Annual third-party penetration testing required
+- **KYC Data Retention:** KYC documents retained for 7 years minimum; accessible only to Compliance role
+
+### Scalability
+
+- **Corridor Expansion:** Platform architecture supports new corridor addition without core platform modification
+- **User Growth:** System scales from MVP (10 settlements) to 1000+ settlements/month with <20% performance degradation
+- **Geographic Distribution:** Supports users from 50+ countries without infrastructure modification
+- **Volume Spikes:** Handles 3x normal settlement volume during market volatility periods (BRL/ARS FX events)
+
+### Reliability
+
+- **Settlement Completion Rate:** >99% of initiated settlements reach SETTLED state
+- **Evidence Pack Completeness:** 100% of settlements produce complete evidence pack
+- **System Uptime:** 99.5% uptime (excluding scheduled maintenance)
+- **Disaster Recovery:** Recovery Point Objective (RPO) = 0; Recovery Time Objective (RTO) < 4 hours
+
+### Compliance
+
+- **HK PSP License:** Everypay HK operates under HK SFC payment service provider license
+- **Dubai Custody License:** Cregis operates under Dubai Virtual Assets Regulatory Authority (VARA) custody license
+- **BCB Compliance (Brazil):** Brazil payment partner maintains BCB payment institution authorization
+- **BCRA Compliance (Argentina):** Platform implements BCRA Resolution 8430/2020 requirements for ARS corridor
+- **SAFE/CBIRC Compliance:** Everypay HK maintains cross-border FX registration with SAFE; CNY transfers via participating bank (CITIC or equivalent)
+- **Data Residency:** KYC/KYB documents stored in jurisdiction-appropriate data centers per local regulations
+- **AML Compliance:** FATF-aligned AML/CTF program; suspicious activity reporting within regulatory timeframes
+
+### Integration
+
+- **Cregis API:** 99.9% uptime for escrow operations; <1 second response time for release commands
+- **Brazil Payment Partner API:** 99% uptime; real-time BRL confirmation
+- **Logistics Oracle:** Webhook delivery with retry logic (3 attempts, exponential backoff); manual override available for ops team
+- **Everypay HK FX Engine:** Real-time USDT→CNY conversion; batch CNY transfer to mainland bank
+- **Bank Rail (CITIC/equivalent):** T+1 CNY settlement confirmation; ISO 20022 message format
 
 <!-- Content will be appended sequentially through collaborative workflow steps -->
