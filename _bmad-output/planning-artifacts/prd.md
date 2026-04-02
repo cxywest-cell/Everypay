@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ["step-01-init", "step-02-discovery", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation", "step-07-project-type", "step-08-scoping", "step-09-functional", "step-10-nonfunctional"]
+stepsCompleted: ["step-01-init", "step-02-discovery", "step-03-success", "step-04-journeys", "step-05-domain", "step-06-innovation", "step-07-project-type", "step-08-scoping", "step-09-functional", "step-10-nonfunctional", "step-11-polish"]
 inputDocuments: ["_bmad-output/planning-artifacts/product-brief-Everypay-2026-04-01.md"]
 documentCounts:
   briefCount: 1
@@ -460,20 +460,6 @@ Complete trade relationship management inside the platform: rate methods (pre-lo
 - **Regulatory risk:** HK/Dubai licensing provides established regulatory standing; Brazil partner has BCB authorization
 - **FX risk:** Rate lock mechanism protects Carlos during volatile BRL periods; over-escrow buffer for Wei
 - **Technical risk:** Cregis provides institutional-grade custody infrastructure; proven stablecoin vault with policy-enforced signing
-
-| Data Class | Examples | Access Control |
-|------------|----------|----------------|
-| **Public** | Invoice number, settlement status | All authenticated users |
-| **Internal** | FX rates, fee structure | Platform operations |
-| **Confidential** | User identities, business details | Authorized personnel only |
-| **Restricted** | KYC documents, freeze orders, audit logs | Compliance, legal, CTO only |
-
-**Role-Based Access Control (RBAC):**
-- **Viewer:** Read-only access to own settlements
-- **Operator:** Create invoices, initiate payments
-- **Approver:** Treasury/CFO review for high-value settlements
-- **Compliance:** Access to KYC/KYB documents, freeze orders, audit logs
-- **Admin:** Platform configuration, user management
 
 ## SaaS B2B Specific Requirements
 

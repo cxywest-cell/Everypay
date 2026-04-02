@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everypay — Design Direction Mockups · Web Only</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --trust-blue: #1E3A5F;
+    --trust-blue-light: #3B82F6;
+    --success-green: #10B981;
+    --warning-amber: #F59E0B;
+    --danger-red: #EF4444;
+    --bg-slate: #F8FAFC;
+    --card-white: #FFFFFF;
+    --text-primary: #0F172A;
+    --text-secondary: #64748B;
+    --border-slate: #E2E8F0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-slate);
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: var(--trust-blue);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 100;
+  }
+  nav .logo { color: white; font-weight: 700; font-size: 18px; letter-spacing: -0.5px; }
+  nav .user { color: rgba(255,255,255,0.7); font-size: 14px; }
+
+  main { padding-top: 60px; }
+
+  .hero {
+    background: linear-gradient(135deg, var(--trust-blue) 0%, #2d4a6f 100%);
+    color: white;
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .hero h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+  .hero p { opacity: 0.8; font-size: 15px; }
+
+  .direction-nav {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 14px 24px;
+    background: white;
+    border-bottom: 1px solid var(--border-slate);
+    position: sticky;
+    top: 60px;
+    z-index: 50;
+  }
+  .direction-nav button {
+    padding: 8px 16px;
+    border: 1px solid var(--border-slate);
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+  }
+  .direction-nav button:hover { border-color: var(--trust-blue-light); color: var(--trust-blue-light); }
+  .direction-nav button.active {
+    background: var(--trust-blue);
+    color: white;
+    border-color: var(--trust-blue);
+  }
+
+  .mockup-section { display: none; padding: 32px 24px; max-width: 1200px; margin: 0 auto; }
+  .mockup-section.active { display: block; }
+
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--trust-blue-light);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .step-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-slate);
+  }
+
+  .section-header { margin-bottom: 24px; }
+  .section-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .section-desc { color: var(--text-secondary); font-size: 14px; }
+
+  /* CARD */
+  .card {
+    background: var(--card-white);
+    border: 1px solid var(--border-slate);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .card-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-slate);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-title { font-weight: 600; font-size: 14px; }
+  .card-body { padding: 20px; }
+
+  /* BADGE */
+  .badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .badge-secured { background: #D1FAE5; color: #065F46; }
+  .badge-pending { background: #FEF3C7; color: #92400E; }
+  .badge-delivered { background: #DBEAFE; color: #1E40AF; }
+
+  /* RATE LOCK HERO */
+  .rate-lock-hero {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    border-radius: 16px;
+    padding: 32px;
+    color: white;
+    text-align: center;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .rate-lock-hero .confetti {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .rate-lock-hero .check-circle {
+    width: 64px; height: 64px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 32px;
+  }
+  .rate-lock-hero .amount { font-size: 42px; font-weight: 700; letter-spacing: -1px; }
+  .rate-lock-hero .label { opacity: 0.9; font-size: 15px; margin-top: 4px; }
+  .rate-lock-hero .rate-row {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 16px;
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  /* STATUS TRACKER */
+  .status-tracker {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .status-tracker::before {
+    content: '';
+    position: absolute;
+    top: 16px; left: 32px; right: 32px;
+    height: 2px;
+    background: var(--border-slate);
+  }
+  .status-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+  .status-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--border-slate);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  .status-step.completed .status-dot { background: var(--success-green); color: white; }
+  .status-step.active .status-dot { background: var(--trust-blue-light); color: white; animation: pulse 2s infinite; }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(59,130,246,0); }
+  }
+  .status-label { font-size: 11px; color: var(--text-secondary); text-align: center; max-width: 70px; }
+  .status-step.completed .status-label, .status-step.active .status-label { color: var(--text-primary); font-weight: 500; }
+
+  /* INFO ROW */
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-slate);
+    font-size: 14px;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { color: var(--text-secondary); }
+  .info-value { font-weight: 500; }
+  .info-value.success { color: var(--success-green); }
+
+  /* BUTTONS */
+  .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-primary { background: var(--trust-blue); color: white; }
+  .btn-primary:hover { background: #1a3250; }
+  .btn-success { background: var(--success-green); color: white; }
+  .btn-success:hover { background: #059669; }
+  .btn-secondary { background: white; border: 1px solid var(--border-slate); color: var(--text-primary); }
+  .btn-secondary:hover { border-color: var(--trust-blue-light); color: var(--trust-blue-light); }
+  .btn-danger { background: white; border: 1px solid var(--danger-red); color: var(--danger-red); }
+
+  /* DASHBOARD LAYOUT */
+  .dashboard { display: flex; gap: 20px; }
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: white;
+    border: 1px solid var(--border-slate);
+    border-radius: 12px;
+    padding: 16px 0;
+    height: fit-content;
+    position: sticky;
+    top: 120px;
+  }
+  .sidebar-section { padding: 8px 16px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-top: 12px; }
+  .sidebar-section:first-child { margin-top: 0; }
+  .sidebar-item { padding: 9px 16px; font-size: 13px; color: var(--text-secondary); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 10px; margin: 0 8px; }
+  .sidebar-item:hover { background: #F8FAFC; color: var(--text-primary); }
+  .sidebar-item.active { background: #EFF6FF; color: var(--trust-blue-light); font-weight: 500; }
+  .sidebar-icon { font-size: 15px; }
+  .dashboard-main { flex: 1; min-width: 0; }
+
+  /* KPI GRID */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .kpi-card { background: white; border: 1px solid var(--border-slate); border-radius: 10px; padding: 14px; }
+  .kpi-value { font-size: 22px; font-weight: 700; }
+  .kpi-label { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
+  .kpi-change { font-size: 11px; margin-top: 3px; }
+  .kpi-change.up { color: var(--success-green); }
+  .kpi-change.down { color: var(--danger-red); }
+
+  /* SETTLEMENT TABLE */
+  .settlement-table { width: 100%; border-collapse: collapse; }
+  .settlement-table th {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    background: #F8FAFC;
+    border-bottom: 1px solid var(--border-slate);
+  }
+  .settlement-table td {
+    padding: 14px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border-slate);
+    vertical-align: middle;
+  }
+  .settlement-table tr:last-child td { border-bottom: none; }
+  .settlement-table .invoice { font-weight: 600; }
+  .settlement-table .counterparty { color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
+  .settlement-table .amount { font-size: 16px; font-weight: 700; }
+  .settlement-table tr:hover td { background: #FAFBFC; }
+
+  /* EVIDENCE PACK */
+  .evidence-pack {
+    border: 1px solid var(--border-slate);
+    border-radius: 12px;
+    background: white;
+  }
+  .evidence-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-slate);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .evidence-header-title { font-weight: 600; font-size: 14px; }
+  .evidence-header-meta { font-size: 12px; color: var(--text-secondary); }
+  .evidence-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-slate);
+  }
+  .evidence-item:last-child { border-bottom: none; }
+  .evidence-icon { font-size: 18px; }
+  .evidence-name { font-weight: 500; font-size: 13px; }
+  .evidence-desc { font-size: 12px; color: var(--text-secondary); }
+  .evidence-action {
+    margin-left: auto;
+    color: var(--trust-blue-light);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-slate);
+  }
+  .evidence-action:hover { background: #EFF6FF; }
+  .evidence-footer {
+    padding: 14px 20px;
+    background: #F8FAFC;
+    text-align: center;
+  }
+
+  /* APPROVAL CARD */
+  .approval-card {
+    border: 1px solid var(--border-slate);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    background: white;
+    overflow: hidden;
+  }
+  .approval-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-slate);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .approval-id { font-weight: 600; font-size: 14px; }
+  .approval-time { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .approval-body { padding: 16px 20px; }
+  .approval-amount { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .approval-amount small { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+  .approval-parties { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  /* RISK SUMMARY */
+  .risk-summary {
+    background: #F8FAFC;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+  }
+  .risk-row { display: flex; justify-content: space-between; margin-bottom: 7px; font-size: 13px; }
+  .risk-row:last-child { margin-bottom: 0; }
+  .risk-label { color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+  .risk-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .risk-dot.green { background: var(--success-green); }
+  .risk-dot.yellow { background: var(--warning-amber); }
+  .risk-dot.red { background: var(--danger-red); }
+  .risk-value { font-weight: 500; }
+
+  .approval-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+  .approval-metric { background: #F8FAFC; border-radius: 6px; padding: 10px; font-size: 12px; }
+  .approval-metric-value { font-weight: 700; font-size: 15px; }
+  .approval-metric-label { color: var(--text-secondary); margin-top: 2px; }
+
+  .approval-actions { display: flex; gap: 8px; }
+
+  /* RISK TABLE */
+  .risk-table { width: 100%; border-collapse: collapse; }
+  .risk-table th {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    background: #F8FAFC;
+    border-bottom: 1px solid var(--border-slate);
+  }
+  .risk-table td {
+    padding: 12px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border-slate);
+    vertical-align: middle;
+  }
+  .risk-table tr:last-child td { border-bottom: none; }
+  .risk-table .amount { font-weight: 700; font-size: 15px; }
+  .risk-table tr:hover td { background: #FAFBFC; }
+
+  /* COMPARE GRID */
+  .compare-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .compare-card {
+    background: white;
+    border: 1px solid var(--border-slate);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .compare-card.highlighted { border-color: var(--trust-blue-light); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+  .compare-card-header {
+    padding: 14px 16px;
+    background: #F8FAFC;
+    border-bottom: 1px solid var(--border-slate);
+    font-weight: 600;
+    font-size: 13px;
+    text-align: center;
+  }
+  .compare-card-body { padding: 16px; }
+  .compare-feature { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 13px; border-bottom: 1px solid #F1F5F9; }
+  .compare-feature:last-child { border-bottom: none; }
+  .compare-check { color: var(--success-green); font-weight: 700; flex-shrink: 0; }
+  .compare-tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; margin-left: 6px; }
+  .tag-recommended { background: #EFF6FF; color: var(--trust-blue-light); }
+  .tag-best { background: #D1FAE5; color: #065F46; }
+
+  .recommendation-box {
+    background: white;
+    border: 1px solid var(--border-slate);
+    border-left: 4px solid var(--trust-blue-light);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 24px;
+  }
+  .recommendation-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  .recommendation-box p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+  /* PERSONA ROWS */
+  .persona-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .persona-col {}
+
+  /* WEB-SPECIFIC BANNER */
+  .web-note {
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #1E40AF;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  @media (max-width: 1000px) {
+    .compare-grid { grid-template-columns: 1fr; }
+    .persona-grid { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .dashboard { flex-direction: column; }
+    .sidebar { width: 100%; position: static; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Everypay</div>
+  <div class="user">Web Experience Only · MVP</div>
+</nav>
+
+<main>
+  <div class="hero">
+    <h1>Everypay Design Directions — Web Only</h1>
+    <p>All experiences optimized for desktop browsers. Mobile app deferred to Phase 2.</p>
+  </div>
+
+  <div class="direction-nav">
+    <button class="active" onclick="showSection('carlos')">Carlos · Buyer</button>
+    <button onclick="showSection('wei')">Wei · Seller</button>
+    <button onclick="showSection('cfo')">CFO · Approver</button>
+    <button onclick="showSection('erp')">ERP Modules</button>
+    <button onclick="showSection('compare')">Compare</button>
+  </div>
+
+  <!-- ========== CARLOS BUYER ========== -->
+  <div id="carlos" class="mockup-section active">
+
+    <div class="web-note">
+      <span>💻</span> MVP: Web browser only. Carlos accesses via a payment link shared by Wei. Responsive design scales from laptop to tablet.
+    </div>
+
+    <div class="persona-grid">
+      <div>
+        <div class="step-label">Direction A — Rate Lock Celebration</div>
+        <div class="section-header">
+          <div class="section-title">Carlos: The Defining Moment</div>
+          <div class="section-desc">Anxiety → Relief arc. Celebratory rate lock confirmation with visual weight.</div>
+        </div>
+
+        <div class="rate-lock-hero">
+          <div class="check-circle">✓</div>
+          <div class="amount">¥12,450.00 CNY</div>
+          <div class="label">Rate locked — supplier guaranteed this amount</div>
+          <div class="rate-row">
+            <span>1 CNY = R$ 0.3926</span>
+            <span>·</span>
+            <span>Fee: R$ 24.50</span>
+            <span>·</span>
+            <span>Locked until Apr 4, 2026</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Settlement Progress</span>
+            <span class="badge badge-secured">Rate Locked</span>
+          </div>
+          <div class="card-body">
+            <div class="status-tracker" style="margin-bottom: 20px;">
+              <div class="status-step completed">
+                <div class="status-dot">✓</div>
+                <div class="status-label">BRL Received</div>
+              </div>
+              <div class="status-step active">
+                <div class="status-dot">🔒</div>
+                <div class="status-label">Rate Locked</div>
+              </div>
+              <div class="status-step">
+                <div class="status-dot">🚢</div>
+                <div class="status-label">In Transit</div>
+              </div>
+              <div class="status-step">
+                <div class="status-dot">🏛️</div>
+                <div class="status-label">Customs</div>
+              </div>
+              <div class="status-step">
+                <div class="status-dot">💰</div>
+                <div class="status-label">CNY Delivered</div>
+              </div>
+            </div>
+            <div class="info-row"><span class="info-label">Your BRL Payment</span><span class="info-value">R$ 4,914.50</span></div>
+            <div class="info-row"><span class="info-label">CNY Received (Guaranteed)</span><span class="info-value success">¥12,450.00</span></div>
+            <div class="info-row"><span class="info-label">Supplier Receives</span><span class="info-value">Apr 3–4, 2026</span></div>
+            <div class="info-row" style="cursor:pointer;"><span class="info-label">Escrow Details (tap to reveal)</span><span class="info-value" style="color: var(--trust-blue-light);">Cregis Custody, Dubai →</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="step-label">Direction B — Speed-First</div>
+        <div class="section-header">
+          <div class="section-title">Carlos: Minimal Confirmation</div>
+          <div class="section-desc">Ultra-lean flow. Maximum clarity on what Carlos pays and what Wei receives.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-body" style="padding: 32px;">
+            <div style="text-align:center; margin-bottom: 24px;">
+              <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">You pay</div>
+              <div class="mono" style="font-size: 36px; font-weight: 700;">R$ 4,914.50</div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+              <div style="flex: 1; height: 1px; background: var(--border-slate);"></div>
+              <div style="padding: 0 16px; color: var(--text-secondary); font-size: 13px;">supplier receives</div>
+              <div style="flex: 1; height: 1px; background: var(--border-slate);"></div>
+            </div>
+            <div style="text-align:center; margin-bottom: 24px;">
+              <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">Guaranteed amount</div>
+              <div class="mono" style="font-size: 36px; font-weight: 700; color: var(--success-green);">¥12,450.00 CNY</div>
+            </div>
+            <div style="background: #F8FAFC; border-radius: 8px; padding: 14px; margin-bottom: 20px; font-size: 13px;">
+              <div class="info-row" style="border:none; padding: 3px 0;"><span class="info-label">Rate (locked 48h)</span><span class="info-value mono">R$ 0.3926/CNY</span></div>
+              <div class="info-row" style="border:none; padding: 3px 0;"><span class="info-label">Fee</span><span class="info-value">R$ 24.50</span></div>
+              <div class="info-row" style="border:none; padding: 3px 0;"><span class="info-label">Escrow</span><span class="info-value" style="font-size:12px;">Cregis Custody</span></div>
+            </div>
+            <button class="btn btn-success" style="width: 100%; padding: 14px; font-size: 15px; border-radius: 10px; justify-content: center;">
+              Confirm Payment · R$ 4,914.50
+            </button>
+            <div style="text-align:center; font-size: 12px; color: var(--text-secondary); margin-top: 12px;">
+              🛡️ Rate guaranteed until Apr 4 · 1-click confirmation
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Rate Locked Confirmation</span>
+          </div>
+          <div class="card-body">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+              <div style="width:40px; height:40px; background:#D1FAE5; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px;">✓</div>
+              <div>
+                <div style="font-weight:600; font-size:15px;">Payment Confirmed</div>
+                <div style="font-size:13px; color:var(--text-secondary);">Apr 2, 2026 · 14:30 BRT</div>
+              </div>
+            </div>
+            <div class="info-row"><span class="info-label">Settlement ID</span><span class="info-value mono" style="font-size:12px;">SETL-2026-0892</span></div>
+            <div class="info-row"><span class="info-label">Locked Rate</span><span class="info-value mono">R$ 0.3926/CNY</span></div>
+            <div class="info-row"><span class="info-label">Lock Expires</span><span class="info-value">Apr 4, 2026 14:30</span></div>
+            <div class="info-row"><span class="info-label">Supplier Receives</span><span class="info-value">¥12,450.00 CNY by Apr 4</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========== WEI SELLER ========== -->
+  <div id="wei" class="mockup-section">
+
+    <div class="web-note">
+      <span>💻</span> Wei's console is desktop-first. Dense data tables, keyboard shortcuts, bulk actions. Responsive down to 1024px tablets.
+    </div>
+
+    <div class="dashboard">
+      <div class="sidebar">
+        <div class="sidebar-section">Overview</div>
+        <div class="sidebar-item active"><span class="sidebar-icon">📊</span> Dashboard</div>
+        <div class="sidebar-item"><span class="sidebar-icon">📄</span> Invoices</div>
+        <div class="sidebar-item"><span class="sidebar-icon">💰</span> Settlements</div>
+        <div class="sidebar-item"><span class="sidebar-icon">📦</span> Counterparties</div>
+        <div class="sidebar-section">Documents</div>
+        <div class="sidebar-item"><span class="sidebar-icon">📁</span> Evidence Packs</div>
+        <div class="sidebar-item"><span class="sidebar-icon">📥</span> Downloads</div>
+        <div class="sidebar-section">Settings</div>
+        <div class="sidebar-item"><span class="sidebar-icon">⚙️</span> Account</div>
+      </div>
+
+      <div class="dashboard-main">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+          <div style="font-size:18px; font-weight:700;">Dashboard</div>
+          <button class="btn btn-primary">+ New Invoice</button>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-value">¥847,230</div>
+            <div class="kpi-label">This Month</div>
+            <div class="kpi-change up">↑ 12.4% vs last month</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value">47</div>
+            <div class="kpi-label">Settlements</div>
+            <div class="kpi-change up">↑ 8 new</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" style="color: var(--success-green);">99.2%</div>
+            <div class="kpi-label">Completion Rate</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value">4.2h</div>
+            <div class="kpi-label">Avg. Settlement Time</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Settlements</span>
+            <div style="font-size:12px; color:var(--text-secondary);">Mar 25 – Apr 2, 2026</div>
+          </div>
+          <table class="settlement-table">
+            <thead>
+              <tr>
+                <th>Invoice</th>
+                <th>Buyer</th>
+                <th>Amount</th>
+                <th>Rate Locked</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="invoice">INV-2026-0047</div><div class="counterparty">Carlos M. · Brazil</div></td>
+                <td class="mono">R$ 97,240</td>
+                <td class="amount">¥12,450<span style="font-size:12px; color:var(--text-secondary);">.00</span></td>
+                <td class="mono" style="font-size:12px;">R$ 0.3926</td>
+                <td><span class="badge badge-secured">Secured</span></td>
+              </tr>
+              <tr>
+                <td><div class="invoice">INV-2026-0046</div><div class="counterparty">Maria S. · Argentina</div></td>
+                <td class="mono">ARS 4,200,000</td>
+                <td class="amount">¥28,100<span style="font-size:12px; color:var(--text-secondary);">.00</span></td>
+                <td class="mono" style="font-size:12px;">ARS 149.5</td>
+                <td><span class="badge badge-delivered">Delivered</span></td>
+              </tr>
+              <tr>
+                <td><div class="invoice">INV-2026-0045</div><div class="counterparty">João P. · Brazil</div></td>
+                <td class="mono">R$ 22,800</td>
+                <td class="amount">¥5,780<span style="font-size:12px; color:var(--text-secondary);">.00</span></td>
+                <td class="mono" style="font-size:12px;">R$ 0.3926</td>
+                <td><span class="badge badge-pending">Pending</span></td>
+              </tr>
+              <tr>
+                <td><div class="invoice">INV-2026-0044</div><div class="counterparty">Ana L. · Brazil</div></td>
+                <td class="mono">R$ 8,400</td>
+                <td class="amount">¥21,400<span style="font-size:12px; color:var(--text-secondary);">.00</span></td>
+                <td class="mono" style="font-size:12px;">R$ 0.3926</td>
+                <td><span class="badge badge-secured">Secured</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="evidence-pack">
+          <div class="evidence-header">
+            <div>
+              <div class="evidence-header-title">Latest Evidence Pack</div>
+              <div class="evidence-header-meta">INV-2026-0046 · Delivered Mar 28, 2026</div>
+            </div>
+            <span style="font-size:12px; color:var(--text-secondary);">4 documents</span>
+          </div>
+          <div class="evidence-item">
+            <span class="evidence-icon">📄</span>
+            <div>
+              <div class="evidence-name">Invoice.pdf</div>
+              <div class="evidence-desc">Original invoice · 245 KB · SHA-256 verified</div>
+            </div>
+            <span class="evidence-action">Download</span>
+          </div>
+          <div class="evidence-item">
+            <span class="evidence-icon">🚢</span>
+            <div>
+              <div class="evidence-name">Shipping Milestone</div>
+              <div class="evidence-desc">Departed port · Mar 22, 2026 · Timestamp verified</div>
+            </div>
+            <span class="evidence-action">View</span>
+          </div>
+          <div class="evidence-item">
+            <span class="evidence-icon">🏛️</span>
+            <div>
+              <div class="evidence-name">Customs Clearance</div>
+              <div class="evidence-desc">Customs cleared · Mar 26, 2026 · Document hash verified</div>
+            </div>
+            <span class="evidence-action">View</span>
+          </div>
+          <div class="evidence-item">
+            <span class="evidence-icon">💵</span>
+            <div>
+              <div class="evidence-name">Settlement Receipt</div>
+              <div class="evidence-desc">CNY transferred · Mar 28, 2026 · Bank confirmation</div>
+            </div>
+            <span class="evidence-action">Download</span>
+          </div>
+          <div class="evidence-footer">
+            <button class="btn btn-success" style="font-size:13px;">📦 Download Complete Evidence Pack</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========== CFO APPROVER ========== -->
+  <div id="cfo" class="mockup-section">
+
+    <div class="web-note">
+      <span>💻</span> CFO console is desktop-only. Card-based approval queue with expandable risk summaries. Keyboard shortcuts for power users.
+    </div>
+
+    <div class="dashboard">
+      <div class="sidebar">
+        <div class="sidebar-section">Dashboard</div>
+        <div class="sidebar-item"><span class="sidebar-icon">📊</span> Overview</div>
+        <div class="sidebar-item active"><span class="sidebar-icon">✅</span> Approval Queue <span style="background:var(--warning-amber); color:white; font-size:10px; padding:1px 6px; border-radius:10px; margin-left:4px;">3</span></div>
+        <div class="sidebar-item"><span class="sidebar-icon">📈</span> Risk Monitor</div>
+        <div class="sidebar-item"><span class="sidebar-icon">💱</span> FX Exposure</div>
+        <div class="sidebar-section">Reports</div>
+        <div class="sidebar-item"><span class="sidebar-icon">📁</span> Audit Logs</div>
+      </div>
+
+      <div class="dashboard-main">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+          <div style="font-size:18px; font-weight:700;">Approval Queue</div>
+          <div style="font-size:13px; color:var(--text-secondary);">3 pending · 2 approved today</div>
+        </div>
+
+        <!-- Approval Card 1 -->
+        <div class="approval-card">
+          <div class="approval-header">
+            <div>
+              <div class="approval-id">SETL-2026-0892</div>
+              <div class="approval-time">Submitted 2h ago · Wei Zhang · Guangzhou</div>
+            </div>
+            <span class="badge badge-pending">Pending Approval</span>
+          </div>
+          <div class="approval-body">
+            <div class="approval-amount">¥245,800<span style="font-size:14px;">.00 CNY</span></div>
+            <div class="approval-parties">Carlos M. (Brazil) → Wei Zhang · Invoice INV-2026-0047</div>
+
+            <div class="risk-summary">
+              <div class="risk-row">
+                <span class="risk-label"><span class="risk-dot green"></span>Counterparty History</span>
+                <span class="risk-value">12 settlements · 100% success</span>
+              </div>
+              <div class="risk-row">
+                <span class="risk-label"><span class="risk-dot green"></span>FX Volatility</span>
+                <span class="risk-value">Low — BRL stable within 48h window</span>
+              </div>
+              <div class="risk-row">
+                <span class="risk-label"><span class="risk-dot yellow"></span>Amount</span>
+                <span class="risk-value">Above average · ¥245K vs ¥87K avg</span>
+              </div>
+              <div class="risk-row">
+                <span class="risk-label"><span class="risk-dot green"></span>Document Complete</span>
+                <span class="risk-value">✓ All 3 milestones verified</span>
+              </div>
+            </div>
+
+            <div class="approval-metrics">
+              <div class="approval-metric">
+                <div class="approval-metric-value">R$ 97,240</div>
+                <div class="approval-metric-label">BRL Equivalent</div>
+              </div>
+              <div class="approval-metric">
+                <div class="approval-metric-value mono">1:0.3926</div>
+                <div class="approval-metric-label">Locked Rate</div>
+              </div>
+              <div class="approval-metric">
+                <div class="approval-metric-value">48h</div>
+                <div class="approval-metric-label">Lock Window</div>
+              </div>
+              <div class="approval-metric">
+                <div class="approval-metric-value">3</div>
+                <div class="approval-metric-label">Milestones</div>
+              </div>
+            </div>
+
+            <div class="approval-actions">
+              <button class="btn btn-success">✓ Approve Settlement</button>
+              <button class="btn btn-secondary">Review Details</button>
+              <button class="btn btn-danger">Reject</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Approval Card 2 -->
+        <div class="approval-card">
+          <div class="approval-header">
+            <div>
+              <div class="approval-id">SETL-2026-0893</div>
+              <div class="approval-time">Submitted 4h ago · Li Ming · Shanghai</div>
+            </div>
+            <span class="badge badge-pending">Pending Approval</span>
+          </div>
+          <div class="approval-body">
+            <div class="approval-amount">¥38,200<span style="font-size:14px;">.00 CNY</span></div>
+            <div class="approval-parties">João P. (Brazil) → Li Ming · Invoice INV-2026-0048</div>
+
+            <div class="risk-summary">
+              <div class="risk-row">
+                <span class="risk-label"><span class="risk-dot green"></span>Counterparty History</span>
+                <span class="risk-value">5 settlements · 100% success</span>
+              </div>
+              <div class="risk-row">
+                <span class="risk-label"><span class="risk-dot green"></span>FX Volatility</span>
+                <span class="risk-value">Low</span>
+              </div>
+              <div class="risk-row">
+                <span class="risk-label"><span class="risk-dot green"></span>Amount</span>
+                <span class="risk-value">Within normal range</span>
+              </div>
+              <div class="risk-row">
+                <span class="risk-label"><span class="risk-dot green"></span>Document Complete</span>
+                <span class="risk-value">✓ All milestones verified</span>
+              </div>
+            </div>
+
+            <div class="approval-metrics">
+              <div class="approval-metric"><div class="approval-metric-value">R$ 15,080</div><div class="approval-metric-label">BRL Equivalent</div></div>
+              <div class="approval-metric"><div class="approval-metric-value mono">1:0.3926</div><div class="approval-metric-label">Locked Rate</div></div>
+              <div class="approval-metric"><div class="approval-metric-value">48h</div><div class="approval-metric-label">Lock Window</div></div>
+              <div class="approval-metric"><div class="approval-metric-value">2</div><div class="approval-metric-label">Milestones</div></div>
+            </div>
+
+            <div class="approval-actions">
+              <button class="btn btn-success">✓ Approve Settlement</button>
+              <button class="btn btn-secondary">Review Details</button>
+              <button class="btn btn-danger">Reject</button>
+            </div>
+          </div>
+        </div>
+
+        <br>
+        <div class="step-label">Direction B — Risk Table View</div>
+        <div class="section-header">
+          <div class="section-title">CFO: Compact Risk Table</div>
+          <div class="section-desc">Dense table for power users. Sort by risk, amount, or pending time. Inline approve buttons.</div>
+        </div>
+
+        <div class="card">
+          <table class="risk-table">
+            <thead>
+              <tr>
+                <th>Risk</th>
+                <th>Settlement</th>
+                <th>Amount</th>
+                <th>Counterparty</th>
+                <th>Submitted</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="risk-dot yellow"></span> Medium</td>
+                <td><div style="font-weight:600;">SETL-2026-0892</div><div style="font-size:11px; color:var(--text-secondary);">INV-2026-0047 · Brazil BRL</div></td>
+                <td class="amount">¥245,800</td>
+                <td>Carlos M.<br><span style="font-size:11px; color:var(--text-secondary);">12 settlements</span></td>
+                <td style="font-size:12px; color:var(--text-secondary);">2h ago</td>
+                <td>
+                  <div style="display:flex; gap:4px;">
+                    <button class="btn btn-success" style="padding:5px 10px; font-size:12px;">✓</button>
+                    <button class="btn btn-secondary" style="padding:5px 10px; font-size:12px;">→</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="risk-dot green"></span> Low</td>
+                <td><div style="font-weight:600;">SETL-2026-0893</div><div style="font-size:11px; color:var(--text-secondary);">INV-2026-0048 · Brazil BRL</div></td>
+                <td class="amount">¥38,200</td>
+                <td>João P.<br><span style="font-size:11px; color:var(--text-secondary);">5 settlements</span></td>
+                <td style="font-size:12px; color:var(--text-secondary);">4h ago</td>
+                <td>
+                  <div style="display:flex; gap:4px;">
+                    <button class="btn btn-success" style="padding:5px 10px; font-size:12px;">✓</button>
+                    <button class="btn btn-secondary" style="padding:5px 10px; font-size:12px;">→</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="risk-dot green"></span> Low</td>
+                <td><div style="font-weight:600;">SETL-2026-0894</div><div style="font-size:11px; color:var(--text-secondary);">INV-2026-0049 · Argentina ARS</div></td>
+                <td class="amount">¥15,600</td>
+                <td>Ana L.<br><span style="font-size:11px; color:var(--text-secondary);">2 settlements</span></td>
+                <td style="font-size:12px; color:var(--text-secondary);">6h ago</td>
+                <td>
+                  <div style="display:flex; gap:4px;">
+                    <button class="btn btn-success" style="padding:5px 10px; font-size:12px;">✓</button>
+                    <button class="btn btn-secondary" style="padding:5px 10px; font-size:12px;">→</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========== COMPARE ========== -->
+  <div id="compare" class="mockup-section">
+    <div class="section-header">
+      <div class="section-title">Design Direction Comparison</div>
+      <div class="section-desc">Evaluating directions against core UX principles for web-only MVP.</div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card highlighted">
+        <div class="compare-card-header">Direction A: Card-Based Approval<span class="compare-tag tag-recommended">Recommended</span></div>
+        <div class="compare-card-body">
+          <div class="compare-feature"><span class="compare-check">✓</span> Pre-computed risk summary cards — CFO sees everything at a glance</div>
+          <div class="compare-feature"><span class="compare-check">✓</span> One-click approve/reject with visual hierarchy</div>
+          <div class="compare-feature"><span class="compare-check">✓</span> Expandable for detailed review</div>
+          <div class="compare-feature"><span class="compare-check">✓</span> Risk dots (green/yellow/red) for instant assessment</div>
+          <div class="compare-feature"><span class="compare-check">✓</span> Metrics grid (BRL equiv, rate, lock window, milestones)</div>
+          <div class="compare-feature" style="color:var(--text-secondary);"><span>○</span> Takes more vertical space than table view</div>
+          <div style="padding-top:12px; font-size:12px; font-weight:600; color:var(--trust-blue-light);">→ Best for: CFO approval queue</div>
+        </div>
+      </div>
+
+      <div class="compare-card">
+        <div class="compare-card-header">Direction B: Risk Table</div>
+        <div class="compare-card-body">
+          <div class="compare-feature"><span class="compare-check">✓</span> Dense, scannable — power users can process many items fast</div>
+          <div class="compare-feature"><span class="compare-check">✓</span> Sortable by risk/amount/time</div>
+          <div class="compare-feature"><span class="compare-check">✓</span> Compact for high-volume review days</div>
+          <div class="compare-feature" style="color:var(--text-secondary);"><span>○</span> Risk details require hover expansion</div>
+          <div class="compare-feature" style="color:var(--text-secondary);"><span>○</span> Less visual impact for approval moment</div>
+          <div style="padding-top:12px; font-size:12px; font-weight:600; color:var(--trust-blue-light);">→ Best for: CFO on high-volume days</div>
+        </div>
+      </div>
+
+      <div class="compare-card">
+        <div class="compare-card-header">Direction C: Minimal Buyer<span class="compare-tag tag-best">Best for Carlos</span></div>
+        <div class="compare-card-body">
+          <div class="compare-feature"><span class="compare-check">✓</span> Maximum clarity on what buyer pays and supplier receives</div>
+          <div class="compare-feature"><span class="compare-check">✓</span> Rate lock celebration creates emotional anchor</div>
+          <div class="compare-feature"><span class="compare-check">✓</span> Single CTA button — "Confirm Payment"</div>
+          <div class="compare-feature"><span class="compare-check">✓</span> Progressive disclosure for escrow details</div>
+          <div class="compare-feature" style="color:var(--text-secondary);"><span>○</span> No visual hierarchy beyond rate lock moment</div>
+          <div style="padding-top:12px; font-size:12px; font-weight:600; color:var(--trust-blue-light);">→ Best for: Carlos buyer flow</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="recommendation-box">
+      <h3>Web-Only MVP Direction</h3>
+      <p>
+        <strong>Carlos (Buyer):</strong> Direction C's minimal confirmation with Direction A's rate lock celebration.
+        Payment link opens in browser — single page with amount confirmation, rate lock moment, and status tracker.
+        Progressive disclosure reveals escrow details and milestone progress below the fold.<br><br>
+        <strong>Wei (Seller):</strong> Direction A's dense dashboard. Full-screen console with sidebar navigation,
+        KPI cards, sortable settlement table, and prominent "Download Complete Evidence Pack" button.
+        Desktop-first with responsive scaling to 1024px tablets.<br><br>
+        <strong>CFO (Approver):</strong> Direction A's card-based approval queue as primary,
+        Direction B's risk table as optional toggle for power users on high-volume days.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- ========== ERP MODULES ========== -->
+  <div id="erp" class="mockup-section">
+
+    <div class="web-note">
+      <span>📋</span> ERP modules cover Sales Ledger, Purchase Ledger, Account Reconciliation, Counterparty Management, and Invoice Creation — as defined in the PRD (FR63–FR87).
+    </div>
+
+    <!-- ERP SUB-NAV -->
+    <div style="display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap;">
+      <button class="erp-tab active" onclick="showErpTab('sales-ledger')" style="padding:8px 14px; border:1px solid var(--border-slate); border-radius:8px; cursor:pointer; font-size:13px; font-weight:500; background:#EFF6FF; border-color:var(--trust-blue-light); color:var(--trust-blue-light);">Sales Ledger</button>
+      <button class="erp-tab" onclick="showErpTab('purchase-ledger')" style="padding:8px 14px; border:1px solid var(--border-slate); background:white; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500;">Purchase Ledger</button>
+      <button class="erp-tab" onclick="showErpTab('reconciliation')" style="padding:8px 14px; border:1px solid var(--border-slate); background:white; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500;">Reconciliation</button>
+      <button class="erp-tab" onclick="showErpTab('counterparty')" style="padding:8px 14px; border:1px solid var(--border-slate); background:white; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500;">Counterparty CRM</button>
+      <button class="erp-tab" onclick="showErpTab('invoice-create')" style="padding:8px 14px; border:1px solid var(--border-slate); background:white; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500;">Invoice Creation</button>
+    </div>
+
+    <!-- ===== SALES LEDGER (Wei) ===== -->
+    <div id="tab-sales-ledger" class="erp-panel active">
+      <div class="section-header">
+        <div class="section-title">Sales Ledger — Wei (Seller)</div>
+        <div class="section-desc">Outstanding invoices, receivables tracking, aging report. All amounts in CNY equivalent. (FR77–FR80)</div>
+      </div>
+      <div class="dashboard">
+        <div class="sidebar">
+          <div class="sidebar-section">Finance</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📊</span> Dashboard</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📄</span> Invoices</div>
+          <div class="sidebar-item active"><span class="sidebar-icon">📈</span> Sales Ledger</div>
+          <div class="sidebar-item"><span class="sidebar-icon">💰</span> Settlements</div>
+          <div class="sidebar-item"><span class="sidebar-icon">🔄</span> Reconciliation</div>
+          <div class="sidebar-section">CRM</div>
+          <div class="sidebar-item"><span class="sidebar-icon">👥</span> Counterparties</div>
+          <div class="sidebar-section">Documents</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📁</span> Evidence Packs</div>
+        </div>
+        <div class="dashboard-main">
+          <!-- KPI Row -->
+          <div class="kpi-grid" style="grid-template-columns: repeat(5, 1fr);">
+            <div class="kpi-card">
+              <div class="kpi-value">¥1,247,580</div>
+              <div class="kpi-label">Total Receivable</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-value" style="color:var(--success-green);">¥892,340</div>
+              <div class="kpi-label">Received YTD</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-value" style="color:var(--warning-amber);">¥355,240</div>
+              <div class="kpi-label">Outstanding</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-value">23</div>
+              <div class="kpi-label">Open Invoices</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-value" style="color:var(--danger-red);">¥42,800</div>
+              <div class="kpi-label">Overdue (60d+)</div>
+            </div>
+          </div>
+
+          <!-- Aging Report -->
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header">
+              <span class="card-title">Receivables Aging</span>
+              <span style="font-size:12px; color:var(--text-secondary);">As of Apr 2, 2026</span>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <div style="display:grid; grid-template-columns: repeat(4, 1fr); text-align:center;">
+                <div style="padding:20px; border-right:1px solid var(--border-slate);">
+                  <div style="font-size:28px; font-weight:700; color:var(--success-green);">¥215,400</div>
+                  <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">0–30 Days</div>
+                  <div style="font-size:11px; color:var(--success-green); margin-top:4px;">On Track</div>
+                </div>
+                <div style="padding:20px; border-right:1px solid var(--border-slate);">
+                  <div style="font-size:28px; font-weight:700; color:var(--warning-amber);">¥97,040</div>
+                  <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">31–60 Days</div>
+                  <div style="font-size:11px; color:var(--warning-amber); margin-top:4px;">Watch</div>
+                </div>
+                <div style="padding:20px; border-right:1px solid var(--border-slate);">
+                  <div style="font-size:28px; font-weight:700; color:#F97316;">¥84,200</div>
+                  <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">60–90 Days</div>
+                  <div style="font-size:11px; color:#F97316; margin-top:4px;">Late</div>
+                </div>
+                <div style="padding:20px;">
+                  <div style="font-size:28px; font-weight:700; color:var(--danger-red);">¥42,800</div>
+                  <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">90+ Days</div>
+                  <div style="font-size:11px; color:var(--danger-red); margin-top:4px;">Critical</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Outstanding Invoices Table -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Outstanding Invoices</span>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <input placeholder="Search invoices..." style="padding:6px 12px; border:1px solid var(--border-slate); border-radius:6px; font-size:13px;">
+                <select style="padding:6px 12px; border:1px solid var(--border-slate); border-radius:6px; font-size:13px; color:var(--text-secondary);">
+                  <option>All counterparties</option>
+                  <option>Carlos M.</option>
+                  <option>Maria S.</option>
+                  <option>João P.</option>
+                </select>
+              </div>
+            </div>
+            <table class="settlement-table">
+              <thead>
+                <tr>
+                  <th>Invoice</th>
+                  <th>Buyer</th>
+                  <th>Amount (CNY)</th>
+                  <th>BRL/ARS Equiv.</th>
+                  <th>Due Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="invoice">INV-2026-0051</div><div style="font-size:11px; color:var(--text-secondary);">Issued Mar 28</div></td>
+                  <td>Ana L. · Brazil</td>
+                  <td class="amount">¥38,200</td>
+                  <td class="mono" style="font-size:12px;">R$ 15,080</td>
+                  <td><div style="font-size:13px;">Apr 5, 2026</div><div style="font-size:11px; color:var(--success-green);">In 3 days</div></td>
+                  <td><span class="badge badge-secured">Secured</span></td>
+                </tr>
+                <tr>
+                  <td><div class="invoice">INV-2026-0049</div><div style="font-size:11px; color:var(--text-secondary);">Issued Mar 15</div></td>
+                  <td>João P. · Brazil</td>
+                  <td class="amount">¥12,450</td>
+                  <td class="mono" style="font-size:12px;">R$ 4,890</td>
+                  <td><div style="font-size:13px;">Mar 30, 2026</div><div style="font-size:11px; color:var(--warning-amber);">3 days overdue</div></td>
+                  <td><span class="badge badge-pending">Payment Due</span></td>
+                </tr>
+                <tr>
+                  <td><div class="invoice">INV-2026-0042</div><div style="font-size:11px; color:var(--text-secondary);">Issued Feb 10</div></td>
+                  <td>Maria S. · Argentina</td>
+                  <td class="amount">¥84,200</td>
+                  <td class="mono" style="font-size:12px;">ARS 12,580,000</td>
+                  <td><div style="font-size:13px;">Mar 15, 2026</div><div style="font-size:11px; color:var(--danger-red);">18 days overdue</div></td>
+                  <td><span class="badge" style="background:#FEE2E2; color:#991B1B;">Overdue</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PURCHASE LEDGER (Carlos) ===== -->
+    <div id="tab-purchase-ledger" class="erp-panel" style="display:none;">
+      <div class="section-header">
+        <div class="section-title">Purchase Ledger — Carlos (Buyer)</div>
+        <div class="section-desc">Pending invoices, outgoing payments, owed vs. paid balance per seller. (FR73–FR76)</div>
+      </div>
+      <div class="dashboard">
+        <div class="sidebar">
+          <div class="sidebar-section">Finance</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📊</span> Dashboard</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📄</span> My Invoices</div>
+          <div class="sidebar-item active"><span class="sidebar-icon">📈</span> Purchase Ledger</div>
+          <div class="sidebar-item"><span class="sidebar-icon">💸</span> Payments</div>
+          <div class="sidebar-section">Counterparties</div>
+          <div class="sidebar-item"><span class="sidebar-icon">🏭</span> Suppliers</div>
+        </div>
+        <div class="dashboard-main">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-value">R$ 487,200</div>
+              <div class="kpi-label">Total Owed</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-value" style="color:var(--success-green);">R$ 312,400</div>
+              <div class="kpi-label">Paid YTD</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-value" style="color:var(--warning-amber);">R$ 174,800</div>
+              <div class="kpi-label">Pending Payment</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-value">8</div>
+              <div class="kpi-label">Open Invoices</div>
+            </div>
+          </div>
+
+          <!-- Owed vs Paid by Supplier -->
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header">
+              <span class="card-title">Balance by Supplier</span>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <div style="display:grid; grid-template-columns: 1fr 120px 120px 120px 120px; padding: 10px 20px; background:#F8FAFC; font-size:11px; font-weight:600; color:var(--text-secondary); border-bottom:1px solid var(--border-slate);">
+                <div>Supplier</div><div>Total Owed</div><div>Paid</div><div>Pending</div><div>Last Payment</div>
+              </div>
+              <div style="display:grid; grid-template-columns: 1fr 120px 120px 120px 120px; padding: 14px 20px; border-bottom:1px solid var(--border-slate); align-items:center; font-size:13px;">
+                <div><div style="font-weight:600;">Wei Zhang Trading</div><div style="font-size:11px; color:var(--text-secondary);">Guangzhou, China</div></div>
+                <div class="mono">R$ 312,400</div>
+                <div class="mono" style="color:var(--success-green);">R$ 187,440</div>
+                <div class="mono" style="color:var(--warning-amber);">R$ 124,960</div>
+                <div style="font-size:12px; color:var(--text-secondary);">Mar 28, 2026</div>
+              </div>
+              <div style="display:grid; grid-template-columns: 1fr 120px 120px 120px 120px; padding: 14px 20px; border-bottom:1px solid var(--border-slate); align-items:center; font-size:13px;">
+                <div><div style="font-weight:600;">Li Ming Exports</div><div style="font-size:11px; color:var(--text-secondary);">Shanghai, China</div></div>
+                <div class="mono">R$ 98,200</div>
+                <div class="mono" style="color:var(--success-green);">R$ 59,800</div>
+                <div class="mono" style="color:var(--warning-amber);">R$ 38,400</div>
+                <div style="font-size:12px; color:var(--text-secondary);">Mar 25, 2026</div>
+              </div>
+              <div style="display:grid; grid-template-columns: 1fr 120px 120px 120px 120px; padding: 14px 20px; align-items:center; font-size:13px;">
+                <div><div style="font-weight:600;">Shenzhen Electronics Co.</div><div style="font-size:11px; color:var(--text-secondary);">Shenzhen, China</div></div>
+                <div class="mono">R$ 76,600</div>
+                <div class="mono" style="color:var(--success-green);">R$ 65,160</div>
+                <div class="mono" style="color:var(--warning-amber);">R$ 11,440</div>
+                <div style="font-size:12px; color:var(--text-secondary);">Apr 1, 2026</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pending Invoices -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Pending Invoices</span>
+              <span style="font-size:12px; color:var(--text-secondary);">8 invoices awaiting payment</span>
+            </div>
+            <table class="settlement-table">
+              <thead>
+                <tr><th>Invoice</th><th>Supplier</th><th>Amount</th><th>Due Date</th><th>Reminder</th><th></th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="invoice">INV-WZ-2026-0048</div></td>
+                  <td>Wei Zhang Trading</td>
+                  <td class="amount">¥38,200</td>
+                  <td><div style="font-size:13px;">Apr 5, 2026</div><div style="font-size:11px; color:var(--success-green);">In 3 days</div></td>
+                  <td><span style="font-size:11px; color:var(--success-green);">✓ Reminder sent</span></td>
+                  <td><button class="btn btn-success" style="padding:5px 12px; font-size:12px;">Pay Now</button></td>
+                </tr>
+                <tr>
+                  <td><div class="invoice">INV-LM-2026-0031</div></td>
+                  <td>Li Ming Exports</td>
+                  <td class="amount">¥28,100</td>
+                  <td><div style="font-size:13px;">Apr 8, 2026</div><div style="font-size:11px; color:var(--success-green);">In 6 days</div></td>
+                  <td><span style="font-size:11px; color:var(--text-secondary);">—</span></td>
+                  <td><button class="btn btn-primary" style="padding:5px 12px; font-size:12px;">Pay Now</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ACCOUNT RECONCILIATION ===== -->
+    <div id="tab-reconciliation" class="erp-panel" style="display:none;">
+      <div class="section-header">
+        <div class="section-title">Account Reconciliation</div>
+        <div class="section-desc">Real-time view of USDT, BRL, CNY holdings. FX exposure per counterparty and corridor. (FR81–FR85)</div>
+      </div>
+      <div class="dashboard">
+        <div class="sidebar">
+          <div class="sidebar-section">Finance</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📊</span> Dashboard</div>
+          <div class="sidebar-item"><span class="sidebar-icon">🔄</span> Reconciliation <span style="background:var(--trust-blue-light); color:white; font-size:10px; padding:1px 6px; border-radius:10px; margin-left:4px;">Active</span></div>
+          <div class="sidebar-item"><span class="sidebar-icon">📈</span> FX Exposure</div>
+          <div class="sidebar-section">Accounts</div>
+          <div class="sidebar-item"><span class="sidebar-icon">💰</span> USDT Vault</div>
+          <div class="sidebar-item"><span class="sidebar-icon">🏦</span> BRL Account</div>
+          <div class="sidebar-item"><span class="sidebar-icon">💵</span> CNY Account</div>
+        </div>
+        <div class="dashboard-main">
+          <!-- USDT Holdings (Wei) -->
+          <div style="font-weight:700; font-size:15px; margin-bottom:12px;">Platform USDT Holdings</div>
+          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:20px;">
+            <div class="kpi-card" style="border-left:3px solid var(--trust-blue-light);">
+              <div class="mono" style="font-size:20px; font-weight:700;">$4,820,000</div>
+              <div class="kpi-label">Total USDT</div>
+            </div>
+            <div class="kpi-card" style="border-left:3px solid var(--success-green);">
+              <div class="mono" style="font-size:20px; font-weight:700; color:var(--success-green);">$2,140,000</div>
+              <div class="kpi-label">Available Balance</div>
+            </div>
+            <div class="kpi-card" style="border-left:3px solid var(--warning-amber);">
+              <div class="mono" style="font-size:20px; font-weight:700; color:var(--warning-amber);">$1,680,000</div>
+              <div class="kpi-label">In Escrow (Cregis)</div>
+            </div>
+            <div class="kpi-card" style="border-left:3px solid var(--text-secondary);">
+              <div class="mono" style="font-size:20px; font-weight:700;">$1,000,000</div>
+              <div class="kpi-label">Released to HK Entity</div>
+            </div>
+          </div>
+
+          <!-- Balance Breakdown -->
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:20px;">
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">Wei — CNY Account</span>
+                <span class="badge badge-delivered">Connected</span>
+              </div>
+              <div class="card-body">
+                <div style="font-size:28px; font-weight:700; margin-bottom:4px;">¥2,847,230</div>
+                <div style="font-size:12px; color:var(--text-secondary); margin-bottom:16px;">ICBC · ****7842 · Guangzhou Branch</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                  <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px;">
+                    <div style="color:var(--text-secondary);">This Month Received</div>
+                    <div style="font-weight:700;">¥847,230</div>
+                  </div>
+                  <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px;">
+                    <div style="color:var(--text-secondary);">Pending Incoming</div>
+                    <div style="font-weight:700;">¥124,800</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">Carlos — BRL Account</span>
+                <span class="badge badge-secured">Connected</span>
+              </div>
+              <div class="card-body">
+                <div style="font-size:28px; font-weight:700; margin-bottom:4px;">R$ 312,400</div>
+                <div style="font-size:12px; color:var(--text-secondary); margin-bottom:16px;">Itaú · ****5521 · São Paulo</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                  <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px;">
+                    <div style="color:var(--text-secondary);">Total Owed to Suppliers</div>
+                    <div style="font-weight:700;">R$ 174,800</div>
+                  </div>
+                  <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px;">
+                    <div style="color:var(--text-secondary);">Pending Outgoing</div>
+                    <div style="font-weight:700;">R$ 38,200</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FX Exposure -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">FX Exposure by Corridor</span>
+              <span style="font-size:12px; color:var(--text-secondary);">Aggregated across all open settlements</span>
+            </div>
+            <table class="settlement-table">
+              <thead>
+                <tr><th>Corridor</th><th>Open Settlements</th><th>Total CNY Exposure</th><th>USDTEscrow</th><th>Avg Locked Rate</th><th>FX Risk</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span style="font-size:14px;">🇧🇷 Brazil (BRL)</span></td>
+                  <td>12</td>
+                  <td class="amount">¥847,230</td>
+                  <td class="mono">$232,400</td>
+                  <td class="mono">R$ 0.3926/CNY</td>
+                  <td><span class="risk-dot green"></span> <span style="font-size:12px; color:var(--success-green);">Low</span></td>
+                </tr>
+                <tr>
+                  <td><span style="font-size:14px;">🇦🇷 Argentina (ARS)</span></td>
+                  <td>4</td>
+                  <td class="amount">¥284,500</td>
+                  <td class="mono">$78,200</td>
+                  <td class="mono">ARS 149.5/CNY</td>
+                  <td><span class="risk-dot yellow"></span> <span style="font-size:12px; color:var(--warning-amber);">Medium</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== COUNTERPARTY MANAGEMENT ===== -->
+    <div id="tab-counterparty" class="erp-panel" style="display:none;">
+      <div class="section-header">
+        <div class="section-title">Counterparty Management — Wei's CRM</div>
+        <div class="section-desc">Trust scores, settlement history, and interaction history per buyer. (FR69–FR72)</div>
+      </div>
+      <div class="dashboard">
+        <div class="sidebar">
+          <div class="sidebar-section">Finance</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📊</span> Dashboard</div>
+          <div class="sidebar-section">CRM</div>
+          <div class="sidebar-item active"><span class="sidebar-icon">👥</span> Counterparties</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📈</span> Sales Ledger</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📁</span> Evidence Packs</div>
+        </div>
+        <div class="dashboard-main">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <div style="font-size:18px; font-weight:700;">My Buyers</div>
+            <input placeholder="Search counterparties..." style="padding:8px 14px; border:1px solid var(--border-slate); border-radius:8px; font-size:13px; width:240px;">
+          </div>
+
+          <!-- Counterparty Cards -->
+          <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px; margin-bottom:24px;">
+            <div class="card" style="border-left:4px solid var(--success-green);">
+              <div class="card-body">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                  <div>
+                    <div style="font-weight:700; font-size:16px;">Carlos Mendez</div>
+                    <div style="font-size:12px; color:var(--text-secondary);">Mendez Importação Ltda. · CNPJ 34.567.890/0001-22 · Brazil</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div style="font-size:22px; font-weight:700; color:var(--success-green);">★★★★★</div>
+                    <div style="font-size:11px; color:var(--text-secondary);">Trust Score</div>
+                  </div>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-bottom:12px;">
+                  <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
+                    <div style="font-weight:700; font-size:16px;">12</div>
+                    <div style="color:var(--text-secondary);">Settlements</div>
+                  </div>
+                  <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
+                    <div style="font-weight:700; font-size:16px;">100%</div>
+                    <div style="color:var(--text-secondary);">Success Rate</div>
+                  </div>
+                  <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
+                    <div style="font-weight:700; font-size:16px;">4.2h</div>
+                    <div style="color:var(--text-secondary);">Avg Delivery</div>
+                  </div>
+                  <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
+                    <div style="font-weight:700; font-size:16px;">0</div>
+                    <div style="color:var(--text-secondary);">Disputes</div>
+                  </div>
+                </div>
+                <div style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
+                  Total volume: <span class="mono" style="font-weight:600; color:var(--text-primary);">¥142,800</span> · Last settlement: <span style="font-weight:600;">Mar 28, 2026</span>
+                </div>
+                <div style="display:flex; gap:8px;">
+                  <button class="btn btn-primary" style="flex:1; font-size:12px; padding:7px;">Create Invoice</button>
+                  <button class="btn btn-secondary" style="font-size:12px; padding:7px;">View History</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="border-left:4px solid var(--warning-amber);">
+              <div class="card-body">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                  <div>
+                    <div style="font-weight:700; font-size:16px;">Maria Santos</div>
+                    <div style="font-size:12px; color:var(--text-secondary);">Santos Comercio S.A. · CNPJ 45.678.901/0001-33 · Argentina</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div style="font-size:22px; font-weight:700; color:var(--warning-amber);">★★★★☆</div>
+                    <div style="font-size:11px; color:var(--text-secondary);">Trust Score</div>
+                  </div>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-bottom:12px;">
+                  <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
+                    <div style="font-weight:700; font-size:16px;">6</div>
+                    <div style="color:var(--text-secondary);">Settlements</div>
+                  </div>
+                  <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
+                    <div style="font-weight:700; font-size:16px; color:var(--warning-amber);">83%</div>
+                    <div style="color:var(--text-secondary);">Success Rate</div>
+                  </div>
+                  <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
+                    <div style="font-weight:700; font-size:16px;">18h</div>
+                    <div style="color:var(--text-secondary);">Avg Delivery</div>
+                  </div>
+                  <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
+                    <div style="font-weight:700; font-size:16px; color:var(--warning-amber);">1</div>
+                    <div style="color:var(--text-secondary);">Disputes</div>
+                  </div>
+                </div>
+                <div style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
+                  Total volume: <span class="mono" style="font-weight:600; color:var(--text-primary);">¥98,200</span> · Last settlement: <span style="font-weight:600;">Mar 15, 2026</span>
+                </div>
+                <div style="display:flex; gap:8px;">
+                  <button class="btn btn-primary" style="flex:1; font-size:12px; padding:7px;">Create Invoice</button>
+                  <button class="btn btn-secondary" style="font-size:12px; padding:7px;">View History</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interaction History -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Interaction History — Carlos Mendez</span>
+              <span style="font-size:12px; color:var(--text-secondary);">Last 10 settlements</span>
+            </div>
+            <table class="settlement-table">
+              <thead>
+                <tr><th>Date</th><th>Invoice</th><th>Amount</th><th>Corridor</th><th>Delivery Time</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Mar 28, 2026</td>
+                  <td><div class="invoice">INV-2026-0046</div></td>
+                  <td class="amount">¥28,100</td>
+                  <td>Brazil BRL</td>
+                  <td>4.1h</td>
+                  <td><span class="badge badge-delivered">Delivered</span></td>
+                </tr>
+                <tr>
+                  <td>Mar 20, 2026</td>
+                  <td><div class="invoice">INV-2026-0042</div></td>
+                  <td class="amount">¥15,400</td>
+                  <td>Brazil BRL</td>
+                  <td>3.8h</td>
+                  <td><span class="badge badge-delivered">Delivered</span></td>
+                </tr>
+                <tr>
+                  <td>Mar 12, 2026</td>
+                  <td><div class="invoice">INV-2026-0038</div></td>
+                  <td class="amount">¥22,100</td>
+                  <td>Brazil BRL</td>
+                  <td>5.2h</td>
+                  <td><span class="badge badge-delivered">Delivered</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== INVOICE CREATION ===== -->
+    <div id="tab-invoice-create" class="erp-panel" style="display:none;">
+      <div class="section-header">
+        <div class="section-title">Invoice Creation — Wei</div>
+        <div class="section-desc">Create invoice, attach Trade Payment Agreement, set milestone tranches, configure approval chain. (FR63–FR64, FR86)</div>
+      </div>
+      <div class="dashboard">
+        <div class="sidebar">
+          <div class="sidebar-section">Finance</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📄</span> Invoices</div>
+          <div class="sidebar-item active"><span class="sidebar-icon">✏️</span> Create Invoice</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📈</span> Sales Ledger</div>
+          <div class="sidebar-section">Templates</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📋</span> My Templates</div>
+        </div>
+        <div class="dashboard-main">
+          <div style="display:grid; grid-template-columns: 1fr 360px; gap:20px;">
+            <!-- Invoice Form -->
+            <div>
+              <div class="card">
+                <div class="card-header">
+                  <span class="card-title">Invoice Details</span>
+                </div>
+                <div class="card-body">
+                  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:16px;">
+                    <div>
+                      <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:6px;">Invoice Number</label>
+                      <input value="INV-2026-0052" style="width:100%; padding:8px 12px; border:1px solid var(--border-slate); border-radius:8px; font-size:14px; font-family:'JetBrains Mono',monospace;" readonly>
+                    </div>
+                    <div>
+                      <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:6px;">Issue Date</label>
+                      <input type="date" value="2026-04-02" style="width:100%; padding:8px 12px; border:1px solid var(--border-slate); border-radius:8px; font-size:14px;">
+                    </div>
+                  </div>
+
+                  <div style="margin-bottom:16px;">
+                    <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:6px;">Buyer (Counterparty)</label>
+                    <select style="width:100%; padding:8px 12px; border:1px solid var(--border-slate); border-radius:8px; font-size:14px;">
+                      <option>Carlos Mendez — Mendez Importação Ltda. — Brazil</option>
+                      <option>Maria Santos — Santos Comercio S.A. — Argentina</option>
+                      <option>João Pereira — Pereira Trading ME — Brazil</option>
+                    </select>
+                  </div>
+
+                  <div style="margin-bottom:16px;">
+                    <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:6px;">Amount (CNY)</label>
+                    <input type="text" value="¥ 45,000.00" style="width:100%; padding:8px 12px; border:1px solid var(--border-slate); border-radius:8px; font-size:16px; font-weight:600; font-family:'JetBrains Mono',monospace;">
+                  </div>
+
+                  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:16px;">
+                    <div>
+                      <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:6px;">Due Date</label>
+                      <input type="date" value="2026-04-15" style="width:100%; padding:8px 12px; border:1px solid var(--border-slate); border-radius:8px; font-size:14px;">
+                    </div>
+                    <div>
+                      <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:6px;">Template</label>
+                      <select style="width:100%; padding:8px 12px; border:1px solid var(--border-slate); border-radius:8px; font-size:14px;">
+                        <option>Standard (30 days) — Default for Carlos</option>
+                        <option>Standard (30 days)</option>
+                        <option>Custom — Flexible</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style="margin-bottom:16px;">
+                    <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:6px;">Description</label>
+                    <textarea rows="3" style="width:100%; padding:8px 12px; border:1px solid var(--border-slate); border-radius:8px; font-size:14px; resize:vertical;">Electronic components — 5,000 units — Model EX-200</textarea>
+                  </div>
+
+                  <!-- Milestone Tranches -->
+                  <div style="margin-bottom:16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                      <label style="font-size:12px; font-weight:600; color:var(--text-secondary);">Milestone Tranches</label>
+                      <button style="font-size:12px; color:var(--trust-blue-light); background:none; border:none; cursor:pointer; font-weight:500;">+ Add Milestone</button>
+                    </div>
+                    <div style="border:1px solid var(--border-slate); border-radius:8px; overflow:hidden;">
+                      <div style="display:grid; grid-template-columns: 1fr 100px 100px; padding:8px 12px; background:#F8FAFC; font-size:11px; font-weight:600; color:var(--text-secondary); border-bottom:1px solid var(--border-slate);">
+                        <div>Milestone</div><div>Percentage</div><div>Amount</div>
+                      </div>
+                      <div style="display:grid; grid-template-columns: 1fr 100px 100px; padding:8px 12px; border-bottom:1px solid var(--border-slate); font-size:13px; align-items:center;">
+                        <div>Deposit (Order Confirmed)</div><div><input value="30" style="width:50px; padding:4px; border:1px solid var(--border-slate); border-radius:4px; font-size:13px; text-align:center;">%</div><div class="mono">¥13,500</div>
+                      </div>
+                      <div style="display:grid; grid-template-columns: 1fr 100px 100px; padding:8px 12px; border-bottom:1px solid var(--border-slate); font-size:13px; align-items:center;">
+                        <div>Shipped (Goods Departed)</div><div><input value="40" style="width:50px; padding:4px; border:1px solid var(--border-slate); border-radius:4px; font-size:13px; text-align:center;">%</div><div class="mono">¥18,000</div>
+                      </div>
+                      <div style="display:grid; grid-template-columns: 1fr 100px 100px; padding:8px 12px; font-size:13px; align-items:center;">
+                        <div>Final (Customs Cleared)</div><div><input value="30" style="width:50px; padding:4px; border:1px solid var(--border-slate); border-radius:4px; font-size:13px; text-align:center;">%</div><div class="mono">¥13,500</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Attachments -->
+                  <div>
+                    <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:8px;">Attachments</label>
+                    <div style="border:1px solid var(--border-slate); border-radius:8px; padding:16px; text-align:center; margin-bottom:8px; background:#FAFBFC;">
+                      <div style="font-size:24px; margin-bottom:8px;">📄</div>
+                      <div style="font-size:13px; font-weight:500;">Contract.pdf</div>
+                      <div style="font-size:12px; color:var(--text-secondary);">External contract · 1.2 MB · Attached externally</div>
+                    </div>
+                    <div style="border:1px dashed var(--border-slate); border-radius:8px; padding:14px; text-align:center; cursor:pointer;">
+                      <div style="font-size:13px; color:var(--trust-blue-light); font-weight:500;">+ Attach Trade Payment Agreement</div>
+                      <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">PDF or image · Max 10 MB</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview Sidebar -->
+            <div>
+              <div class="card" style="position:sticky; top:120px;">
+                <div class="card-header">
+                  <span class="card-title">Invoice Preview</span>
+                  <span style="font-size:11px; color:var(--text-secondary);">Live preview</span>
+                </div>
+                <div class="card-body" style="font-size:13px;">
+                  <div style="text-align:center; padding-bottom:16px; border-bottom:1px solid var(--border-slate); margin-bottom:16px;">
+                    <div style="font-weight:700; font-size:16px;">INVOICE</div>
+                    <div class="mono" style="font-size:14px; color:var(--text-secondary);">INV-2026-0052</div>
+                  </div>
+                  <div style="margin-bottom:12px;">
+                    <div style="font-size:11px; color:var(--text-secondary);">From</div>
+                    <div style="font-weight:600;">Wei Zhang Trading Co.</div>
+                    <div style="font-size:12px; color:var(--text-secondary);">Guangzhou, China</div>
+                  </div>
+                  <div style="margin-bottom:12px;">
+                    <div style="font-size:11px; color:var(--text-secondary);">To</div>
+                    <div style="font-weight:600;">Carlos Mendez</div>
+                    <div style="font-size:12px; color:var(--text-secondary);">Mendez Importação Ltda. · Brazil</div>
+                  </div>
+                  <div style="background:#F8FAFC; border-radius:8px; padding:12px; margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                      <span style="font-size:11px; color:var(--text-secondary);">Amount Due</span>
+                    </div>
+                    <div class="mono" style="font-size:24px; font-weight:700; text-align:center;">¥45,000.00</div>
+                    <div style="text-align:center; font-size:12px; color:var(--text-secondary);">Due Apr 15, 2026</div>
+                  </div>
+                  <div style="font-size:11px; color:var(--text-secondary); margin-bottom:4px;">Payment via Everypay</div>
+                  <div style="font-size:11px; color:var(--trust-blue-light);">Rate lock available at payment initiation</div>
+
+                  <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border-slate);">
+                    <div style="font-size:12px; font-weight:600; margin-bottom:8px;">Payment Link</div>
+                    <div style="background:#F8FAFC; border-radius:6px; padding:8px; font-size:11px; font-family:'JetBrains Mono',monospace; color:var(--text-secondary); word-break:break-all;">
+                      everypay.com/pay/inv-2026-0052
+                    </div>
+                    <div style="display:flex; gap:6px; margin-top:8px;">
+                      <button style="flex:1; padding:6px; font-size:11px; border:1px solid var(--border-slate); border-radius:6px; background:white; cursor:pointer;">📋 Copy Link</button>
+                      <button style="flex:1; padding:6px; font-size:11px; border:1px solid var(--border-slate); border-radius:6px; background:white; cursor:pointer;">📧 Send Email</button>
+                    </div>
+                  </div>
+
+                  <button class="btn btn-success" style="width:100%; margin-top:16px; justify-content:center;">Create Invoice & Send</button>
+                  <button class="btn btn-secondary" style="width:100%; margin-top:8px; justify-content:center;">Save as Draft</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+  function showSection(id) {
+    document.querySelectorAll('.mockup-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.direction-nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function showErpTab(tabId) {
+    document.querySelectorAll('.erp-panel').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('.erp-tab').forEach(t => {
+      t.classList.remove('active');
+      t.style.background = 'white';
+      t.style.borderColor = 'var(--border-slate)';
+      t.style.color = 'var(--text-primary)';
+    });
+    document.getElementById('tab-' + tabId).style.display = 'block';
+    event.target.classList.add('active');
+    event.target.style.background = '#EFF6FF';
+    event.target.style.borderColor = 'var(--trust-blue-light)';
+    event.target.style.color = 'var(--trust-blue-light)';
+  }
+</script>
+
+</body>
+</html>
