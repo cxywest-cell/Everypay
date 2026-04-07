@@ -481,560 +481,250 @@
   </div>
 
   <div class="direction-nav">
-    <button class="active" onclick="showSection('carlos')">Carlos · Buyer</button>
-    <button onclick="showSection('wei')">Wei · Seller</button>
-    <button onclick="showSection('cfo')">CFO · Approver</button>
-    <button onclick="showSection('erp')">ERP Modules</button>
+    <button class="active" onclick="showSection('erp')">All Modules</button>
     <button onclick="showSection('compare')">Compare</button>
   </div>
+</main>
 
-  <!-- ========== CARLOS BUYER ========== -->
-  <div id="carlos" class="mockup-section active">
+<main>
 
-    <div class="web-note">
-      <span>💻</span> MVP: Web browser only. Carlos accesses via a payment link shared by Wei. Responsive design scales from laptop to tablet.
-    </div>
-
-    <div class="persona-grid">
-      <div>
-        <div class="step-label">Direction A — Rate Lock Celebration</div>
-        <div class="section-header">
-          <div class="section-title">Carlos: The Defining Moment</div>
-          <div class="section-desc">Anxiety → Relief arc. Celebratory rate lock confirmation with visual weight.</div>
-        </div>
-
-        <div class="rate-lock-hero">
-          <div class="check-circle">✓</div>
-          <div class="amount">¥12,450.00 CNY</div>
-          <div class="label">Rate locked — supplier guaranteed this amount</div>
-          <div class="rate-row">
-            <span>1 CNY = R$ 0.3926</span>
-            <span>·</span>
-            <span>Fee: R$ 24.50</span>
-            <span>·</span>
-            <span>Locked until Apr 4, 2026</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Settlement Progress</span>
-            <span class="badge badge-secured">Rate Locked</span>
-          </div>
-          <div class="card-body">
-            <div class="status-tracker" style="margin-bottom: 20px;">
-              <div class="status-step completed">
-                <div class="status-dot">✓</div>
-                <div class="status-label">BRL Received</div>
-              </div>
-              <div class="status-step active">
-                <div class="status-dot">🔒</div>
-                <div class="status-label">Rate Locked</div>
-              </div>
-              <div class="status-step">
-                <div class="status-dot">🚢</div>
-                <div class="status-label">In Transit</div>
-              </div>
-              <div class="status-step">
-                <div class="status-dot">🏛️</div>
-                <div class="status-label">Customs</div>
-              </div>
-              <div class="status-step">
-                <div class="status-dot">💰</div>
-                <div class="status-label">CNY Delivered</div>
-              </div>
-            </div>
-            <div class="info-row"><span class="info-label">Your BRL Payment</span><span class="info-value">R$ 4,914.50</span></div>
-            <div class="info-row"><span class="info-label">CNY Received (Guaranteed)</span><span class="info-value success">¥12,450.00</span></div>
-            <div class="info-row"><span class="info-label">Supplier Receives</span><span class="info-value">Apr 3–4, 2026</span></div>
-            <div class="info-row" style="cursor:pointer;"><span class="info-label">Escrow Details (tap to reveal)</span><span class="info-value" style="color: var(--trust-blue-light);">Cregis Custody, Dubai →</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div class="step-label">Direction B — Speed-First</div>
-        <div class="section-header">
-          <div class="section-title">Carlos: Minimal Confirmation</div>
-          <div class="section-desc">Ultra-lean flow. Maximum clarity on what Carlos pays and what Wei receives.</div>
-        </div>
-
-        <div class="card">
-          <div class="card-body" style="padding: 32px;">
-            <div style="text-align:center; margin-bottom: 24px;">
-              <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">You pay</div>
-              <div class="mono" style="font-size: 36px; font-weight: 700;">R$ 4,914.50</div>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
-              <div style="flex: 1; height: 1px; background: var(--border-slate);"></div>
-              <div style="padding: 0 16px; color: var(--text-secondary); font-size: 13px;">supplier receives</div>
-              <div style="flex: 1; height: 1px; background: var(--border-slate);"></div>
-            </div>
-            <div style="text-align:center; margin-bottom: 24px;">
-              <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">Guaranteed amount</div>
-              <div class="mono" style="font-size: 36px; font-weight: 700; color: var(--success-green);">¥12,450.00 CNY</div>
-            </div>
-            <div style="background: #F8FAFC; border-radius: 8px; padding: 14px; margin-bottom: 20px; font-size: 13px;">
-              <div class="info-row" style="border:none; padding: 3px 0;"><span class="info-label">Rate (locked 48h)</span><span class="info-value mono">R$ 0.3926/CNY</span></div>
-              <div class="info-row" style="border:none; padding: 3px 0;"><span class="info-label">Fee</span><span class="info-value">R$ 24.50</span></div>
-              <div class="info-row" style="border:none; padding: 3px 0;"><span class="info-label">Escrow</span><span class="info-value" style="font-size:12px;">Cregis Custody</span></div>
-            </div>
-            <button class="btn btn-success" style="width: 100%; padding: 14px; font-size: 15px; border-radius: 10px; justify-content: center;">
-              Confirm Payment · R$ 4,914.50
-            </button>
-            <div style="text-align:center; font-size: 12px; color: var(--text-secondary); margin-top: 12px;">
-              🛡️ Rate guaranteed until Apr 4 · 1-click confirmation
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Rate Locked Confirmation</span>
-          </div>
-          <div class="card-body">
-            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-              <div style="width:40px; height:40px; background:#D1FAE5; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px;">✓</div>
-              <div>
-                <div style="font-weight:600; font-size:15px;">Payment Confirmed</div>
-                <div style="font-size:13px; color:var(--text-secondary);">Apr 2, 2026 · 14:30 BRT</div>
-              </div>
-            </div>
-            <div class="info-row"><span class="info-label">Settlement ID</span><span class="info-value mono" style="font-size:12px;">SETL-2026-0892</span></div>
-            <div class="info-row"><span class="info-label">Locked Rate</span><span class="info-value mono">R$ 0.3926/CNY</span></div>
-            <div class="info-row"><span class="info-label">Lock Expires</span><span class="info-value">Apr 4, 2026 14:30</span></div>
-            <div class="info-row"><span class="info-label">Supplier Receives</span><span class="info-value">¥12,450.00 CNY by Apr 4</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ========== WEI SELLER ========== -->
-  <div id="wei" class="mockup-section">
+  <!-- ========== ERP SECTION (all modules) ========== -->
+  <div id="erp" class="mockup-section active">
 
     <div class="web-note">
-      <span>💻</span> Wei's console is desktop-first. Dense data tables, keyboard shortcuts, bulk actions. Responsive down to 1024px tablets.
-    </div>
-
-    <div class="dashboard">
-      <div class="sidebar">
-        <div class="sidebar-section">Overview</div>
-        <div class="sidebar-item active"><span class="sidebar-icon">📊</span> Dashboard</div>
-        <div class="sidebar-item"><span class="sidebar-icon">📄</span> Invoices</div>
-        <div class="sidebar-item"><span class="sidebar-icon">💰</span> Settlements</div>
-        <div class="sidebar-item"><span class="sidebar-icon">📦</span> Counterparties</div>
-        <div class="sidebar-section">Documents</div>
-        <div class="sidebar-item"><span class="sidebar-icon">📁</span> Evidence Packs</div>
-        <div class="sidebar-item"><span class="sidebar-icon">📥</span> Downloads</div>
-        <div class="sidebar-section">Settings</div>
-        <div class="sidebar-item"><span class="sidebar-icon">⚙️</span> Account</div>
-      </div>
-
-      <div class="dashboard-main">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-          <div style="font-size:18px; font-weight:700;">Dashboard</div>
-          <button class="btn btn-primary">+ New Invoice</button>
-        </div>
-
-        <div class="kpi-grid">
-          <div class="kpi-card">
-            <div class="kpi-value">¥847,230</div>
-            <div class="kpi-label">This Month</div>
-            <div class="kpi-change up">↑ 12.4% vs last month</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-value">47</div>
-            <div class="kpi-label">Settlements</div>
-            <div class="kpi-change up">↑ 8 new</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-value" style="color: var(--success-green);">99.2%</div>
-            <div class="kpi-label">Completion Rate</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-value">4.2h</div>
-            <div class="kpi-label">Avg. Settlement Time</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Recent Settlements</span>
-            <div style="font-size:12px; color:var(--text-secondary);">Mar 25 – Apr 2, 2026</div>
-          </div>
-          <table class="settlement-table">
-            <thead>
-              <tr>
-                <th>Invoice</th>
-                <th>Buyer</th>
-                <th>Amount</th>
-                <th>Rate Locked</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><div class="invoice">INV-2026-0047</div><div class="counterparty">Carlos M. · Brazil</div></td>
-                <td class="mono">R$ 97,240</td>
-                <td class="amount">¥12,450<span style="font-size:12px; color:var(--text-secondary);">.00</span></td>
-                <td class="mono" style="font-size:12px;">R$ 0.3926</td>
-                <td><span class="badge badge-secured">Secured</span></td>
-              </tr>
-              <tr>
-                <td><div class="invoice">INV-2026-0046</div><div class="counterparty">Maria S. · Argentina</div></td>
-                <td class="mono">ARS 4,200,000</td>
-                <td class="amount">¥28,100<span style="font-size:12px; color:var(--text-secondary);">.00</span></td>
-                <td class="mono" style="font-size:12px;">ARS 149.5</td>
-                <td><span class="badge badge-delivered">Delivered</span></td>
-              </tr>
-              <tr>
-                <td><div class="invoice">INV-2026-0045</div><div class="counterparty">João P. · Brazil</div></td>
-                <td class="mono">R$ 22,800</td>
-                <td class="amount">¥5,780<span style="font-size:12px; color:var(--text-secondary);">.00</span></td>
-                <td class="mono" style="font-size:12px;">R$ 0.3926</td>
-                <td><span class="badge badge-pending">Pending</span></td>
-              </tr>
-              <tr>
-                <td><div class="invoice">INV-2026-0044</div><div class="counterparty">Ana L. · Brazil</div></td>
-                <td class="mono">R$ 8,400</td>
-                <td class="amount">¥21,400<span style="font-size:12px; color:var(--text-secondary);">.00</span></td>
-                <td class="mono" style="font-size:12px;">R$ 0.3926</td>
-                <td><span class="badge badge-secured">Secured</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="evidence-pack">
-          <div class="evidence-header">
-            <div>
-              <div class="evidence-header-title">Latest Evidence Pack</div>
-              <div class="evidence-header-meta">INV-2026-0046 · Delivered Mar 28, 2026</div>
-            </div>
-            <span style="font-size:12px; color:var(--text-secondary);">4 documents</span>
-          </div>
-          <div class="evidence-item">
-            <span class="evidence-icon">📄</span>
-            <div>
-              <div class="evidence-name">Invoice.pdf</div>
-              <div class="evidence-desc">Original invoice · 245 KB · SHA-256 verified</div>
-            </div>
-            <span class="evidence-action">Download</span>
-          </div>
-          <div class="evidence-item">
-            <span class="evidence-icon">🚢</span>
-            <div>
-              <div class="evidence-name">Shipping Milestone</div>
-              <div class="evidence-desc">Departed port · Mar 22, 2026 · Timestamp verified</div>
-            </div>
-            <span class="evidence-action">View</span>
-          </div>
-          <div class="evidence-item">
-            <span class="evidence-icon">🏛️</span>
-            <div>
-              <div class="evidence-name">Customs Clearance</div>
-              <div class="evidence-desc">Customs cleared · Mar 26, 2026 · Document hash verified</div>
-            </div>
-            <span class="evidence-action">View</span>
-          </div>
-          <div class="evidence-item">
-            <span class="evidence-icon">💵</span>
-            <div>
-              <div class="evidence-name">Settlement Receipt</div>
-              <div class="evidence-desc">CNY transferred · Mar 28, 2026 · Bank confirmation</div>
-            </div>
-            <span class="evidence-action">Download</span>
-          </div>
-          <div class="evidence-footer">
-            <button class="btn btn-success" style="font-size:13px;">📦 Download Complete Evidence Pack</button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ========== CFO APPROVER ========== -->
-  <div id="cfo" class="mockup-section">
-
-    <div class="web-note">
-      <span>💻</span> CFO console is desktop-only. Card-based approval queue with expandable risk summaries. Keyboard shortcuts for power users.
-    </div>
-
-    <div class="dashboard">
-      <div class="sidebar">
-        <div class="sidebar-section">Dashboard</div>
-        <div class="sidebar-item"><span class="sidebar-icon">📊</span> Overview</div>
-        <div class="sidebar-item active"><span class="sidebar-icon">✅</span> Approval Queue <span style="background:var(--warning-amber); color:white; font-size:10px; padding:1px 6px; border-radius:10px; margin-left:4px;">3</span></div>
-        <div class="sidebar-item"><span class="sidebar-icon">📈</span> Risk Monitor</div>
-        <div class="sidebar-item"><span class="sidebar-icon">💱</span> FX Exposure</div>
-        <div class="sidebar-section">Reports</div>
-        <div class="sidebar-item"><span class="sidebar-icon">📁</span> Audit Logs</div>
-      </div>
-
-      <div class="dashboard-main">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-          <div style="font-size:18px; font-weight:700;">Approval Queue</div>
-          <div style="font-size:13px; color:var(--text-secondary);">3 pending · 2 approved today</div>
-        </div>
-
-        <!-- Approval Card 1 -->
-        <div class="approval-card">
-          <div class="approval-header">
-            <div>
-              <div class="approval-id">SETL-2026-0892</div>
-              <div class="approval-time">Submitted 2h ago · Wei Zhang · Guangzhou</div>
-            </div>
-            <span class="badge badge-pending">Pending Approval</span>
-          </div>
-          <div class="approval-body">
-            <div class="approval-amount">¥245,800<span style="font-size:14px;">.00 CNY</span></div>
-            <div class="approval-parties">Carlos M. (Brazil) → Wei Zhang · Invoice INV-2026-0047</div>
-
-            <div class="risk-summary">
-              <div class="risk-row">
-                <span class="risk-label"><span class="risk-dot green"></span>Counterparty History</span>
-                <span class="risk-value">12 settlements · 100% success</span>
-              </div>
-              <div class="risk-row">
-                <span class="risk-label"><span class="risk-dot green"></span>FX Volatility</span>
-                <span class="risk-value">Low — BRL stable within 48h window</span>
-              </div>
-              <div class="risk-row">
-                <span class="risk-label"><span class="risk-dot yellow"></span>Amount</span>
-                <span class="risk-value">Above average · ¥245K vs ¥87K avg</span>
-              </div>
-              <div class="risk-row">
-                <span class="risk-label"><span class="risk-dot green"></span>Document Complete</span>
-                <span class="risk-value">✓ All 3 milestones verified</span>
-              </div>
-            </div>
-
-            <div class="approval-metrics">
-              <div class="approval-metric">
-                <div class="approval-metric-value">R$ 97,240</div>
-                <div class="approval-metric-label">BRL Equivalent</div>
-              </div>
-              <div class="approval-metric">
-                <div class="approval-metric-value mono">1:0.3926</div>
-                <div class="approval-metric-label">Locked Rate</div>
-              </div>
-              <div class="approval-metric">
-                <div class="approval-metric-value">48h</div>
-                <div class="approval-metric-label">Lock Window</div>
-              </div>
-              <div class="approval-metric">
-                <div class="approval-metric-value">3</div>
-                <div class="approval-metric-label">Milestones</div>
-              </div>
-            </div>
-
-            <div class="approval-actions">
-              <button class="btn btn-success">✓ Approve Settlement</button>
-              <button class="btn btn-secondary">Review Details</button>
-              <button class="btn btn-danger">Reject</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Approval Card 2 -->
-        <div class="approval-card">
-          <div class="approval-header">
-            <div>
-              <div class="approval-id">SETL-2026-0893</div>
-              <div class="approval-time">Submitted 4h ago · Li Ming · Shanghai</div>
-            </div>
-            <span class="badge badge-pending">Pending Approval</span>
-          </div>
-          <div class="approval-body">
-            <div class="approval-amount">¥38,200<span style="font-size:14px;">.00 CNY</span></div>
-            <div class="approval-parties">João P. (Brazil) → Li Ming · Invoice INV-2026-0048</div>
-
-            <div class="risk-summary">
-              <div class="risk-row">
-                <span class="risk-label"><span class="risk-dot green"></span>Counterparty History</span>
-                <span class="risk-value">5 settlements · 100% success</span>
-              </div>
-              <div class="risk-row">
-                <span class="risk-label"><span class="risk-dot green"></span>FX Volatility</span>
-                <span class="risk-value">Low</span>
-              </div>
-              <div class="risk-row">
-                <span class="risk-label"><span class="risk-dot green"></span>Amount</span>
-                <span class="risk-value">Within normal range</span>
-              </div>
-              <div class="risk-row">
-                <span class="risk-label"><span class="risk-dot green"></span>Document Complete</span>
-                <span class="risk-value">✓ All milestones verified</span>
-              </div>
-            </div>
-
-            <div class="approval-metrics">
-              <div class="approval-metric"><div class="approval-metric-value">R$ 15,080</div><div class="approval-metric-label">BRL Equivalent</div></div>
-              <div class="approval-metric"><div class="approval-metric-value mono">1:0.3926</div><div class="approval-metric-label">Locked Rate</div></div>
-              <div class="approval-metric"><div class="approval-metric-value">48h</div><div class="approval-metric-label">Lock Window</div></div>
-              <div class="approval-metric"><div class="approval-metric-value">2</div><div class="approval-metric-label">Milestones</div></div>
-            </div>
-
-            <div class="approval-actions">
-              <button class="btn btn-success">✓ Approve Settlement</button>
-              <button class="btn btn-secondary">Review Details</button>
-              <button class="btn btn-danger">Reject</button>
-            </div>
-          </div>
-        </div>
-
-        <br>
-        <div class="step-label">Direction B — Risk Table View</div>
-        <div class="section-header">
-          <div class="section-title">CFO: Compact Risk Table</div>
-          <div class="section-desc">Dense table for power users. Sort by risk, amount, or pending time. Inline approve buttons.</div>
-        </div>
-
-        <div class="card">
-          <table class="risk-table">
-            <thead>
-              <tr>
-                <th>Risk</th>
-                <th>Settlement</th>
-                <th>Amount</th>
-                <th>Counterparty</th>
-                <th>Submitted</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><span class="risk-dot yellow"></span> Medium</td>
-                <td><div style="font-weight:600;">SETL-2026-0892</div><div style="font-size:11px; color:var(--text-secondary);">INV-2026-0047 · Brazil BRL</div></td>
-                <td class="amount">¥245,800</td>
-                <td>Carlos M.<br><span style="font-size:11px; color:var(--text-secondary);">12 settlements</span></td>
-                <td style="font-size:12px; color:var(--text-secondary);">2h ago</td>
-                <td>
-                  <div style="display:flex; gap:4px;">
-                    <button class="btn btn-success" style="padding:5px 10px; font-size:12px;">✓</button>
-                    <button class="btn btn-secondary" style="padding:5px 10px; font-size:12px;">→</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td><span class="risk-dot green"></span> Low</td>
-                <td><div style="font-weight:600;">SETL-2026-0893</div><div style="font-size:11px; color:var(--text-secondary);">INV-2026-0048 · Brazil BRL</div></td>
-                <td class="amount">¥38,200</td>
-                <td>João P.<br><span style="font-size:11px; color:var(--text-secondary);">5 settlements</span></td>
-                <td style="font-size:12px; color:var(--text-secondary);">4h ago</td>
-                <td>
-                  <div style="display:flex; gap:4px;">
-                    <button class="btn btn-success" style="padding:5px 10px; font-size:12px;">✓</button>
-                    <button class="btn btn-secondary" style="padding:5px 10px; font-size:12px;">→</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td><span class="risk-dot green"></span> Low</td>
-                <td><div style="font-weight:600;">SETL-2026-0894</div><div style="font-size:11px; color:var(--text-secondary);">INV-2026-0049 · Argentina ARS</div></td>
-                <td class="amount">¥15,600</td>
-                <td>Ana L.<br><span style="font-size:11px; color:var(--text-secondary);">2 settlements</span></td>
-                <td style="font-size:12px; color:var(--text-secondary);">6h ago</td>
-                <td>
-                  <div style="display:flex; gap:4px;">
-                    <button class="btn btn-success" style="padding:5px 10px; font-size:12px;">✓</button>
-                    <button class="btn btn-secondary" style="padding:5px 10px; font-size:12px;">→</button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ========== COMPARE ========== -->
-  <div id="compare" class="mockup-section">
-    <div class="section-header">
-      <div class="section-title">Design Direction Comparison</div>
-      <div class="section-desc">Evaluating directions against core UX principles for web-only MVP.</div>
-    </div>
-
-    <div class="compare-grid">
-      <div class="compare-card highlighted">
-        <div class="compare-card-header">Direction A: Card-Based Approval<span class="compare-tag tag-recommended">Recommended</span></div>
-        <div class="compare-card-body">
-          <div class="compare-feature"><span class="compare-check">✓</span> Pre-computed risk summary cards — CFO sees everything at a glance</div>
-          <div class="compare-feature"><span class="compare-check">✓</span> One-click approve/reject with visual hierarchy</div>
-          <div class="compare-feature"><span class="compare-check">✓</span> Expandable for detailed review</div>
-          <div class="compare-feature"><span class="compare-check">✓</span> Risk dots (green/yellow/red) for instant assessment</div>
-          <div class="compare-feature"><span class="compare-check">✓</span> Metrics grid (BRL equiv, rate, lock window, milestones)</div>
-          <div class="compare-feature" style="color:var(--text-secondary);"><span>○</span> Takes more vertical space than table view</div>
-          <div style="padding-top:12px; font-size:12px; font-weight:600; color:var(--trust-blue-light);">→ Best for: CFO approval queue</div>
-        </div>
-      </div>
-
-      <div class="compare-card">
-        <div class="compare-card-header">Direction B: Risk Table</div>
-        <div class="compare-card-body">
-          <div class="compare-feature"><span class="compare-check">✓</span> Dense, scannable — power users can process many items fast</div>
-          <div class="compare-feature"><span class="compare-check">✓</span> Sortable by risk/amount/time</div>
-          <div class="compare-feature"><span class="compare-check">✓</span> Compact for high-volume review days</div>
-          <div class="compare-feature" style="color:var(--text-secondary);"><span>○</span> Risk details require hover expansion</div>
-          <div class="compare-feature" style="color:var(--text-secondary);"><span>○</span> Less visual impact for approval moment</div>
-          <div style="padding-top:12px; font-size:12px; font-weight:600; color:var(--trust-blue-light);">→ Best for: CFO on high-volume days</div>
-        </div>
-      </div>
-
-      <div class="compare-card">
-        <div class="compare-card-header">Direction C: Minimal Buyer<span class="compare-tag tag-best">Best for Carlos</span></div>
-        <div class="compare-card-body">
-          <div class="compare-feature"><span class="compare-check">✓</span> Maximum clarity on what buyer pays and supplier receives</div>
-          <div class="compare-feature"><span class="compare-check">✓</span> Rate lock celebration creates emotional anchor</div>
-          <div class="compare-feature"><span class="compare-check">✓</span> Single CTA button — "Confirm Payment"</div>
-          <div class="compare-feature"><span class="compare-check">✓</span> Progressive disclosure for escrow details</div>
-          <div class="compare-feature" style="color:var(--text-secondary);"><span>○</span> No visual hierarchy beyond rate lock moment</div>
-          <div style="padding-top:12px; font-size:12px; font-weight:600; color:var(--trust-blue-light);">→ Best for: Carlos buyer flow</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="recommendation-box">
-      <h3>Web-Only MVP Direction</h3>
-      <p>
-        <strong>Carlos (Buyer):</strong> Direction C's minimal confirmation with Direction A's rate lock celebration.
-        Payment link opens in browser — single page with amount confirmation, rate lock moment, and status tracker.
-        Progressive disclosure reveals escrow details and milestone progress below the fold.<br><br>
-        <strong>Wei (Seller):</strong> Direction A's dense dashboard. Full-screen console with sidebar navigation,
-        KPI cards, sortable settlement table, and prominent "Download Complete Evidence Pack" button.
-        Desktop-first with responsive scaling to 1024px tablets.<br><br>
-        <strong>CFO (Approver):</strong> Direction A's card-based approval queue as primary,
-        Direction B's risk table as optional toggle for power users on high-volume days.
-      </p>
-    </div>
-
-  </div>
-
-  <!-- ========== ERP MODULES ========== -->
-  <div id="erp" class="mockup-section">
-
-    <div class="web-note">
-      <span>📋</span> ERP modules cover Sales Ledger, Purchase Ledger, Account Reconciliation, Counterparty Management, and Invoice Creation — as defined in the PRD (FR63–FR87).
+      <span>📋</span> ERP modules reflect key design decisions: (1) Escrow is optional — seller chooses risk model per buyer. (2) Three risk layers: credit risk (seller, non-escrowed), capital burden (buyer, escrowed), rate exposure (platform, lock window). (3) All UI labels branch on escrow_required flag.
     </div>
 
     <!-- ERP SUB-NAV -->
     <div style="display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap;">
-      <button class="erp-tab active" onclick="showErpTab('sales-ledger')" style="padding:8px 14px; border:1px solid var(--border-slate); border-radius:8px; cursor:pointer; font-size:13px; font-weight:500; background:#EFF6FF; border-color:var(--trust-blue-light); color:var(--trust-blue-light);">Sales Ledger</button>
+      <button class="erp-tab active" onclick="showErpTab('buyer-rate-lock')" style="padding:8px 14px; border:1px solid var(--border-slate); border-radius:8px; cursor:pointer; font-size:13px; font-weight:500; background:#EFF6FF; border-color:var(--trust-blue-light); color:var(--trust-blue-light);">Carlos · Buyer</button>
+      <button class="erp-tab" onclick="showErpTab('seller-dashboard')" style="padding:8px 14px; border:1px solid var(--border-slate); background:white; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500;">Wei · Seller</button>
+      <button class="erp-tab" onclick="showErpTab('cfo-approval')" style="padding:8px 14px; border:1px solid var(--border-slate); background:white; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500;">CFO · Approver</button>
+      <div style="width:1px; background:var(--border-slate); margin:0 4px;"></div>
+      <button class="erp-tab" onclick="showErpTab('sales-ledger')" style="padding:8px 14px; border:1px solid var(--border-slate); background:white; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500;">Sales Ledger</button>
       <button class="erp-tab" onclick="showErpTab('purchase-ledger')" style="padding:8px 14px; border:1px solid var(--border-slate); background:white; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500;">Purchase Ledger</button>
       <button class="erp-tab" onclick="showErpTab('reconciliation')" style="padding:8px 14px; border:1px solid var(--border-slate); background:white; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500;">Reconciliation</button>
       <button class="erp-tab" onclick="showErpTab('counterparty')" style="padding:8px 14px; border:1px solid var(--border-slate); background:white; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500;">Counterparty CRM</button>
       <button class="erp-tab" onclick="showErpTab('invoice-create')" style="padding:8px 14px; border:1px solid var(--border-slate); background:white; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500;">Invoice Creation</button>
     </div>
 
+    <!-- ===== BUYER: RATE LOCK (Carlos) ===== -->
+    <div id="tab-buyer-rate-lock" class="erp-panel active">
+      <div class="section-header">
+        <div class="section-title">Carlos (Buyer) — Rate Lock + Payment</div>
+        <div class="section-desc">Web-only for MVP. Carlos accesses via Wei's payment link. Rate lock moment = anxiety to relief.</div>
+      </div>
+      <div class="persona-grid">
+        <div>
+          <div class="step-label">Direction A — Rate Lock Celebration</div>
+          <div class="rate-lock-hero">
+            <div class="check-circle">✓</div>
+            <div class="amount">¥12,450.00 CNY</div>
+            <div class="label">Rate locked — supplier guaranteed this amount</div>
+            <div class="rate-row">
+              <span>1 CNY = R$ 0.3926</span><span>·</span><span>Fee: R$ 24.50</span><span>·</span><span>Locked until Apr 4, 2026</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Settlement Progress</span><span class="badge badge-secured">Rate Locked</span></div>
+            <div class="card-body">
+              <div class="status-tracker" style="margin-bottom:20px;">
+                <div class="status-step completed"><div class="status-dot">✓</div><div class="status-label">BRL Received</div></div>
+                <div class="status-step active"><div class="status-dot">🔒</div><div class="status-label">Rate Locked</div></div>
+                <div class="status-step"><div class="status-dot">🚢</div><div class="status-label">In Transit</div></div>
+                <div class="status-step"><div class="status-dot">🏛️</div><div class="status-label">Customs</div></div>
+                <div class="status-step"><div class="status-dot">💰</div><div class="status-label">CNY Delivered</div></div>
+              </div>
+              <div class="info-row"><span class="info-label">Your BRL Payment</span><span class="info-value">R$ 4,914.50</span></div>
+              <div class="info-row"><span class="info-label">CNY Received (Guaranteed)</span><span class="info-value success">¥12,450.00</span></div>
+              <div class="info-row"><span class="info-label">Supplier Receives</span><span class="info-value">Apr 3–4, 2026</span></div>
+              <div class="info-row" style="cursor:pointer;"><span class="info-label">Escrow Details (tap to reveal)</span><span class="info-value" style="color:var(--trust-blue-light);">Cregis Custody, Dubai →</span></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="step-label">Direction B — Speed-First</div>
+          <div class="card">
+            <div class="card-body" style="padding:32px;">
+              <div style="text-align:center; margin-bottom:24px;">
+                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">You pay</div>
+                <div class="mono" style="font-size:36px; font-weight:700;">R$ 4,914.50</div>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:center; margin-bottom:24px;">
+                <div style="flex:1; height:1px; background:var(--border-slate);"></div>
+                <div style="padding:0 16px; color:var(--text-secondary); font-size:13px;">supplier receives</div>
+                <div style="flex:1; height:1px; background:var(--border-slate);"></div>
+              </div>
+              <div style="text-align:center; margin-bottom:24px;">
+                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">Guaranteed amount</div>
+                <div class="mono" style="font-size:36px; font-weight:700; color:var(--success-green);">¥12,450.00 CNY</div>
+              </div>
+              <div style="background:#F8FAFC; border-radius:8px; padding:14px; margin-bottom:20px; font-size:13px;">
+                <div class="info-row" style="border:none; padding:3px 0;"><span class="info-label">Rate (locked 48h)</span><span class="info-value mono">R$ 0.3926/CNY</span></div>
+                <div class="info-row" style="border:none; padding:3px 0;"><span class="info-label">Fee</span><span class="info-value">R$ 24.50</span></div>
+                <div class="info-row" style="border:none; padding:3px 0;"><span class="info-label">Escrow</span><span class="info-value" style="font-size:12px;">Cregis Custody</span></div>
+              </div>
+              <button class="btn btn-success" style="width:100%; padding:14px; font-size:15px; border-radius:10px; justify-content:center;">Confirm Payment · R$ 4,914.50</button>
+              <div style="text-align:center; font-size:12px; color:var(--text-secondary); margin-top:12px;">🛡️ Rate guaranteed until Apr 4 · 1-click confirmation</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Rate Locked Confirmation</span></div>
+            <div class="card-body">
+              <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+                <div style="width:40px; height:40px; background:#D1FAE5; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px;">✓</div>
+                <div><div style="font-weight:600; font-size:15px;">Payment Confirmed</div><div style="font-size:13px; color:var(--text-secondary);">Apr 2, 2026 · 14:30 BRT</div></div>
+              </div>
+              <div class="info-row"><span class="info-label">Settlement ID</span><span class="info-value mono" style="font-size:12px;">SETL-2026-0892</span></div>
+              <div class="info-row"><span class="info-label">Locked Rate</span><span class="info-value mono">R$ 0.3926/CNY</span></div>
+              <div class="info-row"><span class="info-label">Lock Expires</span><span class="info-value">Apr 4, 2026 14:30</span></div>
+              <div class="info-row"><span class="info-label">Supplier Receives</span><span class="info-value">¥12,450.00 CNY by Apr 4</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SELLER: DASHBOARD (Wei) ===== -->
+    <div id="tab-seller-dashboard" class="erp-panel" style="display:none;">
+      <div class="section-header">
+        <div class="section-title">Wei (Seller) — Dashboard + Settlements</div>
+        <div class="section-desc">Desktop-first. Dense data tables, KPI cards, evidence pack download. Responsive to 1024px tablets.</div>
+      </div>
+      <div class="dashboard">
+        <div class="sidebar">
+          <div class="sidebar-section">Finance</div>
+          <div class="sidebar-item active"><span class="sidebar-icon">📊</span> Dashboard</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📄</span> Invoices</div>
+          <div class="sidebar-item"><span class="sidebar-icon">💰</span> Settlements</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📦</span> Counterparties</div>
+          <div class="sidebar-section">Documents</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📁</span> Evidence Packs</div>
+        </div>
+        <div class="dashboard-main">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <div style="font-size:18px; font-weight:700;">Dashboard</div>
+            <button class="btn btn-primary">+ New Invoice</button>
+          </div>
+          <div class="kpi-grid">
+            <div class="kpi-card"><div class="kpi-value">¥847,230</div><div class="kpi-label">This Month</div><div class="kpi-change up">↑ 12.4% vs last month</div></div>
+            <div class="kpi-card"><div class="kpi-value">47</div><div class="kpi-label">Settlements</div><div class="kpi-change up">↑ 8 new</div></div>
+            <div class="kpi-card"><div class="kpi-value" style="color:var(--success-green);">99.2%</div><div class="kpi-label">Completion Rate</div></div>
+            <div class="kpi-card"><div class="kpi-value">4.2h</div><div class="kpi-label">Avg. Settlement Time</div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Recent Settlements</span><div style="font-size:12px; color:var(--text-secondary);">Mar 25 – Apr 2, 2026</div></div>
+            <table class="settlement-table">
+              <thead><tr><th>Invoice</th><th>Buyer</th><th>Amount</th><th>Rate</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td><div class="invoice">INV-2026-0047</div><div class="counterparty">Carlos M. · Brazil</div></td><td class="mono">R$ 97,240</td><td class="amount">¥12,450</td><td class="mono" style="font-size:12px;">R$ 0.3926</td><td><span class="badge badge-secured">Secured</span></td></tr>
+                <tr><td><div class="invoice">INV-2026-0046</div><div class="counterparty">Maria S. · Argentina</div></td><td class="mono">ARS 4,200,000</td><td class="amount">¥28,100</td><td class="mono" style="font-size:12px;">ARS 149.5</td><td><span class="badge badge-delivered">Delivered</span></td></tr>
+                <tr><td><div class="invoice">INV-2026-0045</div><div class="counterparty">João P. · Brazil</div></td><td class="mono">R$ 22,800</td><td class="amount">¥5,780</td><td class="mono" style="font-size:12px;">R$ 0.3926</td><td><span class="badge badge-pending">Pending</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="evidence-pack">
+            <div class="evidence-header"><div><div class="evidence-header-title">Latest Evidence Pack</div><div class="evidence-header-meta">INV-2026-0046 · Delivered Mar 28, 2026</div></div><span style="font-size:12px; color:var(--text-secondary);">4 documents</span></div>
+            <div class="evidence-item"><span class="evidence-icon">📄</span><div><div class="evidence-name">Invoice.pdf</div><div class="evidence-desc">Original invoice · 245 KB · SHA-256 verified</div></div><span class="evidence-action">Download</span></div>
+            <div class="evidence-item"><span class="evidence-icon">🚢</span><div><div class="evidence-name">Shipping Milestone</div><div class="evidence-desc">Departed port · Mar 22, 2026 · Timestamp verified</div></div><span class="evidence-action">View</span></div>
+            <div class="evidence-item"><span class="evidence-icon">🏛️</span><div><div class="evidence-name">Customs Clearance</div><div class="evidence-desc">Customs cleared · Mar 26, 2026</div></div><span class="evidence-action">View</span></div>
+            <div class="evidence-item"><span class="evidence-icon">💵</span><div><div class="evidence-name">Settlement Receipt</div><div class="evidence-desc">CNY transferred · Mar 28, 2026</div></div><span class="evidence-action">Download</span></div>
+            <div class="evidence-footer"><button class="btn btn-success" style="font-size:13px;">📦 Download Complete Evidence Pack</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CFO: APPROVAL QUEUE ===== -->
+    <div id="tab-cfo-approval" class="erp-panel" style="display:none;">
+      <div class="section-header">
+        <div class="section-title">CFO (Approver) — Approval Queue</div>
+        <div class="section-desc">Desktop-only. Card-based approval with expandable risk summaries. 1-click approve/reject.</div>
+      </div>
+      <div class="dashboard">
+        <div class="sidebar">
+          <div class="sidebar-section">Dashboard</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📊</span> Overview</div>
+          <div class="sidebar-item active"><span class="sidebar-icon">✅</span> Approval Queue <span style="background:var(--warning-amber); color:white; font-size:10px; padding:1px 6px; border-radius:10px; margin-left:4px;">3</span></div>
+          <div class="sidebar-item"><span class="sidebar-icon">📈</span> Risk Monitor</div>
+          <div class="sidebar-item"><span class="sidebar-icon">💱</span> FX Exposure</div>
+          <div class="sidebar-section">Reports</div>
+          <div class="sidebar-item"><span class="sidebar-icon">📁</span> Audit Logs</div>
+        </div>
+        <div class="dashboard-main">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <div style="font-size:18px; font-weight:700;">Approval Queue</div>
+            <div style="font-size:13px; color:var(--text-secondary);">3 pending · 2 approved today</div>
+          </div>
+          <div class="approval-card">
+            <div class="approval-header">
+              <div><div class="approval-id">SETL-2026-0892</div><div class="approval-time">Submitted 2h ago · Wei Zhang · Guangzhou</div></div>
+              <span class="badge badge-pending">Pending Approval</span>
+            </div>
+            <div class="approval-body">
+              <div class="approval-amount">¥245,800<span style="font-size:14px;">.00 CNY</span></div>
+              <div class="approval-parties">Carlos M. (Brazil) → Wei Zhang · Invoice INV-2026-0047</div>
+              <div class="risk-summary">
+                <div class="risk-row"><span class="risk-label"><span class="risk-dot green"></span>Counterparty History</span><span class="risk-value">12 settlements · 100% success</span></div>
+                <div class="risk-row"><span class="risk-label"><span class="risk-dot green"></span>FX Volatility</span><span class="risk-value">Low — BRL stable within 48h window</span></div>
+                <div class="risk-row"><span class="risk-label"><span class="risk-dot yellow"></span>Amount</span><span class="risk-value">Above average · ¥245K vs ¥87K avg</span></div>
+                <div class="risk-row"><span class="risk-label"><span class="risk-dot green"></span>Document Complete</span><span class="risk-value">✓ All 3 milestones verified</span></div>
+              </div>
+              <div class="approval-metrics">
+                <div class="approval-metric"><div class="approval-metric-value">R$ 97,240</div><div class="approval-metric-label">BRL Equivalent</div></div>
+                <div class="approval-metric"><div class="approval-metric-value mono">1:0.3926</div><div class="approval-metric-label">Locked Rate</div></div>
+                <div class="approval-metric"><div class="approval-metric-value">48h</div><div class="approval-metric-label">Lock Window</div></div>
+                <div class="approval-metric"><div class="approval-metric-value">3</div><div class="approval-metric-label">Milestones</div></div>
+              </div>
+              <div class="approval-actions">
+                <button class="btn btn-success">✓ Approve Settlement</button>
+                <button class="btn btn-secondary">Review Details</button>
+                <button class="btn btn-danger">Reject</button>
+              </div>
+            </div>
+          </div>
+          <div class="approval-card">
+            <div class="approval-header">
+              <div><div class="approval-id">SETL-2026-0893</div><div class="approval-time">Submitted 4h ago · Li Ming · Shanghai</div></div>
+              <span class="badge badge-pending">Pending Approval</span>
+            </div>
+            <div class="approval-body">
+              <div class="approval-amount">¥38,200<span style="font-size:14px;">.00 CNY</span></div>
+              <div class="approval-parties">João P. (Brazil) → Li Ming · Invoice INV-2026-0048</div>
+              <div class="risk-summary">
+                <div class="risk-row"><span class="risk-label"><span class="risk-dot green"></span>Counterparty History</span><span class="risk-value">5 settlements · 100% success</span></div>
+                <div class="risk-row"><span class="risk-label"><span class="risk-dot green"></span>FX Volatility</span><span class="risk-value">Low</span></div>
+                <div class="risk-row"><span class="risk-label"><span class="risk-dot green"></span>Amount</span><span class="risk-value">Within normal range</span></div>
+                <div class="risk-row"><span class="risk-label"><span class="risk-dot green"></span>Document Complete</span><span class="risk-value">✓ All milestones verified</span></div>
+              </div>
+              <div class="approval-actions">
+                <button class="btn btn-success">✓ Approve Settlement</button>
+                <button class="btn btn-secondary">Review Details</button>
+                <button class="btn btn-danger">Reject</button>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="step-label">Direction B — Risk Table View</div>
+          <div class="section-header">
+            <div class="section-title">CFO: Compact Risk Table</div>
+            <div class="section-desc">Dense table for power users. Sortable by risk/amount/time. Inline approve buttons.</div>
+          </div>
+          <div class="card">
+            <table class="risk-table">
+              <thead><tr><th>Risk</th><th>Settlement</th><th>Amount</th><th>Counterparty</th><th>Submitted</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td><span class="risk-dot yellow"></span> Medium</td><td><div style="font-weight:600;">SETL-2026-0892</div><div style="font-size:11px; color:var(--text-secondary);">INV-2026-0047 · Brazil BRL</div></td><td class="amount">¥245,800</td><td>Carlos M.<br><span style="font-size:11px; color:var(--text-secondary);">12 settlements</span></td><td style="font-size:12px; color:var(--text-secondary);">2h ago</td><td><div style="display:flex; gap:4px;"><button class="btn btn-success" style="padding:5px 10px; font-size:12px;">✓</button><button class="btn btn-secondary" style="padding:5px 10px; font-size:12px;">→</button></div></td></tr>
+                <tr><td><span class="risk-dot green"></span> Low</td><td><div style="font-weight:600;">SETL-2026-0893</div><div style="font-size:11px; color:var(--text-secondary);">INV-2026-0048 · Brazil BRL</div></td><td class="amount">¥38,200</td><td>João P.<br><span style="font-size:11px; color:var(--text-secondary);">5 settlements</span></td><td style="font-size:12px; color:var(--text-secondary);">4h ago</td><td><div style="display:flex; gap:4px;"><button class="btn btn-success" style="padding:5px 10px; font-size:12px;">✓</button><button class="btn btn-secondary" style="padding:5px 10px; font-size:12px;">→</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ===== SALES LEDGER (Wei) ===== -->
-    <div id="tab-sales-ledger" class="erp-panel active">
+    <div id="tab-sales-ledger" class="erp-panel" style="display:none;">
       <div class="section-header">
         <div class="section-title">Sales Ledger — Wei (Seller)</div>
         <div class="section-desc">Outstanding invoices, receivables tracking, aging report. All amounts in CNY equivalent. (FR77–FR80)</div>
@@ -1065,45 +755,58 @@
             </div>
             <div class="kpi-card">
               <div class="kpi-value" style="color:var(--warning-amber);">¥355,240</div>
-              <div class="kpi-label">Outstanding</div>
+              <div class="kpi-label">Pending Release</div>
             </div>
             <div class="kpi-card">
               <div class="kpi-value">23</div>
               <div class="kpi-label">Open Invoices</div>
             </div>
-            <div class="kpi-card">
-              <div class="kpi-value" style="color:var(--danger-red);">¥42,800</div>
-              <div class="kpi-label">Overdue (60d+)</div>
+            <div class="kpi-card" style="border-left:3px solid var(--success-green);">
+              <div class="kpi-value" style="color:var(--success-green);">¥312,440</div>
+              <div class="kpi-label">Escrowed (Safe)</div>
+            </div>
+            <div class="kpi-card" style="border-left:3px solid var(--warning-amber);">
+              <div class="kpi-value" style="color:var(--warning-amber);">¥42,800</div>
+              <div class="kpi-label">Non-Escrowed (Risk)</div>
             </div>
           </div>
 
-          <!-- Aging Report -->
+          <!-- Settlement Cycle Report -->
           <div class="card" style="margin-bottom:16px;">
             <div class="card-header">
-              <span class="card-title">Receivables Aging</span>
-              <span style="font-size:12px; color:var(--text-secondary);">As of Apr 2, 2026</span>
+              <span class="card-title">Settlement Cycle Report</span>
+              <span style="font-size:12px; color:var(--text-secondary);">Time from invoice to CNY received · Escrowed settlements show guaranteed payment</span>
             </div>
             <div class="card-body" style="padding:0;">
               <div style="display:grid; grid-template-columns: repeat(4, 1fr); text-align:center;">
                 <div style="padding:20px; border-right:1px solid var(--border-slate);">
                   <div style="font-size:28px; font-weight:700; color:var(--success-green);">¥215,400</div>
                   <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">0–30 Days</div>
-                  <div style="font-size:11px; color:var(--success-green); margin-top:4px;">On Track</div>
+                  <div style="display:flex; justify-content:center; gap:6px; margin-top:8px;">
+                    <span style="background:#D1FAE5; color:#065F46; font-size:10px; padding:2px 6px; border-radius:4px;">🛡️ ¥215,400 Escrowed</span>
+                  </div>
                 </div>
                 <div style="padding:20px; border-right:1px solid var(--border-slate);">
                   <div style="font-size:28px; font-weight:700; color:var(--warning-amber);">¥97,040</div>
                   <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">31–60 Days</div>
-                  <div style="font-size:11px; color:var(--warning-amber); margin-top:4px;">Watch</div>
+                  <div style="display:flex; justify-content:center; gap:6px; margin-top:8px;">
+                    <span style="background:#D1FAE5; color:#065F46; font-size:10px; padding:2px 6px; border-radius:4px;">🛡️ ¥52,040 Escrowed</span>
+                  </div>
                 </div>
                 <div style="padding:20px; border-right:1px solid var(--border-slate);">
                   <div style="font-size:28px; font-weight:700; color:#F97316;">¥84,200</div>
-                  <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">60–90 Days</div>
-                  <div style="font-size:11px; color:#F97316; margin-top:4px;">Late</div>
+                  <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">61–90 Days</div>
+                  <div style="display:flex; justify-content:center; gap:6px; margin-top:8px;">
+                    <span style="background:#FEF3C7; color:#92400E; font-size:10px; padding:2px 6px; border-radius:4px;">⚠️ ¥84,200 Non-Escrowed</span>
+                  </div>
                 </div>
                 <div style="padding:20px;">
-                  <div style="font-size:28px; font-weight:700; color:var(--danger-red);">¥42,800</div>
+                  <div style="font-size:28px; font-weight:700; color:#F97316;">¥42,800</div>
                   <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">90+ Days</div>
-                  <div style="font-size:11px; color:var(--danger-red); margin-top:4px;">Critical</div>
+                  <div style="display:flex; justify-content:center; gap:6px; margin-top:8px;">
+                    <span style="background:#FEF3C7; color:#92400E; font-size:10px; padding:2px 6px; border-radius:4px;">⚠️ ¥42,800 Non-Escrowed</span>
+                  </div>
+                  <div style="font-size:10px; color:#F97316; margin-top:6px;">Seller accepted payment risk</div>
                 </div>
               </div>
             </div>
@@ -1130,8 +833,9 @@
                   <th>Buyer</th>
                   <th>Amount (CNY)</th>
                   <th>BRL/ARS Equiv.</th>
-                  <th>Due Date</th>
-                  <th>Status</th>
+                  <th>Cycle Time</th>
+                  <th>Escrow</th>
+                  <th>Lock Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -1140,24 +844,27 @@
                   <td>Ana L. · Brazil</td>
                   <td class="amount">¥38,200</td>
                   <td class="mono" style="font-size:12px;">R$ 15,080</td>
-                  <td><div style="font-size:13px;">Apr 5, 2026</div><div style="font-size:11px; color:var(--success-green);">In 3 days</div></td>
-                  <td><span class="badge badge-secured">Secured</span></td>
+                  <td><div style="font-size:13px;">5 days</div><div style="font-size:11px; color:var(--success-green);">On track</div></td>
+                  <td><span style="background:#D1FAE5; color:#065F46; font-size:11px; padding:2px 8px; border-radius:4px; font-weight:500;">🛡️ Escrowed</span></td>
+                  <td><span style="background:#DBEAFE; color:#1E40AF; font-size:11px; padding:2px 8px; border-radius:4px;">🔒 Locked · 41h left</span></td>
                 </tr>
                 <tr>
                   <td><div class="invoice">INV-2026-0049</div><div style="font-size:11px; color:var(--text-secondary);">Issued Mar 15</div></td>
                   <td>João P. · Brazil</td>
                   <td class="amount">¥12,450</td>
                   <td class="mono" style="font-size:12px;">R$ 4,890</td>
-                  <td><div style="font-size:13px;">Mar 30, 2026</div><div style="font-size:11px; color:var(--warning-amber);">3 days overdue</div></td>
-                  <td><span class="badge badge-pending">Payment Due</span></td>
+                  <td><div style="font-size:13px;">18 days</div><div style="font-size:11px; color:var(--warning-amber);">Awaiting milestones</div></td>
+                  <td><span style="background:#D1FAE5; color:#065F46; font-size:11px; padding:2px 8px; border-radius:4px; font-weight:500;">🛡️ Escrowed</span></td>
+                  <td><span style="background:#FEF3C7; color:#92400E; font-size:11px; padding:2px 8px; border-radius:4px;">⚠️ Lock expiring</span></td>
                 </tr>
                 <tr>
                   <td><div class="invoice">INV-2026-0042</div><div style="font-size:11px; color:var(--text-secondary);">Issued Feb 10</div></td>
                   <td>Maria S. · Argentina</td>
                   <td class="amount">¥84,200</td>
                   <td class="mono" style="font-size:12px;">ARS 12,580,000</td>
-                  <td><div style="font-size:13px;">Mar 15, 2026</div><div style="font-size:11px; color:var(--danger-red);">18 days overdue</div></td>
-                  <td><span class="badge" style="background:#FEE2E2; color:#991B1B;">Overdue</span></td>
+                  <td><div style="font-size:13px;">51 days</div><div style="font-size:11px; color:#F97316;">Extended cycle</div></td>
+                  <td><span style="background:#FEF3C7; color:#92400E; font-size:11px; padding:2px 8px; border-radius:4px; font-weight:500;">⚠️ Non-Escrowed</span></td>
+                  <td><span style="background:#E5E7EB; color:#374151; font-size:11px; padding:2px 8px; border-radius:4px;">— No Lock</span></td>
                 </tr>
               </tbody>
             </table>
@@ -1186,15 +893,15 @@
           <div class="kpi-grid">
             <div class="kpi-card">
               <div class="kpi-value">R$ 487,200</div>
-              <div class="kpi-label">Total Owed</div>
+              <div class="kpi-label">Total in Escrow</div>
             </div>
             <div class="kpi-card">
               <div class="kpi-value" style="color:var(--success-green);">R$ 312,400</div>
-              <div class="kpi-label">Paid YTD</div>
+              <div class="kpi-label">Released to Sellers</div>
             </div>
             <div class="kpi-card">
               <div class="kpi-value" style="color:var(--warning-amber);">R$ 174,800</div>
-              <div class="kpi-label">Pending Payment</div>
+              <div class="kpi-label">In Escrow Pending</div>
             </div>
             <div class="kpi-card">
               <div class="kpi-value">8</div>
@@ -1206,10 +913,11 @@
           <div class="card" style="margin-bottom:16px;">
             <div class="card-header">
               <span class="card-title">Balance by Supplier</span>
+              <span style="font-size:11px; color:var(--text-secondary);">All Carlos payments are escrowed — capital locked until milestone release</span>
             </div>
             <div class="card-body" style="padding:0;">
-              <div style="display:grid; grid-template-columns: 1fr 120px 120px 120px 120px; padding: 10px 20px; background:#F8FAFC; font-size:11px; font-weight:600; color:var(--text-secondary); border-bottom:1px solid var(--border-slate);">
-                <div>Supplier</div><div>Total Owed</div><div>Paid</div><div>Pending</div><div>Last Payment</div>
+              <div style="display:grid; grid-template-columns: 1fr 120px 120px 120px 100px; padding: 10px 20px; background:#F8FAFC; font-size:11px; font-weight:600; color:var(--text-secondary); border-bottom:1px solid var(--border-slate);">
+                <div>Supplier</div><div>In Escrow</div><div>Released</div><div>Pending</div><div>Escrow</div>
               </div>
               <div style="display:grid; grid-template-columns: 1fr 120px 120px 120px 120px; padding: 14px 20px; border-bottom:1px solid var(--border-slate); align-items:center; font-size:13px;">
                 <div><div style="font-weight:600;">Wei Zhang Trading</div><div style="font-size:11px; color:var(--text-secondary);">Guangzhou, China</div></div>
@@ -1273,7 +981,7 @@
     <div id="tab-reconciliation" class="erp-panel" style="display:none;">
       <div class="section-header">
         <div class="section-title">Account Reconciliation</div>
-        <div class="section-desc">Real-time view of USDT, BRL, CNY holdings. FX exposure per counterparty and corridor. (FR81–FR85)</div>
+        <div class="section-desc">Real-time view of USDT, BRL, CNY holdings. FX exposure per counterparty and corridor. Rate lock status tracked. (FR81–FR85)</div>
       </div>
       <div class="dashboard">
         <div class="sidebar">
@@ -1361,7 +1069,7 @@
             </div>
             <table class="settlement-table">
               <thead>
-                <tr><th>Corridor</th><th>Open Settlements</th><th>Total CNY Exposure</th><th>USDTEscrow</th><th>Avg Locked Rate</th><th>FX Risk</th></tr>
+                <tr><th>Corridor</th><th>Open</th><th>Total CNY</th><th>USDT Escrow</th><th>Avg Locked Rate</th><th>Lock Status</th><th>Rate Risk</th></tr>
               </thead>
               <tbody>
                 <tr>
@@ -1370,6 +1078,7 @@
                   <td class="amount">¥847,230</td>
                   <td class="mono">$232,400</td>
                   <td class="mono">R$ 0.3926/CNY</td>
+                  <td><span style="background:#DBEAFE; color:#1E40AF; font-size:11px; padding:2px 8px; border-radius:4px;">10 Locked · 2 Expiring</span></td>
                   <td><span class="risk-dot green"></span> <span style="font-size:12px; color:var(--success-green);">Low</span></td>
                 </tr>
                 <tr>
@@ -1378,6 +1087,7 @@
                   <td class="amount">¥284,500</td>
                   <td class="mono">$78,200</td>
                   <td class="mono">ARS 149.5/CNY</td>
+                  <td><span style="background:#FEF3C7; color:#92400E; font-size:11px; padding:2px 8px; border-radius:4px;">2 Expired · Rate exposure active</span></td>
                   <td><span class="risk-dot yellow"></span> <span style="font-size:12px; color:var(--warning-amber);">Medium</span></td>
                 </tr>
               </tbody>
@@ -1410,34 +1120,34 @@
 
           <!-- Counterparty Cards -->
           <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px; margin-bottom:24px;">
+            <!-- Carlos: All Escrowed — Wei has full protection -->
             <div class="card" style="border-left:4px solid var(--success-green);">
               <div class="card-body">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
                   <div>
                     <div style="font-weight:700; font-size:16px;">Carlos Mendez</div>
-                    <div style="font-size:12px; color:var(--text-secondary);">Mendez Importação Ltda. · CNPJ 34.567.890/0001-22 · Brazil</div>
+                    <div style="font-size:12px; color:var(--text-secondary);">Mendez Importação Ltda. · Brazil</div>
                   </div>
                   <div style="text-align:right;">
                     <div style="font-size:22px; font-weight:700; color:var(--success-green);">★★★★★</div>
-                    <div style="font-size:11px; color:var(--text-secondary);">Trust Score</div>
+                    <div style="font-size:11px; color:var(--text-secondary);">Escrow Score</div>
                   </div>
                 </div>
-                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-bottom:12px;">
+                <div style="background:#D1FAE5; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:12px; color:#065F46;">
+                  🛡️ <strong>100% Escrowed</strong> — Payment guaranteed. Wei bears zero credit risk.
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-bottom:12px;">
                   <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
                     <div style="font-weight:700; font-size:16px;">12</div>
                     <div style="color:var(--text-secondary);">Settlements</div>
                   </div>
                   <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
-                    <div style="font-weight:700; font-size:16px;">100%</div>
-                    <div style="color:var(--text-secondary);">Success Rate</div>
-                  </div>
-                  <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
                     <div style="font-weight:700; font-size:16px;">4.2h</div>
-                    <div style="color:var(--text-secondary);">Avg Delivery</div>
+                    <div style="color:var(--text-secondary);">Avg Confirm Time</div>
                   </div>
                   <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
-                    <div style="font-weight:700; font-size:16px;">0</div>
-                    <div style="color:var(--text-secondary);">Disputes</div>
+                    <div style="font-weight:700; font-size:16px;">1</div>
+                    <div style="color:var(--text-secondary);">Disputes Raised</div>
                   </div>
                 </div>
                 <div style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
@@ -1450,40 +1160,51 @@
               </div>
             </div>
 
+            <!-- Maria: Mix of Escrowed + Non-Escrowed — Wei bears credit risk on non-escrowed -->
             <div class="card" style="border-left:4px solid var(--warning-amber);">
               <div class="card-body">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
                   <div>
                     <div style="font-weight:700; font-size:16px;">Maria Santos</div>
-                    <div style="font-size:12px; color:var(--text-secondary);">Santos Comercio S.A. · CNPJ 45.678.901/0001-33 · Argentina</div>
+                    <div style="font-size:12px; color:var(--text-secondary);">Santos Comercio S.A. · Argentina</div>
                   </div>
                   <div style="text-align:right;">
-                    <div style="font-size:22px; font-weight:700; color:var(--warning-amber);">★★★★☆</div>
-                    <div style="font-size:11px; color:var(--text-secondary);">Trust Score</div>
+                    <div style="font-size:22px; font-weight:700; color:var(--success-green);">★★★★★</div>
+                    <div style="font-size:11px; color:var(--text-secondary);">Escrow Score</div>
                   </div>
                 </div>
-                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-bottom:12px;">
+                <div style="background:#FEF3C7; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:12px; color:#92400E;">
+                  ⚠️ <strong>50% Escrowed</strong> — Non-Escrowed settlements carry credit risk. Wei decides whether to accept risk.
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-bottom:12px;">
                   <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
                     <div style="font-weight:700; font-size:16px;">6</div>
                     <div style="color:var(--text-secondary);">Settlements</div>
                   </div>
                   <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
-                    <div style="font-weight:700; font-size:16px; color:var(--warning-amber);">83%</div>
-                    <div style="color:var(--text-secondary);">Success Rate</div>
-                  </div>
-                  <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
                     <div style="font-weight:700; font-size:16px;">18h</div>
-                    <div style="color:var(--text-secondary);">Avg Delivery</div>
+                    <div style="color:var(--text-secondary);">Avg Confirm Time</div>
                   </div>
                   <div style="background:#F8FAFC; border-radius:6px; padding:10px; font-size:12px; text-align:center;">
-                    <div style="font-weight:700; font-size:16px; color:var(--warning-amber);">1</div>
-                    <div style="color:var(--text-secondary);">Disputes</div>
+                    <div style="font-weight:700; font-size:16px;">1</div>
+                    <div style="color:var(--text-secondary);">Disputes Raised</div>
                   </div>
                 </div>
-                <div style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
-                  Total volume: <span class="mono" style="font-weight:600; color:var(--text-primary);">¥98,200</span> · Last settlement: <span style="font-weight:600;">Mar 15, 2026</span>
+                <!-- Non-Escrowed performance -->
+                <div style="border-top:1px dashed var(--border-slate); padding-top:10px; margin-top:4px;">
+                  <div style="font-size:11px; font-weight:600; color:var(--text-secondary); margin-bottom:6px;">NON-ESCROWED PERFORMANCE</div>
+                  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                    <div style="background:#FEF3C7; border-radius:4px; padding:6px 8px; font-size:11px;">
+                      <div style="color:#92400E; font-weight:600;">⚠️ No data yet</div>
+                      <div style="color:var(--text-secondary);">Non-escrowed settlements</div>
+                    </div>
+                    <div style="background:#F8FAFC; border-radius:4px; padding:6px 8px; font-size:11px;">
+                      <div style="font-weight:600;">—</div>
+                      <div style="color:var(--text-secondary);">Payment on-time rate</div>
+                    </div>
+                  </div>
                 </div>
-                <div style="display:flex; gap:8px;">
+                <div style="display:flex; gap:8px; margin-top:12px;">
                   <button class="btn btn-primary" style="flex:1; font-size:12px; padding:7px;">Create Invoice</button>
                   <button class="btn btn-secondary" style="font-size:12px; padding:7px;">View History</button>
                 </div>
@@ -1577,6 +1298,34 @@
                     </select>
                   </div>
 
+                  <!-- Escrow Toggle -->
+                  <div style="background:#F8FAFC; border:1px solid var(--border-slate); border-radius:10px; padding:14px 16px; margin-bottom:16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <div>
+                        <div style="font-weight:600; font-size:14px; margin-bottom:2px;">Require Escrow 🛡️</div>
+                        <div style="font-size:12px; color:var(--text-secondary);">Payment held in Cregis escrow until milestones confirmed. <strong style="color:var(--success-green);">Guarantees your payment.</strong> Buyer bears capital burden during settlement.</div>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:11px; color:var(--text-secondary);">OFF</span>
+                        <div style="width:44px; height:24px; background:var(--success-green); border-radius:12px; position:relative; cursor:pointer;">
+                          <div style="position:absolute; right:3px; top:3px; width:18px; height:18px; background:white; border-radius:50%;"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border-slate); display:flex; justify-content:space-between; font-size:12px;">
+                      <div style="color:var(--success-green);">✓ Payment guaranteed by platform</div>
+                      <div style="color:var(--warning-amber);">⚠️ Buyer may prefer non-escrow</div>
+                    </div>
+                  </div>
+
+                  <!-- Non-Escrow Warning (shown when escrow is OFF) -->
+                  <div style="background:#FEF3C7; border:1px solid #FCD34D; border-radius:8px; padding:12px 14px; margin-bottom:16px; display:none;">
+                    <div style="font-size:13px; font-weight:600; color:#92400E; margin-bottom:4px;">⚠️ Non-Escrowed Settlement — You Bear the Credit Risk</div>
+                    <div style="font-size:12px; color:#92400E;">This buyer's non-escrowed payment history will be shown. Wei must decide whether to ship before payment is confirmed by Everypay's rails.</div>
+                  </div>
+                    </select>
+                  </div>
+
                   <div style="margin-bottom:16px;">
                     <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:6px;">Amount (CNY)</label>
                     <input type="text" value="¥ 45,000.00" style="width:100%; padding:8px 12px; border:1px solid var(--border-slate); border-radius:8px; font-size:16px; font-weight:600; font-family:'JetBrains Mono',monospace;">
@@ -1663,12 +1412,16 @@
                     <div style="font-weight:600;">Carlos Mendez</div>
                     <div style="font-size:12px; color:var(--text-secondary);">Mendez Importação Ltda. · Brazil</div>
                   </div>
+                  <div style="background:#D1FAE5; border-radius:6px; padding:8px 12px; margin-bottom:12px; text-align:center;">
+                    <span style="font-size:12px; font-weight:600; color:#065F46;">🛡️ Escrowed Settlement</span>
+                    <div style="font-size:11px; color:#065F46; margin-top:2px;">Payment guaranteed by Cregis escrow</div>
+                  </div>
                   <div style="background:#F8FAFC; border-radius:8px; padding:12px; margin-bottom:12px;">
                     <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                      <span style="font-size:11px; color:var(--text-secondary);">Amount Due</span>
+                      <span style="font-size:11px; color:var(--text-secondary);">Amount Receivable</span>
                     </div>
                     <div class="mono" style="font-size:24px; font-weight:700; text-align:center;">¥45,000.00</div>
-                    <div style="text-align:center; font-size:12px; color:var(--text-secondary);">Due Apr 15, 2026</div>
+                    <div style="text-align:center; font-size:12px; color:var(--text-secondary);">Guaranteed · Released after milestones</div>
                   </div>
                   <div style="font-size:11px; color:var(--text-secondary); margin-bottom:4px;">Payment via Everypay</div>
                   <div style="font-size:11px; color:var(--trust-blue-light);">Rate lock available at payment initiation</div>
@@ -1694,6 +1447,88 @@
       </div>
     </div>
 
+  </div>
+  <div id="compare" class="mockup-section">
+    <div class="section-header">
+      <div class="section-title">Design Direction Comparison</div>
+      <div class="section-desc">Evaluating directions against core UX principles for web-only MVP.</div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card highlighted">
+        <div class="compare-card-header">Direction A: Card-Based Approval<span class="compare-tag tag-recommended">Recommended</span></div>
+        <div class="compare-card-body">
+          <div class="compare-feature"><span class="compare-check">&#10003;</span> Pre-computed risk summary cards &#8212; CFO sees everything at a glance</div>
+          <div class="compare-feature"><span class="compare-check">&#10003;</span> One-click approve/reject with visual hierarchy</div>
+          <div class="compare-feature"><span class="compare-check">&#10003;</span> Expandable for detailed review</div>
+          <div class="compare-feature"><span class="compare-check">&#10003;</span> Risk dots (green/yellow/red) for instant assessment</div>
+          <div class="compare-feature"><span class="compare-check">&#10003;</span> Metrics grid (BRL equiv, rate, lock window, milestones)</div>
+          <div class="compare-feature" style="color:var(--text-secondary);"><span>&#9675;</span> Takes more vertical space than table view</div>
+          <div style="padding-top:12px; font-size:12px; font-weight:600; color:var(--trust-blue-light);">&#8594; Best for: CFO approval queue</div>
+        </div>
+      </div>
+
+      <div class="compare-card">
+        <div class="compare-card-header">Direction B: Risk Table</div>
+        <div class="compare-card-body">
+          <div class="compare-feature"><span class="compare-check">&#10003;</span> Dense, scannable &#8212; power users can process many items fast</div>
+          <div class="compare-feature"><span class="compare-check">&#10003;</span> Sortable by risk/amount/time</div>
+          <div class="compare-feature"><span class="compare-check">&#10003;</span> Compact for high-volume review days</div>
+          <div class="compare-feature" style="color:var(--text-secondary);"><span>&#9675;</span> Risk details require hover expansion</div>
+          <div class="compare-feature" style="color:var(--text-secondary);"><span>&#9675;</span> Less visual impact for approval moment</div>
+          <div style="padding-top:12px; font-size:12px; font-weight:600; color:var(--trust-blue-light);">&#8594; Best for: CFO on high-volume days</div>
+        </div>
+      </div>
+
+      <div class="compare-card">
+        <div class="compare-card-header">Direction C: Minimal Buyer<span class="compare-tag tag-best">Best for Carlos</span></div>
+        <div class="compare-card-body">
+          <div class="compare-feature"><span class="compare-check">&#10003;</span> Maximum clarity on what buyer pays and supplier receives</div>
+          <div class="compare-feature"><span class="compare-check">&#10003;</span> Rate lock guarantee prominent</div>
+          <div class="compare-feature"><span class="compare-check">&#10003;</span> Minimal cognitive load</div>
+          <div class="compare-feature" style="color:var(--text-secondary);"><span>&#9675;</span> Less detail for complex scenarios</div>
+          <div style="padding-top:12px; font-size:12px; font-weight:600; color:var(--trust-blue-light);">&#8594; Best for: Carlos buyer flow</div>
+        </div>
+      </div>
+
+      <div class="compare-card">
+        <div class="compare-card-header">Direction D: Escrow-First</div>
+        <div class="compare-card-body">
+          <div class="compare-feature"><span class="compare-check">&#10003;</span> Emphasizes escrow protection prominently</div>
+          <div class="compare-feature"><span class="compare-check">&#10003;</span> Trust-building through visible Cregis custody</div>
+          <div class="compare-feature"><span class="compare-check">&#10003;</span> Good for new users unfamiliar with crypto rails</div>
+          <div class="compare-feature" style="color:var(--text-secondary);"><span>&#9675;</span> May add perceived complexity</div>
+          <div style="padding-top:12px; font-size:12px; font-weight:600; color:var(--trust-blue-light);">&#8594; Best for: Trust-first users</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:32px;">
+      <div class="section-title">Comparison Matrix</div>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Principle</th><th>Direction A</th><th>Direction B</th><th>Direction C</th><th>Direction D</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Abstract complexity</strong></td><td>&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;</td><td>&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;</td></tr>
+        <tr><td><strong>Status clarity</strong></td><td>&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;</td><td>&#9733;&#9733;&#9733;</td></tr>
+        <tr><td><strong>One-click action</strong></td><td>&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;</td><td>&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;</td></tr>
+        <tr><td><strong>Progressive disclosure</strong></td><td>&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;</td><td>&#9733;&#9733;</td><td>&#9733;&#9733;&#9733;</td></tr>
+        <tr><td><strong>Confidence/relief</strong></td><td>&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;</td><td>&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;&#9733;</td></tr>
+        <tr><td><strong>Web-only fit</strong></td><td>&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;&#9733;</td><td>&#9733;&#9733;&#9733;</td></tr>
+      </tbody>
+    </table>
+
+    <div class="recommendation-box">
+      <div class="recommendation-title">Recommended Direction</div>
+      <p>
+        <strong>Direction A (Card-Based) for CFO</strong> paired with <strong>Direction C (Minimal) for Carlos</strong> &#8212; 
+        delivers one-click CFO approval with scannable risk summaries while keeping Carlos&#39;s payment flow ultra-lean.
+        Both directions score 3/3 on Web-only fit and core UX principles.
+      </p>
+    </div>
   </div>
 
 </main>

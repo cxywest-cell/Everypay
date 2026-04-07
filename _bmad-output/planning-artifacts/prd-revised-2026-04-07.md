@@ -1,0 +1,846 @@
+# Product Requirements Document - Everypay (REVISED)
+
+**Author:** Daniel
+**Date:** 2026-04-07
+**Revision:** Based on stakeholder feedback - Settlement currency changed from CNY/mainland to USD or HKD/offshore HK
+
+---
+
+## Success Criteria
+
+### User Success
+
+**Carlos (Buyer) — Foreign Importer:**
+- Completes BRL → USD/HKD payment without needing to source USD himself
+- At every step, Carlos sees full settlement chain visibility:
+  - BRL received by Everypay
+  - USDT purchased
+  - Held in Cregis escrow
+  - Released upon milestone confirmation
+  - USD or HKD delivered to supplier
+- No crypto complexity visible — sees only: "Payment sent, supplier received."
+
+**Wei Zhang (Exporter) — Chinese Mainland Exporter (with HK Offshore Account):**
+- Receives USD or HKD settlement in offshore Hong Kong account with full transparency at every stage:
+  - Payment initiated by seller (most common), buyer, or system (escrow + scheduled only)
+  - Each payment tranche associated with seller-issued invoice
+  - 3-currency chain: Local fiat (BRL/ARS) → USDT stablecoin escrow → USD or HKD
+  - Escrow optional (EXACT/OVER/UNDER)
+  - Rate exposure managed per agreements type
+  - Milestone-confirmed release (shipped, customs)
+  - USD or HKD transferred to offshore Hong Kong bank account
+- Risk Score generated per settlement based on protective measures
+- Dispute mechanism available if goods not received within deadline
+- Downloads complete evidence pack for regulatory compliance
+
+**Both Parties:**
+- Real-time settlement status visible throughout the entire chain
+- Both buyer segments served: informal traders (speed-first) and structured importers (compliance-first)
+
+### Business Success
+
+- Settlement completion rate >99% of initiated settlements reaching SETTLED state
+- Evidence pack completeness at 100% for every settlement
+- MVP Go/No-Go: 10 successful end-to-end settlements with positive user feedback
+- Settlement speed target: stablecoin leg T+0 (full chain TBD)
+
+### Technical Success
+
+- Cregis escrow releases USDT only upon verified milestone confirmation from logistics partner
+- Everypay HK converts USDT → USD or HKD and transfers to Wei's offshore HK account with full timestamped audit trail
+- Evidence pack is timestamped, tamper-evident, and retrievable on demand by regulators
+- 100% regulatory compliance: HK licensing + HK offshore account compliance
+
+### Compliance (Core / Non-Negotiable)
+
+- Every settlement must produce a full, timestamped evidence pack as proof of trading activity for audit and monitoring
+- 100% adherence to HK licensing requirements
+- Milestone data from logistics partner must be tamper-evident and timestamped
+
+## Product Scope
+
+### MVP — Minimum Viable Product
+
+- **Anchor Markets**: Brazil BRL and Argentina ARS corridors (dual-corridor MVP)
+- **Settlement Type**: Milestone-based deferred settlement (Deposit → Shipped → Customs → Final)
+- **Settlement Flow**:
+  1. Settlement initiated by seller (most common), buyer, or system (escrow + scheduled only)
+  2. Each tranche tied to seller-issued invoice
+  3. Buyer transfers local fiat (BRL/ARS) to Everypay collection account
+  4. Everypay converts local currency → USDT internally
+  5. USDT held in Cregis escrow (if enabled)
+  6. Logistics partner provides milestone data — shipped, customs cleared
+  7. Cregis releases USDT to Everypay HK upon milestone confirmation
+  8. Everypay HK converts USDT → USD or HKD
+  9. USD or HKD transferred to Wei's offshore Hong Kong bank account
+  10. Wei receives full evidence pack (per tranche)
+- **3-Currency Chain**: Local fiat (BRL/ARS) → USDT stablecoin → USD or HKD
+- **Rate Lock**: Full implementation — both PRELOCK (rate agreed at invoice, locked) and INTIME (rate at moment of payment) methods available
+- **Escrow Negotiation**: Full bilateral negotiation flow — both parties can propose over-escrow buffer, negotiate terms, and approve
+- **Escrow Amount Types**: EXACT, OVER, UNDER with shortfall handling
+- **Buyer Segments**: Both informal traders and structured importers
+- **Platform**: Web-based UI only (no mobile app)
+- **Logistics Integration**: Internal integration only (no external API for logistics partners in MVP)
+- **Go/No-Go**: Minimum 10 successful settlements with positive user feedback
+
+### Out of Scope for MVP
+
+- Additional corridors (Colombia COP, Peru PEN) — Phase 2
+- Mobile application
+- FX hedging instruments beyond rate locks (forward contracts, options)
+- Subsidy document preparation service (evidence pack provided; application is Wei's responsibility)
+- Partner/channel referral program
+- API for third-party integrations
+- Large institutional buyers (government procurement, SOEs)
+
+### Growth Features (Post-MVP)
+
+- Additional LatAm corridors: Colombia COP, Peru PEN
+- Mobile application
+- FX hedging instruments: forward contracts, options for enterprise users
+- API for logistics partner webhook integration
+- Subsidy document preparation automation
+- Additional market expansion (Southeast Asia)
+
+## Settlement Configuration Model
+
+Everypay supports a multi-dimensional settlement configuration to accommodate diverse trade scenarios.
+
+### Configuration Dimensions
+
+| Dimension | Options | Description |
+|-----------|---------|-------------|
+| **Escrow** | Required / Not Required | USDT held in Cregis escrow; protects buyer or direct settlement |
+| **Rate Method** | PRELOCK / INTIME | Rate locked at initiation or negotiated at payment moment |
+| **Escrow Amount** | EXACT / OVER / UNDER | USDT amount relative to payment obligation |
+| **Escrow Structure** | One-for-all / Phased | Single escrow or milestone-based tranches |
+| **Initiation** | Seller / Buyer / System | Most settlements by seller; system only with escrow |
+
+### Rate Exposure Management
+
+| Scenario | Rate Protection | Mechanism |
+|----------|----------------|-----------|
+| Escrow + PRELOCK | Rate locked at initiation | Buyer protected; seller bears risk until release |
+| Escrow + INTIME | Good-faith negotiation | 48h SLA; rate penalty for delay; auto-escalation to neutral third party on failure |
+| No Escrow | Bilateral agreement | No automated protection; parties negotiate directly |
+
+### Escrow Amount Types
+
+| Type | Description | Shortfall Handling |
+|------|-------------|-------------------|
+| **EXACT** | USDT = exact payment obligation at agreed rate | N/A |
+| **OVER** | Buffer above exact (seller protection) | Seller protected against adverse rate movement |
+| **UNDER** | USDT < payment obligation | Buyer: (1) pays shortfall directly, OR (2) requests seller to supplement escrow |
+
+### Dispute Mechanism
+
+- **Trigger**: Buyer has not received goods within agreed deadline
+- **Buyer Action**: Request partial or full escrow return
+- **Penalty Escrow**: Both parties may commit additional escrow as penalty bonds
+- **Escalation Path**: Direct negotiation → 48h SLA → Auto-escalation to neutral third party
+- **Third Party Resolution**: Reviews evidence; decides on partial/full release or penalty enforcement
+
+### Risk Score Evaluation
+
+Platform calculates a **Risk Score (0-100)** per settlement based on protective measures:
+
+| Risk Factor | Impact | Assessment |
+|-------------|--------|------------|
+| Escrow enabled | High | Enabled = lower risk |
+| Rate method | Medium | PRELOCK < INTIME < No escrow |
+| Escrow amount type | High | EXACT < OVER < UNDER |
+| Escrow structure | Medium | Phased < One-for-all |
+| Dispute history | High | Prior disputes increase risk |
+| Payment size | Medium | Larger = higher risk |
+| Corridor volatility | Medium | Higher FX volatility = higher risk |
+
+**Risk Report includes:**
+- Overall Risk Score with grade (A/B/C/D)
+- Breakdown by risk factor
+- Recommended protective measures
+- Risk flags for escalation
+- Visible to both buyer and seller before commitment
+
+## User Journeys
+
+### Journey 1: Carlos Mendez — Buyer (Success Path)
+
+**Opening Scene:** Carlos owes a Chinese supplier 50,000 USD equivalent. His customers paid him in BRL, but he cannot access USD to pay the supplier — a currency access gap, not a preference. He is anxious about BRL devaluing every hour.
+
+**Rising Action:** Carlos logs into Everypay, enters 50,000 USD equivalent in BRL. Everypay shows the exchange rate and fee upfront. Carlos confirms. He transfers BRL to Everypay's Brazilian collection account. The moment he completes the transfer, Everypay displays: "You've locked in X USD for your supplier. Your BRL is now protected from market volatility." — Carlos feels **relief**, not just "transaction complete."
+
+**Climax:** Carlos tracks the payment in real-time: BRL received → USDT purchased → Cregis escrow → Goods shipped → Customs cleared → USD or HKD delivered to supplier. He sees "Payment complete — Supplier received USD/HKD."
+
+**Resolution:** Carlos's supplier got paid in USD/HKD without Carlos ever sourcing USD. Carlos returns for his next payment. The emotional payoff is **anxiety → relief**.
+
+---
+
+### Journey 2: Wei Zhang — Exporter (Success Path)
+
+**Prerequisites (Must Complete First):**
+
+1. **KYB Verification**: Both Wei (seller) and the Brazilian buyer must:
+   - Complete business registration verification
+   - Submit beneficial ownership declaration (>10% shareholders)
+   - Provide authorized signatories list
+   - Pass AML/CTF risk classification
+   - Receive platform approval before trading
+
+2. **Establish Trading Relationship**: Before any payment:
+   - Wei and Brazilian buyer establish counterparty relationship on Everypay
+   - Both parties agree to platform terms and conditions
+   - Trading history begins (first settlement builds trust score)
+
+3. **Payment Agreement**: Each settlement requires:
+   - Trade Payment Agreement defining terms (escrow, rate method, amount type)
+   - Reference to underlying contract between parties
+   - Reference to seller-issued invoice(s) per tranche
+
+**Journey Begins Here:**
+
+**Opening Scene:** Wei's company sold goods to a Brazilian buyer. A trading relationship has been established on Everypay. Wei creates invoices for each payment tranche. He needs reliable USD or HKD settlement in his offshore Hong Kong account and must produce audit-ready documentation for regulatory compliance.
+
+**Rising Action:** 
+- Wei creates invoice on Everypay with agreed terms (escrow, rate method, amount type)
+- Payment Agreement is created referencing the invoice
+- Buyer accepts terms and initiates payment
+- Wei monitors settlement in real-time
+- Settlement path depends on configuration:
+  - With escrow: Wei tracks milestone confirmations (shipped, customs)
+  - Without escrow: Direct settlement after payment confirmation
+- Rate exposure depends on rate method:
+  - PRELOCK: Wei is protected once rate is locked
+  - INTIME: Both parties negotiate; Wei monitors for rate agreement
+- If dispute arises (goods not received): Wei can respond to escrow return request or escalation
+
+**Key Decision Points:**
+1. **Escrow Configuration**: Wei sets escrow required/optional per buyer
+2. **Rate Method Selection**: PRELOCK or INTIME based on risk appetite
+3. **Escrow Amount**: EXACT/OVER/UNDER based on trust level
+4. **Milestone Confirmation**: Wei verifies shipped/customs before releasing escrow
+5. **Dispute Response**: Wei can commit penalty escrow or escalate to third party
+
+**Climax:** Wei downloads the complete evidence pack per tranche: invoice, contract, logistics milestones, settlement receipt — all timestamped, auditable, formatted for regulatory submission. Wei reviews Risk Score report before committing.
+
+**Resolution:** Wei's payment is settled in USD or HKD to his offshore HK account. Evidence pack is complete. Trust is established for future trades.
+
+---
+
+### Journey 3: Wei's CFO — Treasury & Risk Approver (High-Value Settlement)
+
+**Opening Scene:** Wei submits a $250,000 settlement. Everypay policy flags it: "High-value — requires treasury review."
+
+**Rising Action:** The CFO opens Everypay's approval queue and sees:
+- Counterparty details: Carlos's company, Brazilian registration, trading history
+- Settlement summary: $250,000, BRL → USD/HKD corridor, exchange rate at initiation
+- FX exposure: Current USDT/USD or USDT/HKD rate and projected amount at delivery
+- Escrow amount under review
+- Risk Score with breakdown
+- Policy check: within single-transaction limit ✓
+
+**Key Decision Points (Treasury Risk Management):**
+
+1. **Rate Risk Check** — CFO evaluates: "At current USDT/USD or USDT/HKD rate, can Everypay HK accept this payment without unacceptable FX exposure?"
+2. **Liquidity Timing** — CFO decides: "Release USDT from escrow to HK now, or wait until pool threshold reached for efficient conversion?"
+3. **Escrow Amount Review** — If over-escrow was negotiated: CFO reviews and approves the buffer amount
+4. **Risk Report Review** — CFO assesses overall Risk Score and flags
+
+**Escalation Policy (Configurable per Account):**
+- CFO → Treasurer → Risk Manager (customer-defined chain)
+- Auto-escalate if: rate moved >X% since initiation, payment >$X threshold, corridor volatility trigger, Risk Score exceeds threshold
+- Time limit: 48 hours; if no response: escalate to next reviewer
+
+**Resolution:** CFO approves. Cregis releases → Everypay HK → USD/HKD → Wei. Full audit trail: who approved, when, comments, rate at approval.
+
+---
+
+### Journey 4: Wei's Operations Team — Settlement Monitoring (Internal)
+
+**Opening Scene:** Everypay's operations team monitors the settlement pipeline for issues.
+
+**Rising Action:** Dashboard shows all active settlements: stages, any stuck payments, FX rates, escrow status, Risk Scores. An alert fires — a milestone confirmation from the logistics partner failed to arrive.
+
+**Climax:** Ops investigates: logistics partner system down? Data mismatch? Contacts the logistics partner, resolves the issue. If manual intervention required: Ops can trigger milestone confirmation with authorization.
+
+**Resolution:** Settlement completes. Incident logged for audit. SLA breach flagged if applicable.
+
+---
+
+### Journey 5: Carlos — Rate Lock Scenario
+
+**Opening Scene:** Carlos initiates a large payment. BRL is volatile — he wants FX protection.
+
+**Rising Action:** Carlos sees the rate lock option before confirming. He locks the rate (PRELOCK). BRL later devalues significantly. Carlos pays the locked rate — his supplier receives the agreed USD equivalent.
+
+**Resolution:** Carlos was protected from BRL devaluation. The supplier received the exact USD agreed at invoice time. Carlos uses rate lock for all large payments going forward.
+
+---
+
+### Journey 6: Wei — Escrow Optional (Trusted Partner)
+
+**Opening Scene:** Wei and Carlos have completed 20 successful settlements. Wei trusts Carlos's business.
+
+**Rising Action:** Wei creates a new invoice and selects "No Escrow" for this shipment. Carlos receives the invoice, agrees to no-escrow terms. Wei approves.
+
+**Flow:** Carlos pays BRL → Everypay converts → USD/HKD → Wei directly. No milestone hold. No Cregis escrow.
+
+**Resolution:** Faster settlement. Lower fees. Both parties benefit from established trust.
+
+---
+
+### Journey 7: Wei — Over-Escrow Negotiation
+
+**Opening Scene:** USDT/USD or USDT/HKD rate has been volatile. Wei wants protection against further movement.
+
+**Rising Action:** Wei requests an over-escrow buffer of 5% above the exact USD obligation. Carlos receives the request. Carlos proposes 3% instead. Wei accepts.
+
+**Flow:** Carlos tops up escrow by 3%. Milestone confirmed. Wei accepts. Settlement proceeds.
+
+**Resolution:** Both parties negotiated and agreed. Over-escrow is a transparent, agreed mechanism — not a penalty.
+
+---
+
+### Journey 8: Carlos — INTIME Rate Negotiation
+
+**Opening Scene:** Carlos and Wei agree to INTIME rate method. Rate must be negotiated at payment moment.
+
+**Rising Action:** 
+- At payment moment, Everypay presents current rate
+- Carlos proposes a rate, Wei counters
+- Negotiation begins with 48h SLA
+- If Carlos stalls maliciously: rate penalty applies, auto-escalation to third party after SLA breach
+
+**Resolution:** Both parties agree on rate within SLA, OR third party resolves fairly. Settlement proceeds.
+
+---
+
+### Journey 9: Carlos — Milestone Dispute
+
+**Opening Scene:** Logistics partner confirmed "shipped," but Wei claims goods were damaged in transit.
+
+**Rising Action:** Wei disputes the milestone. Settlement is paused in Cregis escrow. Carlos and Wei negotiate. Logistics partner provides additional documentation.
+
+**Resolution:** Both parties reach agreement. Funds released per new terms. Full dispute record logged for audit. Penalty escrow may be committed by either party.
+
+---
+
+## Journey Requirements Summary
+
+| Capability | From Journey |
+|-----------|-------------|
+| Real-time settlement status visibility | Carlos, Wei |
+| Rate lock at payment initiation (PRELOCK) | Carlos |
+| Rate negotiation at payment moment (INTIME) | Carlos, Wei |
+| Milestone tracking (shipped, customs) | Carlos, Wei |
+| Evidence pack generation | Wei |
+| Treasury/approval workflow with configurable escalation | CFO |
+| FX risk review before escrow release | CFO |
+| Risk Score evaluation and report | CFO |
+| Liquidity timing decision (batch/conversion) | CFO |
+| Escrow optional (configurable per invoice) | Wei, Carlos |
+| Over-escrow negotiation (propose + approve) | Wei, Carlos |
+| Under-escrow shortfall handling | Wei, Carlos |
+| Rate method: pre-lock vs. in-time | Carlos, Wei |
+| Dispute pause and resolution flow | Wei, Carlos |
+| Penalty escrow | Wei, Carlos |
+| INTIME negotiation with SLA | Carlos, Wei |
+
+## Trade Payment Agreement Framework
+
+**Core Concept:**
+Everypay facilitates **trade payment agreements** between buyers and sellers. The agreement is the core product object — not just a payment, but a structured, enforceable contract governing how settlement occurs.
+
+### Agreement ↔ Trade Document Relationship
+
+```
+Trade Package (Full Record)
+├── Contract (legal trade agreement between buyer and seller — external)
+├── Invoice (seller-created, references contract)
+├── Customs Documents (shipping, clearance — external)
+├── Trade Payment Agreement (Everypay — NEW)
+│   ├── Rate method: PRELOCK | INTIME
+│   ├── Escrow terms: required | optional
+│   ├── Escrow amount: EXACT | OVER | UNDER
+│   ├── Escrow structure: one-for-all | phased
+│   ├── Milestone tranches
+│   ├── Approval chains
+│   ├── References to Contract + Invoice
+│   └── blockchain_ref (reserved for future on-chain mapping)
+└── Amendments (versioned, both parties sign)
+```
+
+### Agreement Format
+
+- **Structured data agreement** — machine-readable, auditable, timestamped
+- Designed to serve as a **formal legal document** over time
+- **Off-chain agreement** with reserved `blockchain_ref` field for future on-chain smart contract mapping
+- Digital signatures from both parties provide legal weight
+
+### Rate Determination — Two Methods
+
+| Method | Description |
+|--------|-------------|
+| **Pre-Lock** | Rate agreed at invoice creation, locked regardless of market movement. Carlos protected if BRL devalues. Wei absorbs if USDT/USD or USDT/HKD moves unfavorably. |
+| **In-Time** | Rate set at moment of payment/tranche. Both parties see current market rate. Negotiation with 48h SLA; auto-escalation to third party on failure. |
+
+### Escrow — Three Amount Types + Structure
+
+| Amount Type | Description |
+|-------------|-------------|
+| **No Escrow** | High-trust relationships. Carlos pays BRL → Everypay converts → USD/HKD → Wei directly. |
+| **Exact Escrow** | USDT amount = exact USD obligation at agreed rate. Held in Cregis until milestone confirmation. |
+| **Over Escrow** | Wei requests buffer above exact amount (for FX risk). Both parties negotiate and approve the over-amount. |
+| **Under Escrow** | USDT < payment obligation. Buyer: (1) pays shortfall directly, OR (2) requests seller to supplement escrow. |
+
+| Structure | Description |
+|-----------|-------------|
+| **One-for-all** | Single escrow for entire settlement |
+| **Phased** | Milestone-based tranches (Deposit → Shipped → Customs → Final) |
+
+### Agreement Creation Flow
+
+```
+Wei creates Invoice
+  → Attach Trade Payment Agreement as independent file
+  OR
+  → Embed payment tranche terms inside invoice
+
+Agreement references:
+  → Contract #CTR-XXX
+  → Logistics milestones (from logistics partner oracle)
+  → Customs reference
+
+Agreement status: DRAFT → PROPOSED → NEGOTIATED → SIGNED → ACTIVE → FULFILLED / DISPUTED / CANCELLED
+```
+
+### Template Library
+
+Everypay provides **platform-level agreement templates** (not seller-created):
+- Template per corridor (Brazil BRL default template)
+- Template per transaction size tier
+- Template per relationship trust level
+
+Wei saves completed agreements as **reusable templates** for repeat trades with the same buyer (e.g., "Wei ↔ Carlos Standard Terms"). Future invoices auto-populate from saved agreement template.
+
+### Approval Chain (Configurable per Seller Account)
+
+```
+Policy Configuration (per account):
+  ├── Auto-accept threshold: rate move < X%
+  ├── Escrow required: always | never | threshold-based
+  ├── Review chain: CFO → Treasurer → Risk Manager
+  ├── Risk Score threshold: auto-escalate if > X
+  └── Time limit: 48 hours default
+
+Settlement triggers review when:
+  ├── Payment > $X threshold
+  ├── Rate move > X% since initiation
+  ├── Corridor volatility trigger
+  ├── Over-escrow amount exceeds Y%
+  └── Risk Score exceeds threshold
+```
+
+### USDT Balance States
+
+| State | Description | Carlos Can Withdraw? |
+|-------|-------------|---------------------|
+| Available balance | USDT held on platform, not committed | Yes, any time |
+| Locked for settlement | Committed to a pending settlement | No |
+| Escrow (Cregis) | Held in Cregis escrow, awaiting milestone | No |
+| Released to HK | USDT released to Everypay HK for conversion | No |
+| Tranche fulfilled | USD or HKD delivered to Wei, settlement complete | N/A |
+
+### Dispute Resolution
+
+- **Trigger**: Buyer has not received goods within agreed deadline
+- **Buyer Action**: Request partial or full escrow return
+- **Penalty Escrow**: Both parties may commit additional escrow as penalty bonds
+- **Escalation**: Direct negotiation → 48h SLA → Auto-escalation to neutral third party
+- **Third Party**: Reviews evidence, decides on partial/full release or penalty enforcement
+
+### Platform Licensing (Enforceability)
+
+Everypay must be **licensed** to operate as an enforceable trade payment platform:
+- HK payment service provider license
+- Dubai custody license (Cregis)
+- Additional licenses as required by buyer-seller jurisdictions
+
+The agreement is **legally binding** between buyer and seller through Everypay's licensed framework, digital signatures, and immutable audit log.
+
+## Domain-Specific Requirements
+
+### Per-Corridor Compliance Framework
+
+Everypay operates across multiple jurisdictions with different legal and regulatory frameworks. The compliance architecture must be designed per corridor from inception:
+
+| Corridor | Regulatory Authority | Key Requirements |
+|----------|----------------------|------------------|
+| Brazil (MVP) | BCB (Central Bank of Brazil) | Payment institution authorization, LGPD data privacy, CMN Resolution 4.966 |
+| Argentina (MVP) | BCRA (Central Bank of Argentina) | FX control regulations, USDT usage restrictions, blue dollar premium |
+| Colombia (Phase 2) | SFC / BanRep | Payment institution licensing, AML requirements |
+| Peru (Phase 2) | SBS / BCRP | Payment service provider regulations |
+
+**Architecture Implication:** Compliance logic must be corridor-aware. When a settlement moves between corridors (e.g., Carlos pays in BRL, but over-escrow involves USDT on Dubai/Cregis rail), the applicable rules from each jurisdiction apply at each leg.
+
+### Licensing Stack
+
+Everypay requires a multi-jurisdiction license structure to operate legally:
+
+| Entity | License | Jurisdiction | Purpose |
+|--------|---------|--------------|---------|
+| Everypay HK | Payment Service Provider (PSP) license | Hong Kong | FX conversion engine, USDT → USD/HKD |
+| Cregis | Custody license | Dubai | USDT escrow, reserve management |
+| Brazil Partner | Payment Institution (IP) / Payment Arranger | Brazil (BCB) | BRL collection, local rails |
+| Everypay HK | HK offshore account compliance | Hong Kong | USD/HKD settlement to offshore account |
+
+### KYC + KYB Requirements
+
+Everypay is a B2B platform requiring dual verification:
+
+| Verification | What | Who | Purpose |
+|--------------|------|-----|---------|
+| **KYC** (Know Your Customer) | Individual identity verification | All platform users | Anti-money laundering, fraud prevention |
+| **KYB** (Know Your Business) | Business entity verification | Companies creating invoices or making large payments | Compliance with AML/CTF regulations, beneficial ownership |
+
+**KYC Requirements:**
+- Government-issued ID verification
+- Facial recognition/liveness check
+- Address verification
+- Sanctions screening (OFAC, UN, EU, local lists)
+
+**KYB Requirements:**
+- Business registration verification (national ID, certificates)
+- Beneficial ownership declaration (>10% shareholders)
+- Authorized signatories list
+- Business activity declaration
+- AML/CTF risk classification
+
+### AML Freeze Order Integration
+
+**Critical Requirement:** Cregis must support regulatory freeze orders from competent authorities (FATF-aligned countries, G20 members). When a freeze order is issued:
+1. Affected USDT is immediately frozen in Cregis escrow
+2. No release until freeze lifted by issuing authority
+3. Full audit trail: freeze order ID, issuer, timestamp, amount frozen
+4. Notification to Everypay compliance team within 15 minutes
+
+**Implementation:** Cregis policy engine must enforce freeze orders as hard blocks — no override capability even by Cregis administrators.
+
+### Audit and Reporting Obligations
+
+Everypay operates under strict audit requirements:
+
+- **Evidence Pack Completeness:** 100% — every settlement must produce a complete, timestamped evidence pack
+- **Document Retention:** 7 years minimum (aligned with financial record-keeping requirements)
+- **Regulatory Reporting:** Ad-hoc report production within 48 hours of authority request
+- **Audit Trail Immutability:** All settlement events logged with timestamp, actor, action, and hash reference
+- **Internal Audit:** Quarterly review of settlement records, freeze order handling, KYC/KYB compliance
+
+### Data Classification and RBAC
+
+| Data Class | Examples | Access Control |
+|------------|----------|----------------|
+| **Public** | Invoice number, settlement status | All authenticated users |
+| **Internal** | FX rates, fee structure | Platform operations |
+| **Confidential** | User identities, business details | Authorized personnel only |
+| **Restricted** | KYC documents, freeze orders, audit logs | Compliance, legal, CTO only |
+
+**Role-Based Access Control (RBAC):**
+- **Viewer:** Read-only access to own settlements
+- **Operator:** Create invoices, initiate payments
+- **Approver:** Treasury/CFO review for high-value settlements
+- **Compliance:** Access to KYC/KYB documents, freeze orders, audit logs
+- **Admin:** Platform configuration, user management
+
+## Innovation & Novel Patterns
+
+### Detected Innovation Areas
+
+**1. Trade-to-Payment Evidence Chain**
+The evidence pack is the CORE product deliverable — not a compliance checkbox. Every settlement produces a complete, timestamped, tamper-evident evidence pack (invoice, contract, logistics milestones, settlement receipt) that Wei uses for regulatory compliance. This is the first platform where regulatory compliance *creates* user value rather than just protecting the platform. No direct equivalent in LatAm-to-China corridors.
+
+**2. Stablecoin Escrow with Logistics Oracle**
+Cregis holds USDT against a verifiable external condition — logistics milestone confirmation (shipped, customs cleared). Neither party can manipulate unilaterally. This is a trustless conditional release mechanism, not a simple escrow. Unique to Everypay in developing-market-to-China trade corridors.
+
+**3. Multi-Dimensional Settlement Configuration**
+Complete trade relationship management inside the platform: rate methods (pre-lock vs. in-time), escrow models (none/exact/over/under), escrow structures (one-for-all vs. phased), milestone tranches, approval chains, and configurable escalation policies. The Trade Payment Agreement is a structured data contract — not just a payment rail, but a negotiated, versioned trade relationship with full audit history.
+
+**4. Risk Score Evaluation System**
+Platform calculates a Risk Score (0-100) per settlement based on protective measures adopted. Risk Report provides transparency to both parties before commitment, enabling informed decisions.
+
+**5. Per-Corridor Compliance Architecture**
+Compliance logic is designed corridor-aware from Day 1. With Argentina ARS in MVP alongside Brazil BRL, Everypay implements dual-corridor compliance from inception — BCRA (Argentina) and BCB (Brazil) frameworks running in parallel.
+
+### Validation Approach
+
+- MVP validates with 10 successful BRL→USD/HKD settlements with positive user feedback
+- Evidence pack completeness at 100% for every settlement
+- Settlement completion rate >99%
+- Both informal traders and structured importers successfully onboarded
+
+### Risk Mitigation
+
+- **Corridor expansion risk:** Per-corridor compliance architecture allows incremental validation per market
+- **Regulatory risk:** HK/Dubai licensing provides established regulatory standing; Brazil partner has BCB authorization
+- **FX risk:** Rate lock mechanism protects Carlos during volatile BRL periods; over-escrow buffer for Wei
+- **Technical risk:** Cregis provides institutional-grade custody infrastructure; proven stablecoin vault with policy-enforced signing
+
+## SaaS B2B Specific Requirements
+
+### Multi-Tenancy Model
+
+| Tenant Type | Role | Description |
+|-------------|------|-------------|
+| **Seller tenant** | Wei Zhang + team | Creates invoices, receives USD/HKD, manages trade agreements |
+| **Buyer tenant** | Carlos Mendez + team | Initiates payments in BRL, tracks settlement status |
+| **Platform operations** | Internal | Manages FX, liquidity, compliance, customer support |
+
+**Tenant isolation:** Each settlement is isolated per seller-buyer pair. Settlement data is not shared across tenants without explicit agreement.
+
+### RBAC Matrix
+
+| Role | Wei (Seller) | Carlos (Buyer) | Use Case |
+|------|-------------|----------------|----------|
+| Viewer | View own invoices and settlements | View own payments | Day-to-day tracking |
+| Operator | Create invoices, attach contracts | Initiate BRL payment | Core workflow |
+| Approver | CFO/treasury review for high-value | N/A | Risk management |
+| Compliance | Access KYC/KYB, freeze orders | N/A | Regulatory compliance |
+| Admin | Platform configuration | N/A | System administration |
+
+### Integration List
+
+| Partner | Integration Type | Purpose |
+|---------|-----------------|---------|
+| Cregis Custody | API + policy engine | USDT escrow, freeze orders, reserve management |
+| Brazil Payment Partner | Local rails API | BRL collection, Brazilian payment infrastructure |
+| Logistics Partner Oracle | Webhook/internal feed | Milestone data (shipped, customs cleared) |
+| Everypay HK Entity | Internal FX engine | USDT → USD or HKD conversion, USD/HKD settlement to HK offshore account |
+
+### Subscription Tiers
+
+**MVP:** Single product tier serving both buyer segments:
+- Informal traders: speed-first, minimal documentation
+- Structured importers: compliance-first, full audit trail
+
+No tiered pricing in MVP. Future (post-MVP): per-seat pricing or volume-based tiers.
+
+---
+
+## Functional Requirements
+
+### User Management
+
+- FR1: Platform users can register and complete KYC individual verification (government ID, liveness check, address verification, sanctions screening)
+- FR2: Business entities can complete KYB verification with beneficial ownership declaration (>10% shareholders), authorized signatories, business activity declaration
+- FR3: Platform can assign RBAC roles (Viewer, Operator, Approver, Compliance, Admin) per user
+- FR4: Team administrators can invite and manage team members within their organization
+
+### Seller Workflow
+
+- FR5: Seller can create invoice with attached contract and line items
+- FR6: Seller can propose trade payment agreement terms (rate method, escrow model, escrow amount type, escrow structure, milestones, approval chain)
+- FR7: Seller can accept or reject terms proposed by buyer
+- FR8: Seller can configure approval chain for high-value settlements (CFO → Treasurer → Risk Manager)
+- FR9: Seller can configure auto-acceptance thresholds (rate move %, payment amount threshold)
+- FR10: Seller can download complete evidence pack for any settlement
+- FR11: Seller can configure default over-escrow buffer preferences
+- FR12: Seller can save invoice terms as reusable template for repeat trades with the same buyer
+
+### Buyer Workflow
+
+- FR13: Buyer can view invoices received from sellers
+- FR14: Buyer can initiate payment in local currency (BRL or ARS per corridor)
+- FR15: Buyer can select rate method: PRELOCK (rate locked at payment initiation) or INTIME (rate at moment of payment)
+- FR16: Buyer can propose trade payment agreement terms to seller
+- FR17: Buyer can propose over-escrow buffer amount or under-escrow shortfall handling option
+- FR18: Buyer can track real-time settlement status through entire chain
+- FR19: Buyer can withdraw unlocked USDT balance at any time
+- FR20: Buyer can view upfront exchange rate and fees before confirming payment
+
+### Corridor Operations
+
+- FR21: Platform supports Brazil BRL as settlement corridor with BCB regulatory compliance
+- FR22: Platform supports Argentina ARS as settlement corridor with BCRA regulatory compliance (including USDT usage restrictions and blue dollar premium handling)
+- FR23: Platform enforces corridor-specific compliance rules at each settlement leg
+- FR24: Platform displays settlement status in corridor-appropriate format
+
+### Settlement Engine
+
+- FR25: Platform converts buyer local currency (BRL/ARS) to USDT upon payment initiation
+- FR26: Platform holds USDT in Cregis escrow upon conversion
+- FR27: Platform releases USDT from escrow upon verified milestone confirmation from logistics oracle
+- FR28: Platform supports milestone-based tranche releases (Deposit → Shipped → Customs → Final)
+- FR29: Platform converts released USDT to USD or HKD via Everypay HK entity
+- FR30: Platform transfers USD or HKD to seller's offshore Hong Kong bank account via HK-compliant bank transfer
+- FR31: Platform displays full settlement chain visibility to both parties at all times
+- FR56: Platform handles ARS corridor BCRA-specific USDT restrictions with alternative settlement path documentation
+- FR57: Platform implements settlement failure state machine with defined states, transitions, and rollback procedures
+
+### Rate Management
+
+- FR32: Platform offers PRELOCK rate method (rate agreed at invoice, locked until settlement)
+- FR33: Platform offers INTIME rate method (rate set at moment of each tranche payment with negotiation)
+- FR34: Platform displays exchange rate and fees upfront before buyer confirms payment
+- FR35: Platform locks PRELOCK rate upon buyer payment confirmation
+- FR-N4: Platform enforces 48h SLA for INTIME rate negotiation with rate penalty for delay
+- FR-N5: Platform auto-escalates INTIME negotiation to neutral third party after SLA breach
+
+### Escrow Negotiation
+
+- FR36: Platform supports NOESCROW model for trusted seller-buyer relationships
+- FR37: Platform supports EXACT escrow model (USDT amount = exact USD obligation at agreed rate)
+- FR38: Platform supports OVER escrow model (buffer above exact USD obligation)
+- FR-N8: Platform supports UNDER escrow model (USDT amount < USD obligation)
+- FR-N9: Platform handles UNDER shortfall: buyer pays directly OR requests seller to supplement escrow
+- FR39: Buyer can propose over-escrow buffer amount
+- FR40: Seller can accept, reject, or counter-propose escrow amount
+- FR41: Over-escrow requires bilateral approval before being activated
+- FR-N10: Platform supports one-for-all escrow (single escrow for entire settlement)
+- FR-N11: Platform supports phased escrow (milestone-based multiple tranches)
+
+### Approval Workflow
+
+- FR42: Seller can configure approval chain per account (CFO → Treasurer → Risk Manager)
+- FR43: Platform auto-escalates settlement for review when configured thresholds exceeded (rate move %, payment amount, corridor volatility, Risk Score)
+- FR44: Platform enforces 48-hour acceptance SLA with auto-escalation to next reviewer
+- FR45: Approvers can approve or reject settlements with comments
+- FR46: Platform logs all approval decisions with timestamp, approver identity, and comments
+
+### Evidence & Audit
+
+- FR47: Platform generates timestamped, tamper-evident evidence pack per settlement
+- FR48: Evidence pack includes: invoice, contract, logistics milestones (shipped, customs cleared), settlement receipt
+- FR49: Seller can download evidence pack at any time
+- FR50: Platform retains all evidence for minimum 7 years
+- FR51: Platform can produce evidence pack within 48 hours of regulator request
+- FR62: Platform can retrieve and deliver evidence pack to regulators within 48 hours of request
+
+### AML & Compliance
+
+- FR52: Platform screens all users against OFAC, UN, EU, and local sanctions lists
+- FR53: Cregis can enforce regulatory freeze orders as hard blocks with no override capability
+- FR54: Platform logs all freeze order events with issuer, timestamp, and amount frozen
+- FR55: Platform maintains KYC/KYB records per regulatory requirements
+
+### USDT Balance & Liquidity
+
+- FR58: Platform tracks USDT balance states: available, locked for settlement, in Cregis escrow, released to HK
+- FR59: Operations team can trigger manual milestone confirmation with full audit trail
+- FR61: Platform guarantees USDT conversion within T+0; if conversion delayed beyond T+0, compensation clause applies
+- FR66: Everypay HK maintains HK offshore account documentation requirements per settlement
+- FR67: Platform integrates with Hong Kong bank for USD/HKD clearing and settlement
+
+### Dispute Resolution
+
+- FR60: Platform provides dispute deadlock resolution: escalation to neutral third party or automatic split-decision mechanism after 48hr escalation
+- FR68: Both parties can pause settlement and enter dispute state; funds remain in Cregis escrow until resolved
+- FR-N15: Platform supports dispute mechanism: buyer can request partial or full escrow return if goods not received within deadline
+- FR-N16: Platform supports penalty escrow committed by both parties
+
+### Counterparty Management (CRM)
+
+- FR69: Seller can view all buyer counterparties with settlement history, trust score, and total volume traded
+- FR70: Buyer can view all seller counterparties with invoice history, delivery performance, and total volume
+- FR71: Platform calculates and displays trust indicators per counterparty (settlement success rate, average delivery time, dispute rate)
+- FR72: Platform maintains interaction history across all settlements per counterparty pair
+
+### Purchase Ledger (Buyer)
+
+- FR73: Buyer can view all pending invoices with due dates and payment status
+- FR74: Buyer can track all outgoing payments across BRL and ARS corridors
+- FR75: Buyer sees running balance of total owed versus total paid per seller
+- FR76: Platform sends automated payment reminders to buyer before due dates
+
+### Sales Ledger (Seller)
+
+- FR77: Seller can view all outstanding invoices with expected payment dates and collection status
+- FR78: Seller can track all incoming receivables across corridors in USD equivalent
+- FR79: Seller sees running balance of total billed versus total received per buyer
+- FR80: Platform displays aging report for receivables (0-30 days, 31-60 days, 60+ days overdue)
+
+### Account Reconciliation
+
+- FR81: Platform provides real-time view of USDT holdings: available balance, locked, in escrow, released to HK
+- FR82: Platform provides real-time view of BRL/ARS holdings in local currency
+- FR83: Platform provides real-time view of USD/HKD receipts in seller's offshore HK account
+- FR84: Platform calculates aggregated FX exposure per counterparty and per corridor
+- FR85: Seller can view total currency exposure across all open settlements
+
+### Template Management
+
+- FR63: Platform versions invoice templates when seller updates terms; in-flight invoices continue under original template version
+- FR86: Seller can set a template as default for specific buyer counterparties
+
+### Simplified Onboarding (Informal Traders)
+
+- FR64: Platform supports simplified KYC tier for low-value, low-risk buyers with reduced verification requirements
+- FR87: Platform applies risk-based KYC: higher payment thresholds require fuller KYC/KYB verification
+
+### Settlement Configuration (NEW)
+
+- FR-N1: Platform supports multi-dimensional settlement configuration (escrow, rate method, escrow amount type, escrow structure)
+- FR-N2: Platform supports PRELOCK rate method (rate locked at payment initiation)
+- FR-N3: Platform supports INTIME rate method (rate negotiated at payment moment)
+- FR-N6: Platform supports EXACT escrow amount type
+- FR-N7: Platform supports OVER escrow amount type
+- FR-N12: Platform calculates Risk Score (0-100) per settlement based on protective measures
+- FR-N13: Platform generates Risk Report per settlement with breakdown by risk factor
+- FR-N14: Platform displays Risk Report to both buyer and seller before commitment
+- FR-N17: Platform supports payment initiation by seller, buyer, or system (escrow + scheduled)
+
+### Settlement Success Definition
+
+- FR65: Settlement success is defined as: SETTLED state reached in system AND Wei confirms USD or HKD received in offshore HK account. Success metric tracked as SETTLED + USD_HKD_CONFIRMED.
+
+---
+
+## Non-Functional Requirements
+
+### Performance
+
+- **Settlement Processing:** Stablecoin leg (USDT conversion) completes T+0; USD/HKD cross-border transfer completes T+1
+- **Real-Time Status:** Settlement status updates visible to both parties within 30 seconds of state change
+- **Evidence Pack Retrieval:** Complete evidence pack retrievable within 48 hours of regulator request
+- **System Response:** UI operations (invoice creation, payment initiation, status check) complete within 3 seconds
+- **Concurrent Users:** System supports 100 concurrent active settlements per corridor without performance degradation
+
+### Security
+
+- **Data Encryption:** All KYC/KYB documents encrypted at rest (AES-256); all data encrypted in transit (TLS 1.3)
+- **Access Control:** RBAC enforced at API level; no cross-tenant data access possible
+- **Sanctions Screening:** All users screened against OFAC, UN, EU, and local sanctions lists in real-time
+- **Audit Logging:** All settlement events logged with timestamp, actor, action, and hash reference; immutable
+- **Freeze Order Enforcement:** Cregis enforces freeze orders as hard blocks within 15 minutes of receipt
+- **Penetration Testing:** Annual third-party penetration testing required
+- **KYC Data Retention:** KYC documents retained for 7 years minimum; accessible only to Compliance role
+
+### Scalability
+
+- **Corridor Expansion:** Platform architecture supports new corridor addition without core platform modification
+- **User Growth:** System scales from MVP (10 settlements) to 1000+ settlements/month with <20% performance degradation
+- **Geographic Distribution:** Supports users from 50+ countries without infrastructure modification
+- **Volume Spikes:** Handles 3x normal settlement volume during market volatility periods (BRL/ARS FX events)
+
+### Reliability
+
+- **Settlement Completion Rate:** >99% of initiated settlements reach SETTLED state
+- **Evidence Pack Completeness:** 100% of settlements produce complete evidence pack
+- **System Uptime:** 99.5% uptime (excluding scheduled maintenance)
+- **Disaster Recovery:** Recovery Point Objective (RPO) = 0; Recovery Time Objective (RTO) < 4 hours
+
+### Compliance
+
+- **HK PSP License:** Everypay HK operates under HK SFC payment service provider license
+- **Dubai Custody License:** Cregis operates under Dubai Virtual Assets Regulatory Authority (VARA) custody license
+- **BCB Compliance (Brazil):** Brazil payment partner maintains BCB payment institution authorization
+- **BCRA Compliance (Argentina):** Platform implements BCRA Resolution 8430/2020 requirements for ARS corridor
+- **HK Offshore Compliance:** Everypay HK maintains HK offshore account compliance; USD/HKD transfers via HK bank rails
+- **Data Residency:** KYC/KYB documents stored in jurisdiction-appropriate data centers per local regulations
+- **AML Compliance:** FATF-aligned AML/CTF program; suspicious activity reporting within regulatory timeframes
+
+### Integration
+
+- **Cregis API:** 99.9% uptime for escrow operations; <1 second response time for release commands
+- **Brazil Payment Partner API:** 99% uptime; real-time BRL confirmation
+- **Logistics Oracle:** Webhook delivery with retry logic (3 attempts, exponential backoff); manual override available for ops team
+- **Everypay HK FX Engine:** Real-time USDT→USD or HKD conversion; USD/HKD transfer to HK offshore account
+- **Bank Rail (HK bank):** T+1 USD/HKD settlement confirmation; ISO 20022 message format

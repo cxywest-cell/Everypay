@@ -1,6 +1,8 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 inputDocuments: ["_bmad-output/planning-artifacts/prd.md", "_bmad-output/planning-artifacts/product-brief-Everypay-2026-04-01.md", "_bmad-output/planning-artifacts/validation-report-prd.md"]
+lastStep: 14
+workflowComplete: true
 ---
 
 # UX Design Specification Everypay
@@ -463,3 +465,298 @@ Carlos initiates BRL payment → Everypay locks the FX rate → immediate "Rate 
 | Settlement progress | Smooth step transitions |
 | Button hover | Scale(1.02) + shadow lift |
 | Error state | Subtle shake (3 cycles, 4px) |
+
+## Step 9 — Design Directions
+
+### Design Decisions Framework
+
+**Escrow-as-Optional Model**
+Every invoice has an `escrow_required` boolean flag. The seller chooses the risk model per buyer. This single flag branches the entire UI:
+
+| State | Risk Bearer | UI Indication |
+|-------|------------|--------------|
+| `escrow_required: true` | Buyer bears capital burden (locked BRL) | "Funds secured" badge, Cregis escrow details |
+| `escrow_required: false` | Seller bears credit risk | No escrow mention, payment-on-delivery model |
+
+**Three Risk Layers**
+
+1. **Credit Risk** — Seller bears on non-escrowed settlements. Shown as "Payment on delivery" model with no upfront lock.
+2. **Capital Burden** — Buyer bears on escrowed settlements (BRL locked during settlement). Prominent lock window countdown.
+3. **Rate Exposure** — Platform absorbs when settlement exceeds 48h lock window. Internal risk metric, shown to CFO as "Platform risk" in FX exposure views.
+
+**Trust Score → Escrow Score Reframe**
+
+| Metric | Escrowed | Non-Escrowed |
+|--------|----------|--------------|
+| Settlement history | ✓ Shown | ✓ Shown |
+| Escrow score | ✓ "Escrow protected" badge | N/A — no escrow |
+| Disputes raised | Neutral fact, always shown | Neutral fact, always shown |
+| Trust indicators | Cregis custody badge | Payment-on-delivery model |
+
+**Rate Lock Exposure**
+When settlement exceeds 48h lock window, rate exposure risk transfers to platform. The UI shows this as "Rate exposure: Platform" in CFO risk views. Carlos never sees this — it's an internal platform concern.
+
+### Design Directions HTML
+
+All 8 ERP modules are accessible via unified tabbed navigation in `_bmad-output/planning-artifacts/ux-design-directions.html`:
+
+**Navigation Structure:**
+- Top nav: "All Modules" (shows ERP) and "Compare"
+- ERP sub-nav: Carlos · Buyer | Wei · Seller | CFO · Approver | Sales Ledger | Purchase Ledger | Reconciliation | Counterparty CRM | Invoice Creation
+
+**Sub-Panels (8 total):**
+
+1. **Carlos · Buyer** (`tab-buyer-rate-lock`) — Rate lock celebration (Direction A) + Speed-First minimal confirmation (Direction B)
+2. **Wei · Seller** (`tab-seller-dashboard`) — Dashboard, recent settlements, KPI cards
+3. **CFO · Approver** (`tab-cfo-approval`) — Card-based approval queue with expandable risk summaries
+4. **Sales Ledger** (`tab-sales-ledger`) — Outgoing invoices, BRL holdings, settlement pipeline
+5. **Purchase Ledger** (`tab-purchase-ledger`) — Incoming invoices from buyers, USDT escrow holdings
+6. **Reconciliation** (`tab-reconciliation`) — USDT/BRL/CNY balances, FX exposure by corridor
+7. **Counterparty CRM** (`tab-counterparty`) — Buyer profiles, Escrow Score, interaction history
+8. **Invoice Creation** (`tab-invoice-create`) — Invoice form with milestone tranches, Trade Payment Agreement attachment
+
+### Party Mode Synthesis (Step 9 Validation)
+
+**Sally (UX):**
+- Rate lock is emotional climax needing visual celebration
+- Escrow branching is correct — seller chooses per invoice
+- Trust Score → Escrow Score reframe is validated
+- Three risk layers properly assigned to UI displays
+
+**Mary (Analyst):**
+- 48-hour lock window validated against BRL volatility
+- Rate exposure risk (platform) only appears in CFO dashboard
+- Escrow Score displayed differently for escrowed vs non-escrowed
+
+**Winston (Architect):**
+- `escrow_required` flag is the primary UI branch throughout
+- Rate lock state machine: 0-44h active, 44-48h warning, 48h+ re-quote
+- USDT placement (internal ledger vs Cregis) affects Escrow Score display
+
+**Consolidated Design Directions:**
+- Direction A (Card-Based) for CFO approval queue — recommended
+- Direction C (Minimal) for Carlos buyer flow — recommended
+- Direction B (Speed-First) as alternative for Carlos
+- All directions score 3/3 on Web-only fit and core UX principles
+
+## Step 10 — User Journey Flows
+
+### Critical Journeys
+
+Three primary journeys define Everypay's user experience:
+
+**Journey 1: Carlos — BRL Payment to Rate Lock**
+- Entry: Carlos clicks payment link from Wei's invoice
+- Core flow: Enter amount → Confirm rate → Transfer BRL → Rate locked (anxiety → relief arc)
+- Success path: 4 taps maximum
+- Key moment: "Rate Locked" confirmation with celebratory micro-animation
+
+**Journey 2: Wei — Invoice Creation to Evidence Pack**
+- Entry: Wei logs into Everypay console → New Invoice
+- Core flow: Create invoice → Send link → Track settlement → Download evidence pack
+- Escrow branching: `escrow_required` flag drives all UI labels and risk messaging
+- Key moment: Single-click evidence pack download
+
+**Journey 3: CFO — High-Value Settlement Approval**
+- Entry: CFO opens Approval Queue
+- Core flow: Scan risk summary cards → 1-click approve/reject → Audit trail
+- Escalation: CFO → Treasurer → Risk Manager (configurable per account)
+- Key moment: Pre-computed risk summary enables 2-click decision
+
+### Journey Patterns
+
+| Pattern | Usage |
+|---------|-------|
+| One-click primary action | Approve, Rate Lock, Download |
+| Progressive disclosure | Default: simple. Tap: full detail |
+| Escrow branching | `escrow_required` flag drives all UI |
+| Real-time tracking | Settlement pipeline with milestone updates |
+| Error → recovery | Clear message + actionable CTA |
+| Confirmation celebration | Rate locked, CNY received — moment of arrival |
+
+### Flow Optimization Principles
+
+1. Minimize taps to value — Rate lock in 4 taps maximum
+2. Anxiety → relief — Rate locked confirmation is celebratory
+3. Trust through transparency — Status visible but not overwhelming
+4. Zero dead ends — Every error has a recovery path
+
+### Deferral Note
+
+Back-office purchase/sales activities (Purchase Order Management, Sales Ledger Reconciliation, Template Management) are deferred to Epic & Story phase. These are important ERP operational workflows but not UX-differentiating. They map to FR63–FR87 in the PRD and will be handled as standard backlog items during sprint planning.
+
+## Step 11 — Component Strategy
+
+### Design System: Tailwind UI + Headless UI
+
+| Source | Components |
+|--------|------------|
+| Tailwind UI | Button, Card, Input, Select, Modal, Form inputs, badges, tables |
+| Headless UI | Dialog, Dropdown, Tabs, Switch (accessible primitives) |
+
+### Custom Components
+
+| Component | Purpose | Journey |
+|-----------|---------|---------|
+| `RateLockCard` | Celebratory rate lock confirmation | Carlos |
+| `StatusTracker` | Multi-step settlement progress | All |
+| `ApprovalCard` | CFO risk summary + 1-click actions | CFO |
+| `EvidencePackDownload` | Single-click doc download | Wei |
+| `EscrowBadge` | Branches on `escrow_required` | All |
+| `RiskSummaryRow` | Green/yellow/red risk indicators | CFO |
+
+### RateLockCard
+
+- States: locked, warning (44–48h), expired (re-quote flow)
+- Anatomy: Check icon + CNY amount (hero) + rate/fee row + lock expiry
+- Animation: 600ms spring celebration on lock confirmation
+- Variants: Direction A (celebration), Direction B (minimal)
+
+### StatusTracker
+
+- States per step: completed, active, pending
+- 5 steps: BRL Received → Rate Locked → In Transit → Customs → CNY Delivered
+- Progressive disclosure: step detail on tap
+
+### ApprovalCard (CFO)
+
+- States: pending, approved, rejected
+- Anatomy: Settlement ID + amount + parties + RiskSummary + MetricsGrid + ActionButtons
+- Risk indicators: green/yellow/red dots per risk layer
+
+### EscrowBadge
+
+- Branches on `escrow_required: true/false`
+- True: "Escrow Protected" + Cregis custody detail
+- False: Hidden or "Payment-on-delivery" (seller view)
+
+### Implementation Roadmap
+
+**Phase 1 (MVP):** RateLockCard, StatusTracker, ApprovalCard, EscrowBadge
+**Phase 2:** EvidencePackDownload, KPICard, RiskSummaryRow
+**Phase 3:** Full library refinement, animation polish
+
+## Step 12 — UX Consistency Patterns
+
+### Button Hierarchy
+
+| Action | Style | Usage |
+|--------|-------|-------|
+| Primary CTA | `btn btn-success` (green) | Rate Lock, Approve, Pay Now |
+| Secondary | `btn btn-primary` (blue) | Continue, View Details |
+| Tertiary | `btn btn-secondary` (outlined) | Cancel, Back, Reject |
+| Danger | `btn btn-danger` (red) | Reject Settlement only |
+
+**Rules:** One primary CTA per view. Never side-by-side primary + danger. Loading state: spinner replaces text, button disabled.
+
+### Feedback Patterns
+
+| State | Visual | Example |
+|-------|--------|---------|
+| Success | Green badge + checkmark | "Rate Locked", "CNY Delivered" |
+| Pending | Amber badge + timestamp | "Pending — awaiting confirmation" |
+| Warning | Amber badge + warning icon | "Rate expires in 4h" (44-48h window) |
+| Error | Red badge | "Transfer Failed" + reason code |
+| Info | Blue badge | "Escrow Details" expandable |
+
+**Rules:** Actor + timestamp on all state changes (audit trail). Reason codes for Reject/Pending states. Amber pulse only for initial load — use static badge with elapsed time for ongoing states.
+
+### Rate Lock State Machine Integration
+
+The 0-44h/44-48h/48h+ trifurcation affects all CTAs and feedback:
+
+| Window | CTA | Feedback |
+|--------|-----|---------|
+| 0–44h | Standard patterns | Green badge |
+| 44–48h | "Confirm (Rate expires in Xh)" | Amber warning banner |
+| 48h+ | "Get New Quote" (disabled Confirm) | Red "Re-quote required" |
+
+### Form Patterns
+
+- Labels above inputs, 14px semibold
+- Error messages inline below field, red text + reason
+- Required fields: asterisk + `aria-required="true"` + legend
+- Disabled state: 50% opacity + explanatory tooltip — never silent disable
+
+### Navigation Patterns
+
+- Top nav: Logo left, user/mode indicator right
+- Sidebar (desktop): Icon + label, collapsible
+- Sub-navigation: Tab row, horizontal scroll on overflow
+- Back navigation: Breadcrumb for deep flows
+
+### Modal Patterns
+
+- Default: 480px max-width, centered
+- Complex confirmations (settlement details, fee breakdown): 640px max
+- Backdrop: `rgba(0,0,0,0.5)`
+- Close: X button top-right + Escape key
+- Primary action bottom-right
+- State invalidation: re-validate on submit to prevent race conditions
+
+### Empty States
+
+- Centered illustration + message + CTA
+- Positive confirmation states for CFO: "All 47 settlements reconciled — zero exceptions"
+- New user vs. all-complete vs. all-expired: different CTAs per state
+
+### Loading States
+
+- Skeleton screens for initial table/card load
+- Status badges always show real state — never skeletonize time-sensitive data
+- Spinner only for button loading
+
+### Accessibility
+
+- Focus management: modal opens → focus trap; modal closes → focus returns to trigger
+- `aria-live="polite"` for async status changes
+- `prefers-reduced-motion` respected — no shake animation
+- Color contrast: 4.5:1 minimum for text, 3:1 for large text/badges
+
+### Party Mode Findings (Step 12 Validation)
+
+**Sally (UX):** 11 gaps identified — offline state handling, touch targets (44px min), progress steppers for Carlos, confirmation dialogs for destructive actions, accessibility specs throughout
+
+**Winston (Architect):** Rate lock state machine not reflected in patterns, state transition banners missing, disabled state affordance, skeleton screens hiding time-sensitive status, modal invalidation on state change
+
+**Mary (Analyst):** Actor + timestamp on all feedback (audit), danger by consequence magnitude, reason codes for Reject/Pending, positive confirmation states for CFO, expected-time context for pending
+
+## Step 13 — Responsive Design & Accessibility
+
+### Responsive Strategy
+
+| Persona | Device | Strategy |
+|---------|--------|----------|
+| Carlos (buyer) | Mobile browser | Touch-first, bottom-anchored CTAs, minimal scrolling |
+| Wei (seller) | Desktop-first | Full dashboard, keyboard shortcuts, data density |
+| CFO (approver) | Desktop-first | Card-based queue, expandable detail |
+
+**Web-only MVP:** No mobile app. All experiences must work in mobile browser (375px+) and desktop (1024px+).
+
+### Breakpoint Strategy
+
+| Breakpoint | Width | Target |
+|------------|-------|--------|
+| Mobile | < 640px | Carlos buyer flow |
+| Tablet | 640–1023px | Wei on tablet |
+| Desktop | ≥ 1024px | Wei/CFO console |
+
+**Rules:** Mobile-first CSS. No horizontal scrolling. Tables collapse to cards on mobile.
+
+### Accessibility Strategy
+
+**WCAG Level: AA**
+
+| Requirement | Implementation |
+|-------------|----------------|
+| Color contrast | 4.5:1 minimum (text), 3:1 (badges/icons) |
+| Touch targets | 44×44px minimum |
+| Focus indicators | Visible 2px outline on all interactive elements |
+| Keyboard navigation | Full flow navigable without mouse |
+| Screen reader | Semantic HTML, ARIA labels, `aria-live` for status changes |
+| Reduced motion | `prefers-reduced-motion` respected |
+
+### Testing Strategy
+
+**Responsive:** Physical devices + Chrome DevTools emulation across Chrome, Firefox, Safari, Edge
+**Accessibility:** axe-core/WAVE automated + VoiceOver/NVDA manual + keyboard-only audit
