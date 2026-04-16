@@ -1,0 +1,29 @@
+[
+  {
+    "tier": "TIER_1",
+    "name": "Basic",
+    "description": "Simplified KYC - government ID only",
+    "maxTransactionAmount": 10000,
+    "maxMonthlyVolume": 50000,
+    "requiredDocuments": ["government_id"],
+    "kycStatusRequired": "PENDING"
+  },
+  {
+    "tier": "TIER_2",
+    "name": "Standard",
+    "description": "Full KYC - ID + liveness + address verification",
+    "maxTransactionAmount": 100000,
+    "maxMonthlyVolume": 500000,
+    "requiredDocuments": ["government_id", "liveness_check", "address_proof"],
+    "kycStatusRequired": "VERIFIED"
+  },
+  {
+    "tier": "TIER_3",
+    "name": "Enhanced Due Diligence",
+    "description": "EDD - Standard KYC + source of funds + enhanced sanctions screening",
+    "maxTransactionAmount": 1000000,
+    "maxMonthlyVolume": 5000000,
+    "requiredDocuments": ["government_id", "liveness_check", "address_proof", "source_of_funds", "enhanced_sanctions"],
+    "kycStatusRequired": "VERIFIED"
+  }
+]

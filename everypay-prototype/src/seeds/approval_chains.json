@@ -1,0 +1,19 @@
+[
+  {
+    "id": "ac-1",
+    "organizationId": "org-beta",
+    "threshold": 100000,
+    "approvers": [
+      {
+        "userId": "user-3",
+        "role": "APPROVER",
+        "order": 1,
+        "status": "pending",
+        "comment": null,
+        "timestamp": null
+      }
+    ],
+    "createdAt": "2026-03-05T08:00:00Z",
+    "updatedAt": "2026-03-05T08:00:00Z"
+  }
+]

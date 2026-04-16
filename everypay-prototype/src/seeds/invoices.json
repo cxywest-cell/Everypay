@@ -1,0 +1,78 @@
+[
+  {
+    "id": "inv-1",
+    "sellerId": "user-2",
+    "buyerId": "user-1",
+    "status": "SENT",
+    "lineItems": [
+      {
+        "id": "li-1",
+        "description": "Electronic Components - Batch A",
+        "quantity": 500,
+        "unitPrice": 120.00,
+        "currency": "USD"
+      },
+      {
+        "id": "li-2",
+        "description": "Shipping & Handling",
+        "quantity": 1,
+        "unitPrice": 2500.00,
+        "currency": "USD"
+      }
+    ],
+    "contractDocumentUrl": "/contracts/contract-alpha-batch-a.pdf",
+    "totalAmount": 62500.00,
+    "currency": "USD",
+    "dueDate": "2026-05-01T00:00:00Z",
+    "templateId": null,
+    "templateVersion": null,
+    "createdAt": "2026-04-10T09:00:00Z",
+    "updatedAt": "2026-04-12T10:30:00Z"
+  },
+  {
+    "id": "inv-2",
+    "sellerId": "user-2",
+    "buyerId": "user-1",
+    "status": "PAID",
+    "lineItems": [
+      {
+        "id": "li-3",
+        "description": "Raw Materials - Steel Coil",
+        "quantity": 20,
+        "unitPrice": 8500.00,
+        "currency": "USD"
+      }
+    ],
+    "contractDocumentUrl": "/contracts/contract-alpha-steel.pdf",
+    "totalAmount": 170000.00,
+    "currency": "USD",
+    "dueDate": "2026-03-15T00:00:00Z",
+    "templateId": null,
+    "templateVersion": null,
+    "createdAt": "2026-02-20T11:00:00Z",
+    "updatedAt": "2026-03-14T16:45:00Z"
+  },
+  {
+    "id": "inv-3",
+    "sellerId": "user-2",
+    "buyerId": "user-1",
+    "status": "DRAFT",
+    "lineItems": [
+      {
+        "id": "li-4",
+        "description": "Textile Products - Q2 Order",
+        "quantity": 1000,
+        "unitPrice": 45.00,
+        "currency": "USD"
+      }
+    ],
+    "contractDocumentUrl": null,
+    "totalAmount": 45000.00,
+    "currency": "USD",
+    "dueDate": null,
+    "templateId": "tpl-1",
+    "templateVersion": 1,
+    "createdAt": "2026-04-14T08:00:00Z",
+    "updatedAt": "2026-04-14T08:00:00Z"
+  }
+]

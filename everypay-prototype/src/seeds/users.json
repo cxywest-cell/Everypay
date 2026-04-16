@@ -1,0 +1,35 @@
+[
+  {
+    "id": "user-1",
+    "email": "carlos@alpha.com.br",
+    "firstName": "Carlos",
+    "lastName": "Silva",
+    "kycStatus": "VERIFIED",
+    "roles": ["OPERATOR", "ADMIN"],
+    "organizationId": "org-alpha",
+    "createdAt": "2026-03-01T10:00:00Z",
+    "updatedAt": "2026-03-15T14:30:00Z"
+  },
+  {
+    "id": "user-2",
+    "email": "wei@betatrading.cn",
+    "firstName": "Wei",
+    "lastName": "Zhang",
+    "kycStatus": "VERIFIED",
+    "roles": ["OPERATOR", "ADMIN"],
+    "organizationId": "org-beta",
+    "createdAt": "2026-03-05T08:00:00Z",
+    "updatedAt": "2026-03-20T09:15:00Z"
+  },
+  {
+    "id": "user-3",
+    "email": "cfo@betatrading.cn",
+    "firstName": "Li",
+    "lastName": "Chen",
+    "kycStatus": "VERIFIED",
+    "roles": ["APPROVER", "COMPLIANCE"],
+    "organizationId": "org-beta",
+    "createdAt": "2026-03-05T08:00:00Z",
+    "updatedAt": "2026-03-20T09:15:00Z"
+  }
+]

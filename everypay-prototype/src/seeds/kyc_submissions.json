@@ -1,0 +1,39 @@
+[
+  {
+    "id": "kyc-1",
+    "userId": "user-1",
+    "idDocument": {
+      "id": "doc-1",
+      "userId": "user-1",
+      "type": "passport",
+      "documentUrl": "/mock/passport-user1.pdf",
+      "documentNumber": "BR123456",
+      "nationality": "Brazilian",
+      "expiryDate": "2028-06-15",
+      "submittedAt": "2024-01-10T10:00:00.000Z"
+    },
+    "livenessCheck": {
+      "id": "live-1",
+      "userId": "user-1",
+      "selfieUrl": "/mock/selfie-user1.jpg",
+      "result": "passed",
+      "failureReason": null,
+      "checkedAt": "2024-01-10T10:05:00.000Z"
+    },
+    "addressVerification": {
+      "id": "addr-1",
+      "userId": "user-1",
+      "addressLine1": "Rua das Palmeiras, 123",
+      "addressLine2": "Apto 45",
+      "city": "Sao Paulo",
+      "state": "SP",
+      "country": "Brazil",
+      "postalCode": "01234-567",
+      "proofDocumentUrl": "/mock/utility-bill-user1.pdf",
+      "submittedAt": "2024-01-10T10:10:00.000Z"
+    },
+    "sanctionsScreening": "passed",
+    "submittedAt": "2024-01-10T10:00:00.000Z",
+    "completedAt": "2024-01-10T10:15:00.000Z"
+  }
+]

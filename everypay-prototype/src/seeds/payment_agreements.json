@@ -1,0 +1,21 @@
+[
+  {
+    "id": "tpa-1",
+    "invoiceId": "inv-1",
+    "sellerId": "user-2",
+    "buyerId": "user-1",
+    "status": "PROPOSED",
+    "rateMethod": "PRELOCK",
+    "proposedRate": 5.22,
+    "marketRate": 5.18,
+    "feeBreakdown": {
+      "fxFee": 312.50,
+      "platformFee": 156.25,
+      "corridorFee": 93.75,
+      "totalFees": 562.50
+    },
+    "createdAt": "2026-04-12T10:30:00Z",
+    "updatedAt": "2026-04-12T10:30:00Z",
+    "expiresAt": "2026-04-14T10:30:00Z"
+  }
+]

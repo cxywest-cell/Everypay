@@ -1,0 +1,28 @@
+[
+  {
+    "id": "inv-team-1",
+    "organizationId": "org-beta",
+    "email": "newperson@example.com",
+    "invitedBy": "user-2",
+    "roles": ["OPERATOR"],
+    "status": "PENDING",
+    "inviteCode": "INV-BETA-2024-001",
+    "sentAt": "2024-03-10T10:00:00.000Z",
+    "expiresAt": "2024-03-13T10:00:00.000Z",
+    "acceptedAt": null,
+    "personalMessage": "Welcome to Beta Trading! Please complete your registration."
+  },
+  {
+    "id": "inv-team-2",
+    "organizationId": "org-alpha",
+    "email": "finance@alpha.com.br",
+    "invitedBy": "user-1",
+    "roles": ["APPROVER"],
+    "status": "ACCEPTED",
+    "inviteCode": "INV-ALPHA-2024-001",
+    "sentAt": "2024-02-15T10:00:00.000Z",
+    "expiresAt": "2024-02-18T10:00:00.000Z",
+    "acceptedAt": "2024-02-16T14:30:00.000Z",
+    "personalMessage": null
+  }
+]

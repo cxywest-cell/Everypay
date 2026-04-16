@@ -1,0 +1,96 @@
+[
+  {
+    "id": "stl-1",
+    "buyerId": "user-1",
+    "sellerId": "user-2",
+    "agreementId": "agr-1",
+    "status": "SETTLED",
+    "corridor": "BRL",
+    "settlementCurrency": "USD",
+    "lockedRate": 5.15,
+    "fiatAmount": 850000.00,
+    "usdtAmount": 165048.54,
+    "finalAmount": 170000.00,
+    "legs": [
+      {
+        "id": "leg-1-1",
+        "settlementId": "stl-1",
+        "legOrder": 1,
+        "status": "FIAT_TO_USDT_COMPLETE",
+        "amountFrom": 850000.00,
+        "currencyFrom": "BRL",
+        "amountTo": 165048.54,
+        "currencyTo": "USDT",
+        "exchangeRate": 5.15,
+        "fees": 4250.00,
+        "timestamp": "2026-03-14T10:30:00Z",
+        "failureReason": null
+      },
+      {
+        "id": "leg-1-2",
+        "settlementId": "stl-1",
+        "legOrder": 2,
+        "status": "TRANSFERRED",
+        "amountFrom": 165048.54,
+        "currencyFrom": "USDT",
+        "amountTo": 170000.00,
+        "currencyTo": "USD",
+        "exchangeRate": 0.971,
+        "fees": 825.24,
+        "timestamp": "2026-03-15T14:00:00Z",
+        "failureReason": null
+      }
+    ],
+    "createdAt": "2026-03-14T09:00:00Z",
+    "updatedAt": "2026-03-15T14:30:00Z",
+    "completedAt": "2026-03-15T14:30:00Z",
+    "disputeReason": null
+  },
+  {
+    "id": "stl-2",
+    "buyerId": "user-1",
+    "sellerId": "user-2",
+    "agreementId": "agr-2",
+    "status": "USD_HKD_READY",
+    "corridor": "BRL",
+    "settlementCurrency": "USD",
+    "lockedRate": 5.22,
+    "fiatAmount": 325650.00,
+    "usdtAmount": 62500.00,
+    "finalAmount": 62375.00,
+    "legs": [
+      {
+        "id": "leg-2-1",
+        "settlementId": "stl-2",
+        "legOrder": 1,
+        "status": "FIAT_TO_USDT_COMPLETE",
+        "amountFrom": 325650.00,
+        "currencyFrom": "BRL",
+        "amountTo": 62500.00,
+        "currencyTo": "USDT",
+        "exchangeRate": 5.22,
+        "fees": 1628.25,
+        "timestamp": "2026-04-13T11:00:00Z",
+        "failureReason": null
+      },
+      {
+        "id": "leg-2-2",
+        "settlementId": "stl-2",
+        "legOrder": 2,
+        "status": "FIAT_CONVERSION_CONFIRMED",
+        "amountFrom": 62500.00,
+        "currencyFrom": "USDT",
+        "amountTo": 62375.00,
+        "currencyTo": "USD",
+        "exchangeRate": 0.998,
+        "fees": 312.50,
+        "timestamp": "2026-04-14T09:00:00Z",
+        "failureReason": null
+      }
+    ],
+    "createdAt": "2026-04-13T08:00:00Z",
+    "updatedAt": "2026-04-14T09:00:00Z",
+    "completedAt": null,
+    "disputeReason": null
+  }
+]
