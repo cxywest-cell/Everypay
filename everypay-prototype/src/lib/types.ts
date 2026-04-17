@@ -216,7 +216,7 @@ export interface Settlement {
 export interface RateLock {
   id: string;
   settlementId: string;
-  invoiceId: string;
+  procurementId: string;
   status: RateLockStatus;
   lockedRate: number;
   marketRateAtLock: number;
@@ -224,15 +224,28 @@ export interface RateLock {
   createdAt: Date;
 }
 
+export interface ProposalVersion {
+  round: number;
+  proposer: "seller" | "buyer";
+  rate: number;
+  feeBreakdown: FeeBreakdown;
+  status: "proposed" | "countered" | "accepted" | "rejected";
+  timestamp: Date;
+  changes: string[];
+}
+
 export interface TradePaymentAgreement {
   id: string;
-  invoiceId: string;
+  procurementId: string;
   sellerId: string;
   buyerId: string;
   status: TradePaymentAgreementStatus;
   rateMethod: "PRELOCK"; // INTIME is Phase 2
   proposedRate: number;
+  marketRate?: number;
+  expiresAt?: Date;
   feeBreakdown: FeeBreakdown;
+  proposalHistory: ProposalVersion[];
   createdAt: Date;
   updatedAt: Date;
 }

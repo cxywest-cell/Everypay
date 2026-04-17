@@ -3,17 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import type { TradePaymentAgreement, FeeBreakdown } from "@/lib/types";
-
-type ProposalVersion = {
-  round: number;
-  proposer: "seller" | "buyer";
-  rate: number;
-  feeBreakdown: FeeBreakdown;
-  status: "proposed" | "countered" | "accepted" | "rejected";
-  timestamp: Date;
-  changes: string[];
-};
+import type { TradePaymentAgreement, ProposalVersion } from "@/lib/types";
 
 export default function PaymentAgreementReviewPage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -28,37 +18,6 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
 
   const role = userId === "user-1" ? "buyer" : userId === "user-2" ? "seller" : "approver";
 
-  // Mock negotiation history
-  const [negotiationHistory] = useState<ProposalVersion[]>([
-    {
-      round: 1,
-      proposer: "seller",
-      rate: 5.18,
-      feeBreakdown: { fxFee: 268.32, platformFee: 134.16, corridorFee: 80.50, totalFees: 482.98 },
-      status: "countered",
-      timestamp: new Date(Date.now() - 86400000 * 2),
-      changes: ["Initial proposal"],
-    },
-    {
-      round: 2,
-      proposer: "buyer",
-      rate: 5.15,
-      feeBreakdown: { fxFee: 265.23, platformFee: 132.61, corridorFee: 79.57, totalFees: 477.41 },
-      status: "countered",
-      timestamp: new Date(Date.now() - 86400000),
-      changes: ["Rate lowered from 5.18 to 5.15 (-0.58%)", "Updated fee breakdown"],
-    },
-    {
-      round: 3,
-      proposer: "seller",
-      rate: 5.16,
-      feeBreakdown: { fxFee: 266.26, platformFee: 133.13, corridorFee: 79.88, totalFees: 479.27 },
-      status: agreement?.status === "ACCEPTED" ? "accepted" : "proposed",
-      timestamp: new Date(Date.now() - 3600000),
-      changes: ["Rate adjusted from 5.15 to 5.16 (+0.19%)", "Compromise on FX fee"],
-    },
-  ]);
-
   useEffect(() => {
     fetch(`/api/payment-agreements/${params.id}`)
       .then((res) => res.json())
@@ -72,7 +31,7 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
   const handleAction = async (action: "accept" | "reject" | "counter") => {
     setActionLoading(true);
     try {
-      const body: Record<string, unknown> = { action };
+      const body: Record<string, unknown> = { action, proposerRole: role === "buyer" ? "buyer" : "seller" };
       if (action === "counter") {
         body.newRate = parseFloat(counterRate);
       }
@@ -103,7 +62,7 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
           agreementId: params.id,
           sellerId: agreement?.sellerId,
           buyerId: agreement?.buyerId,
-          invoiceId: agreement?.invoiceId,
+          procurementId: agreement?.procurementId,
           lockedRate: agreement?.proposedRate,
           corridor: "BRL",
           settlementCurrency: "USD",
@@ -132,8 +91,8 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
     return (
       <div className="flex flex-col items-center justify-center p-8 gap-4">
         <h2 className="text-lg font-medium text-gray-900">Agreement not found</h2>
-        <Link href="/invoices" className="text-sm text-everypay-600 hover:text-everypay-900">
-          &larr; Back to Invoices
+        <Link href={`/procurement?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">
+          &larr; Back to Procurement
         </Link>
       </div>
     );
@@ -155,9 +114,9 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
     <div className="p-4 lg:p-6 space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-500">
-        <Link href={`/invoices?userId=${userId}`} className="hover:text-gray-700">Invoices</Link>
+        <Link href={`/procurement?userId=${userId}`} className="hover:text-gray-700">Procurement</Link>
         <span>/</span>
-        <Link href={`/invoices/${agreement.invoiceId}?userId=${userId}`} className="hover:text-gray-700">{agreement.invoiceId}</Link>
+        <Link href={`/procurement/${agreement.procurementId}?userId=${userId}`} className="hover:text-gray-700">{agreement.procurementId}</Link>
         <span>/</span>
         <span className="text-gray-900 font-medium">Payment Agreement</span>
       </div>
@@ -174,7 +133,7 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
                 EXPIRED
               </span>
             )}
-            <span className="text-xs text-gray-500">Round {negotiationHistory.length}</span>
+            <span className="text-xs text-gray-500">Round {agreement.proposalHistory?.length || 1}</span>
           </div>
           <p className="text-xs text-gray-500">
             Created {new Date(agreement.createdAt).toLocaleString()}
@@ -201,10 +160,14 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
           <div>
             <p className="text-xs text-gray-500 uppercase">Proposed By</p>
             <p className="text-sm font-medium text-gray-900">
-              {negotiationHistory[negotiationHistory.length - 1]?.proposer === "seller" ? "Wei Zhang (Seller)" : "Carlos (Buyer)"}
+              {agreement.proposalHistory && agreement.proposalHistory.length > 0
+                ? (agreement.proposalHistory[agreement.proposalHistory.length - 1].proposer === "seller" ? "Wei Zhang (Seller)" : "Carlos (Buyer)")
+                : "Wei Zhang (Seller)"}
             </p>
             <p className="text-xs text-gray-400 mt-1">
-              {negotiationHistory[negotiationHistory.length - 1]?.timestamp.toLocaleDateString()}
+              {agreement.proposalHistory && agreement.proposalHistory.length > 0
+                ? new Date(agreement.proposalHistory[agreement.proposalHistory.length - 1].timestamp).toLocaleDateString()
+                : new Date(agreement.createdAt).toLocaleDateString()}
             </p>
           </div>
         </div>
@@ -241,17 +204,17 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
         >
           <div>
             <h2 className="text-sm font-medium text-gray-900">Negotiation History</h2>
-            <p className="text-xs text-gray-500">{negotiationHistory.length} rounds</p>
+            <p className="text-xs text-gray-500">{agreement.proposalHistory?.length || 1} round{agreement.proposalHistory?.length !== 1 ? "s" : ""}</p>
           </div>
           <svg className={`w-5 h-5 text-gray-400 transition-transform ${showHistory ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
 
-        {showHistory && (
+        {showHistory && agreement.proposalHistory && (
           <div className="border-t border-gray-100">
             <div className="divide-y divide-gray-100">
-              {negotiationHistory.map((round) => (
+              {agreement.proposalHistory.map((round: ProposalVersion) => (
                 <div key={round.round} className="p-5">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
@@ -264,12 +227,13 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                         round.status === "accepted" ? "bg-green-100 text-green-800"
                           : round.status === "countered" ? "bg-yellow-100 text-yellow-800"
+                          : round.status === "rejected" ? "bg-red-100 text-red-800"
                           : "bg-blue-100 text-blue-800"
                       }`}>
-                        {round.status === "countered" ? "Countered" : round.status}
+                        {round.status === "countered" ? "Countered" : round.status.charAt(0).toUpperCase() + round.status.slice(1)}
                       </span>
                     </div>
-                    <span className="text-xs text-gray-400">{round.timestamp.toLocaleDateString()}</span>
+                    <span className="text-xs text-gray-400">{new Date(round.timestamp).toLocaleDateString()}</span>
                   </div>
 
                   <div className="ml-8">
@@ -366,7 +330,7 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
         <div className="bg-everypay-50 border border-everypay-200 rounded-lg p-6">
           <h3 className="text-sm font-medium text-everypay-900 mb-1">Agreement Accepted</h3>
           <p className="text-sm text-everypay-700 mb-3">
-            The rate has been locked after {negotiationHistory.length} round{negotiationHistory.length > 1 ? "s" : ""}. You can now initiate the settlement.
+            The rate has been locked after {agreement.proposalHistory?.length || 1} round{(agreement.proposalHistory?.length || 1) > 1 ? "s" : ""}. You can now initiate the settlement.
           </p>
           <button
             onClick={handleInitiateSettlement}

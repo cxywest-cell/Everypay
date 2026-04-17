@@ -23,6 +23,13 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const LEG_LABELS: Record<number, string> = {
+  1: "BRL/ARS → Converted",
+  2: "Digital Transfer",
+  3: "Converted → USD/HKD",
+  4: "USD/HKD → Bank",
+};
+
+const LEG_LABELS_SELLER: Record<number, string> = {
   1: "BRL/ARS → USDT",
   2: "USDT Transfer",
   3: "USDT → USD/HKD",
@@ -116,8 +123,8 @@ export default function SettlementDetailPage({ params }: { params: { id: string 
 
   const progressSteps = [
     { label: "Initiated", done: true },
-    { label: "Fiat Received", done: settlement.legs.some((l) => l.status !== "INITIATED") },
-    { label: "USDT Converted", done: settlement.legs.length > 1 && settlement.legs[1]?.status !== "INITIATED" },
+    { label: isBuyer ? "Fiat Received" : "Fiat Received", done: settlement.legs.some((l) => l.status !== "INITIATED") },
+    { label: isBuyer ? "Currency Converted" : "USDT Converted", done: settlement.legs.length > 1 && settlement.legs[1]?.status !== "INITIATED" },
     { label: "Transferred", done: settlement.status === "SETTLED" },
   ];
 
@@ -201,7 +208,39 @@ export default function SettlementDetailPage({ params }: { params: { id: string 
                 </p>
               </div>
             </div>
+
+            {/* NOESCROW badge */}
+            <div className="mt-4 flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-everypay-100 text-everypay-800 border border-everypay-200">
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                NOESCROW — Pre-payment settlement
+              </span>
+            </div>
           </div>
+
+          {/* Rate Lock Confirmation — defining UX moment */}
+          {settlement.status === "INITIATED" && (
+            <div className="bg-gradient-to-br from-everypay-50 to-green-50 border border-everypay-200 rounded-lg p-6 text-center animate-fade-in">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-100 mb-3">
+                <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-green-800 mb-1">Rate Locked Successfully</h3>
+              <p className="text-sm text-green-700 mb-3">
+                Your rate of <span className="font-mono font-bold">{settlement.lockedRate.toFixed(4)}</span> has been locked for 48 hours.
+                The settlement process has begun.
+              </p>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-full border border-green-200 text-xs text-green-700">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                NOESCROW — Pre-payment settlement secured
+              </div>
+            </div>
+          )}
 
           {/* Corridor info */}
           <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
@@ -259,7 +298,9 @@ export default function SettlementDetailPage({ params }: { params: { id: string 
                         Leg {leg.legOrder}
                       </span>
                       <span className="ml-2 text-sm font-medium text-gray-900">
-                        {LEG_LABELS[leg.legOrder] || `${leg.currencyFrom} → ${leg.currencyTo}`}
+                        {isBuyer
+                          ? (LEG_LABELS[leg.legOrder] || `${leg.currencyFrom} → ${leg.currencyTo}`)
+                          : (LEG_LABELS_SELLER[leg.legOrder] || `${leg.currencyFrom} → ${leg.currencyTo}`)}
                       </span>
                     </div>
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[leg.status]}`}>
@@ -276,7 +317,7 @@ export default function SettlementDetailPage({ params }: { params: { id: string 
                     <div>
                       <p className="text-xs text-gray-500">To</p>
                       <p className="font-mono font-medium">
-                        {isBuyer && leg.currencyTo === "USDT"
+                        {isBuyer && (leg.currencyTo === "USDT" || leg.currencyFrom === "USDT")
                           ? "Converted"
                           : `${leg.amountTo.toLocaleString()} ${leg.currencyTo}`}
                       </p>

@@ -1,7 +1,7 @@
 [
   {
     "id": "tpa-1",
-    "invoiceId": "inv-1",
+    "procurementId": "po-1",
     "sellerId": "user-2",
     "buyerId": "user-1",
     "status": "PROPOSED",
@@ -16,44 +16,17 @@
     },
     "createdAt": "2026-04-12T10:30:00Z",
     "updatedAt": "2026-04-12T10:30:00Z",
-    "expiresAt": "2026-04-14T10:30:00Z"
-  },
-  {
-    "id": "tpa-1776393914053",
-    "invoiceId": "inv-1",
-    "sellerId": "user-2",
-    "buyerId": "user-1",
-    "status": "PROPOSED",
-    "rateMethod": "PRELOCK",
-    "proposedRate": 5.18,
-    "marketRate": 5.18,
-    "feeBreakdown": {
-      "fxFee": 625,
-      "platformFee": 312.5,
-      "corridorFee": 187.5,
-      "totalFees": 1125
-    },
-    "createdAt": "2026-04-17T02:45:14.053Z",
-    "updatedAt": "2026-04-17T02:45:14.053Z",
-    "expiresAt": "2026-04-19T02:45:14.053Z"
-  },
-  {
-    "id": "tpa-1776393915580",
-    "invoiceId": "inv-1",
-    "sellerId": "user-2",
-    "buyerId": "user-1",
-    "status": "PROPOSED",
-    "rateMethod": "PRELOCK",
-    "proposedRate": 5.18,
-    "marketRate": 5.18,
-    "feeBreakdown": {
-      "fxFee": 625,
-      "platformFee": 312.5,
-      "corridorFee": 187.5,
-      "totalFees": 1125
-    },
-    "createdAt": "2026-04-17T02:45:15.580Z",
-    "updatedAt": "2026-04-17T02:45:15.580Z",
-    "expiresAt": "2026-04-19T02:45:15.580Z"
+    "expiresAt": "2026-04-19T10:30:00Z",
+    "proposalHistory": [
+      {
+        "round": 1,
+        "proposer": "seller",
+        "rate": 5.22,
+        "feeBreakdown": { "fxFee": 312.5, "platformFee": 156.25, "corridorFee": 93.75, "totalFees": 562.5 },
+        "status": "proposed",
+        "timestamp": "2026-04-12T10:30:00Z",
+        "changes": ["Initial proposal based on po-1 procurement terms"]
+      }
+    ]
   }
 ]

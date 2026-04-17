@@ -140,7 +140,7 @@ export default function HomePage() {
         <Section
           title="Sales Awaiting Payment"
           subtitle="Outbound invoices sent to buyers, waiting for payment"
-          action={<Link href={`/invoices?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">View all &rarr;</Link>}
+          action={<Link href={`/templates?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">View all &rarr;</Link>}
         >
           {salesAwaitingPayment.length === 0 ? (
             <EmptyState message="No outstanding invoices" />

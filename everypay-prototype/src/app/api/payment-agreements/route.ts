@@ -10,7 +10,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const body = (await request.json()) as {
-    invoiceId: string;
+    procurementId: string;
     sellerId: string;
     buyerId: string;
     proposedRate: number;
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     const newAgreement = {
       id: `tpa-${Date.now()}`,
-      invoiceId: body.invoiceId,
+      procurementId: body.procurementId,
       sellerId: body.sellerId,
       buyerId: body.buyerId,
       status: "PROPOSED",
@@ -57,6 +57,22 @@ export async function POST(request: NextRequest) {
         corridorFee: Math.round(body.proposedRate * body.proposedRate * 0.003 * 100) / 100,
         totalFees: 0,
       },
+      proposalHistory: [
+        {
+          round: 1,
+          proposer: "seller",
+          rate: body.proposedRate,
+          feeBreakdown: body.feeBreakdown || {
+            fxFee: Math.round(body.proposedRate * body.proposedRate * 0.01 * 100) / 100,
+            platformFee: Math.round(body.proposedRate * body.proposedRate * 0.005 * 100) / 100,
+            corridorFee: Math.round(body.proposedRate * body.proposedRate * 0.003 * 100) / 100,
+            totalFees: 0,
+          },
+          status: "proposed",
+          timestamp: new Date(now),
+          changes: [`Initial proposal based on ${body.procurementId} procurement terms`],
+        },
+      ],
       createdAt: new Date(now),
       updatedAt: new Date(now),
       expiresAt: new Date(expiresAt),

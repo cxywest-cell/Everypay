@@ -28,7 +28,7 @@ export const NAV_SECTIONS: NavSection[] = [
     label: "Settlements",
     items: [
       { label: "Settlements", href: "/settlements", icon: "settlements", roles: ["buyer", "seller"] },
-      { label: "Payment Agreements", href: "/payment-agreements/new", icon: "agreements", roles: ["buyer", "seller"] },
+      { label: "Payment Agreements", href: "/settlements", icon: "agreements", roles: ["buyer", "seller"] },
       { label: "Approvals", href: "/approvals", icon: "approvals", roles: ["approver"] },
     ],
   },

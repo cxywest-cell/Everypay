@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import type { Procurement, TradePaymentAgreement } from "@/lib/types";
 
 type ApprovalItem = {
   id: string;
@@ -19,6 +20,8 @@ type ApprovalItem = {
   documents: { type: string; name: string }[];
   riskNotes: string[];
   myAction: boolean;
+  procurementId?: string;
+  agreementId?: string;
 };
 
 type ApprovalTab = "queue" | "settings";
@@ -35,70 +38,86 @@ export default function ApprovalsPage() {
   const [bulkMode, setBulkMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  // Mock approval queue
+  // Build approval queue from real procurement + payment agreement data
   useEffect(() => {
-    setItems([
-      {
-        id: "APR-001",
-        type: "terms",
-        title: "Payment Terms — Round 1",
-        counterparty: "Wei Zhang (seller)",
-        amount: 25000,
-        currency: "USD",
-        status: "pending",
-        riskLevel: "green",
-        submittedBy: "user-2",
-        submittedAt: new Date(Date.now() - 7200000),
-        round: 1,
-        documents: [
-          { type: "contract", name: "Sales_Contract.pdf" },
-          { type: "invoice", name: "Commercial_Invoice.pdf" },
-          { type: "po", name: "Purchase_Order.pdf" },
-        ],
-        riskNotes: ["Counterparty trust score: 92%", "No prior disputes", "Within auto-acceptance threshold"],
-        myAction: true,
-      },
-      {
-        id: "APR-002",
-        type: "prepayment",
-        title: "Pre-Payment Request",
-        counterparty: "Carlos Silva (buyer)",
-        amount: 45000,
-        currency: "USD",
-        status: "pending",
-        riskLevel: "yellow",
-        submittedBy: "user-1",
-        submittedAt: new Date(Date.now() - 3600000),
-        round: 1,
-        documents: [
-          { type: "bank_transfer", name: "Bank_Transfer_Receipt.pdf" },
-          { type: "invoice", name: "Invoice_INV-007.pdf" },
-        ],
-        riskNotes: ["Large amount — exceeds $30K threshold", "Buyer has 2 pending settlements", "Rate deviation: 2.3% from market"],
-        myAction: true,
-      },
-      {
-        id: "APR-003",
-        type: "counter_proposal",
-        title: "Counter-Proposal — Round 2",
-        counterparty: "Wei Zhang (seller)",
-        amount: 12400,
-        currency: "USD",
-        status: "pending",
-        riskLevel: "red",
-        submittedBy: "user-2",
-        submittedAt: new Date(Date.now() - 1800000),
-        round: 2,
-        documents: [
-          { type: "contract", name: "Revised_Contract_v2.pdf" },
-          { type: "invoice", name: "Revised_Invoice_v2.pdf" },
-        ],
-        riskNotes: ["Rate deviation: 5.1% — exceeds 5% threshold", "Prior dispute with this counterparty", "Corridor BRL: enhanced scrutiny required"],
-        myAction: true,
-      },
-    ]);
-    setLoading(false);
-  }, []);
+    Promise.all([
+      fetch("/api/procurements").then((r) => r.json()),
+      fetch("/api/payment-agreements").then((r) => r.json()),
+    ]).then(([procResult, agrResult]) => {
+      const procurements = (procResult.data || []) as Procurement[];
+      const agreements = (agrResult.data || []) as TradePaymentAgreement[];
+      const queue: ApprovalItem[] = [];
+
+      // Payment agreements with PROPOSED or COUNTER_PROPOSED status need approval
+      agreements.forEach((agr) => {
+        if (agr.status === "PROPOSED" || agr.status === "COUNTER_PROPOSED") {
+          const isSellerSide = userId === agr.sellerId;
+          const isBuyerSide = userId === agr.buyerId;
+          // In prototype, approver (user-3) sees all items
+          const procurement = procurements.find((p) => p.id === agr.procurementId);
+          const roundNum = agr.proposalHistory?.length || 1;
+          const lastProposal = agr.proposalHistory?.[agr.proposalHistory.length - 1];
+
+          queue.push({
+            id: `APR-${agr.id}`,
+            type: agr.status === "COUNTER_PROPOSED" ? "counter_proposal" : "terms",
+            title: `Payment Terms — Round ${roundNum}`,
+            counterparty: isSellerSide ? `${procurement?.buyerId || "Buyer"} (buyer)` : `${procurement?.sellerId || "Seller"} (seller)`,
+            amount: procurement?.totalAmount || 0,
+            currency: procurement?.currency || "USD",
+            status: "pending",
+            riskLevel: agr.proposedRate > 5.25 ? "red" : agr.proposedRate > 5.20 ? "yellow" : "green",
+            submittedBy: lastProposal?.proposer === "seller" ? agr.sellerId : agr.buyerId,
+            submittedAt: new Date(agr.updatedAt),
+            round: roundNum,
+            documents: [
+              { type: "contract", name: `Sales_Contract_${agr.procurementId}.pdf` },
+              { type: "po", name: `PO_${agr.procurementId}.pdf` },
+            ],
+            riskNotes: [
+              `Rate: ${agr.proposedRate.toFixed(2)} (market: 5.18, deviation: ${((agr.proposedRate - 5.18) / 5.18 * 100).toFixed(1)}%)`,
+              `Corridor: ${procurement?.corridor || "BRL"}`,
+              roundNum > 1 ? `Negotiation round ${roundNum}` : "Initial proposal",
+            ],
+            myAction: true,
+            procurementId: agr.procurementId,
+            agreementId: agr.id,
+          });
+        }
+      });
+
+      // Procurements in NEGOTIATING or TERMS_PROPOSED that may need internal review
+      procurements.forEach((proc) => {
+        if (proc.status === "TERMS_PROPOSED" || proc.status === "NEGOTIATING") {
+          const alreadyHasAgreement = agreements.some((a) => a.procurementId === proc.id);
+          if (!alreadyHasAgreement) {
+            queue.push({
+              id: `APR-${proc.id}`,
+              type: "terms",
+              title: `Procurement ${proc.id} — Awaiting Terms`,
+              counterparty: `${proc.sellerId} (seller)`,
+              amount: proc.totalAmount,
+              currency: proc.currency,
+              status: "pending",
+              riskLevel: "yellow",
+              submittedBy: proc.buyerId,
+              submittedAt: new Date(proc.createdAt),
+              round: 0,
+              documents: [{ type: "po", name: `PO_${proc.id}.pdf` }],
+              riskNotes: [`Corridor: ${proc.corridor}`, "Terms proposal pending"],
+              myAction: true,
+              procurementId: proc.id,
+            });
+          }
+        }
+      });
+
+      setItems(queue);
+      setLoading(false);
+    }).catch(() => {
+      setLoading(false);
+    });
+  }, [userId]);
 
   const handleAction = async (itemId: string, action: "approve" | "reject") => {
     if (action === "reject" && !comment.trim()) {
@@ -453,6 +472,26 @@ export default function ApprovalsPage() {
                   <p className="font-mono text-gray-900">0</p>
                 </div>
               </div>
+            </div>
+
+            {/* Linked procurement / agreement */}
+            <div className="mb-4 flex gap-3 text-sm">
+              {selectedItem.procurementId && (
+                <Link
+                  href={`/procurement/${selectedItem.procurementId}?userId=${userId}`}
+                  className="text-everypay-600 hover:text-everypay-900 font-medium"
+                >
+                  View Procurement &rarr;
+                </Link>
+              )}
+              {selectedItem.agreementId && (
+                <Link
+                  href={`/payment-agreements/${selectedItem.agreementId}/review?userId=${userId}`}
+                  className="text-everypay-600 hover:text-everypay-900 font-medium"
+                >
+                  View Payment Agreement &rarr;
+                </Link>
+              )}
             </div>
 
             {/* Action */}

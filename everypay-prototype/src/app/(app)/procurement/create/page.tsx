@@ -17,6 +17,10 @@ export default function ProcurementCreatePage() {
     { id: "new-li-0", description: "", quantity: 1, unitPrice: 0, currency: "USD", hsCode: "", specs: "" },
   ]);
   const [notes, setNotes] = useState("");
+  const [attachedFiles, setAttachedFiles] = useState<string[]>([]);
+  const [showUpload, setShowUpload] = useState(false);
+  const [uploadFileName, setUploadFileName] = useState("");
+  const [uploadDocType, setUploadDocType] = useState("contract");
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [counterparties, setCounterparties] = useState<Counterparty[]>([]);
@@ -45,6 +49,13 @@ export default function ProcurementCreatePage() {
     const updated = [...lineItems];
     updated[index] = { ...updated[index], [field]: value };
     setLineItems(updated);
+  };
+
+  const handleAttachFile = () => {
+    if (!uploadFileName.trim()) return;
+    setAttachedFiles([...attachedFiles, `${uploadDocType}:${uploadFileName}`]);
+    setUploadFileName("");
+    setShowUpload(false);
   };
 
   const total = lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
@@ -217,7 +228,7 @@ export default function ProcurementCreatePage() {
                 <div className="flex-1">
                   <input
                     type="text"
-                    value={item.hsCode}
+                    value={item.hsCode || ""}
                     onChange={(e) => updateItem(index, "hsCode", e.target.value)}
                     className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
                     placeholder="HS Code (customs classification)"
@@ -226,7 +237,7 @@ export default function ProcurementCreatePage() {
                 <div className="flex-[2]">
                   <input
                     type="text"
-                    value={item.specs}
+                    value={item.specs || ""}
                     onChange={(e) => updateItem(index, "specs", e.target.value)}
                     className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
                     placeholder="Product specs (optional)"
@@ -255,6 +266,90 @@ export default function ProcurementCreatePage() {
             Total: {total.toLocaleString()} {lineItems[0]?.currency || "USD"}
           </span>
         </div>
+      </div>
+
+      {/* Contract / PO Upload */}
+      <div className="bg-white rounded-lg shadow border border-gray-200 p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-sm font-medium text-gray-900">Contract & Documents</h2>
+            <p className="text-xs text-gray-500">Upload contract, PO, or supporting documents</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowUpload(!showUpload)}
+            className="text-sm text-everypay-600 hover:text-everypay-900 font-medium"
+          >
+            {showUpload ? "Cancel" : "+ Attach Document"}
+          </button>
+        </div>
+
+        {showUpload && (
+          <div className="mb-4 p-4 bg-gray-50 rounded-md space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Document Type</label>
+                <select
+                  value={uploadDocType}
+                  onChange={(e) => setUploadDocType(e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                >
+                  <option value="contract">Contract / PO</option>
+                  <option value="spec">Product Specs</option>
+                  <option value="customs">Customs Classification</option>
+                  <option value="supporting">Supporting Document</option>
+                </select>
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">File Name</label>
+                <input
+                  type="text"
+                  value={uploadFileName}
+                  onChange={(e) => setUploadFileName(e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                  placeholder="e.g. Sales_Contract_2026.pdf"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleAttachFile}
+                disabled={!uploadFileName.trim()}
+                className="px-4 py-1.5 bg-everypay-600 text-white text-sm font-medium rounded-md hover:bg-everypay-700 disabled:opacity-50"
+              >
+                Attach
+              </button>
+            </div>
+          </div>
+        )}
+
+        {attachedFiles.length > 0 && (
+          <div className="space-y-1">
+            {attachedFiles.map((file, i) => {
+              const [type, name] = file.split(":");
+              return (
+                <div key={i} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                  <div className="flex items-center gap-2">
+                    <DocIcon type={type} />
+                    <span className="text-sm text-gray-900">{name}</span>
+                    <span className="text-xs text-gray-500">{type}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setAttachedFiles(attachedFiles.filter((_, idx) => idx !== i))}
+                    className="text-red-500 hover:text-red-700 text-xs"
+                  >
+                    Remove
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {attachedFiles.length === 0 && (
+          <p className="text-xs text-gray-400">No documents attached yet</p>
+        )}
       </div>
 
       {/* Notes */}
@@ -288,4 +383,14 @@ export default function ProcurementCreatePage() {
       </div>
     </div>
   );
+}
+
+function DocIcon({ type }: { type: string }) {
+  const icons: Record<string, string> = {
+    contract: "📄",
+    spec: "📋",
+    customs: "🛃",
+    supporting: "📎",
+  };
+  return <span>{icons[type] || "📎"}</span>;
 }

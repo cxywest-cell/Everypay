@@ -3,7 +3,7 @@
     "id": "po-1",
     "buyerId": "user-1",
     "sellerId": "user-2",
-    "status": "TERMS_ACCEPTED",
+    "status": "TERMS_PROPOSED",
     "corridor": "BRL",
     "lineItems": [
       {

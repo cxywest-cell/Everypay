@@ -27,19 +27,14 @@ export async function POST(request: NextRequest) {
     agreementId: string;
     sellerId: string;
     buyerId: string;
-    invoiceId: string;
+    procurementId: string;
     lockedRate: number;
     corridor: string;
     settlementCurrency: string;
   };
 
   return withMockError(() => {
-    const agreements = readSeed<Array<{
-      id: string;
-      status: string;
-      proposedRate: number;
-      feeBreakdown: { totalFees: number };
-    }>>("payment_agreements.json");
+    const agreements = readSeed<Array<Record<string, unknown>>>("payment_agreements.json");
     const agreement = agreements.find((a: { id: string }) => a.id === body.agreementId);
 
     if (!agreement) {
@@ -56,10 +51,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get procurement amount for realistic settlement values
+    const procurements = readSeed<Array<Record<string, unknown>>>("procurements.json");
+    const procurement = procurements.find((p: Record<string, unknown>) => p.id === body.procurementId);
+    const fiatAmount = procurement ? (procurement.totalAmount as number) : 100000;
+
     const settlements = readSeed<Array<Settlement>>("settlements.json");
     const now = new Date().toISOString();
 
-    const usdtAmount = Math.round(100000 / body.lockedRate * 100) / 100;
+    const feeBreakdown = agreement.feeBreakdown as { totalFees: number } | undefined;
+    const totalFees = feeBreakdown?.totalFees || Math.round(fiatAmount * 0.005 * 100) / 100;
+
+    const usdtAmount = Math.round(fiatAmount / body.lockedRate * 100) / 100;
     const finalAmount = Math.round(usdtAmount * 0.998 * 100) / 100;
 
     const newSettlement: Settlement = {
@@ -71,7 +74,7 @@ export async function POST(request: NextRequest) {
       corridor: body.corridor as import("@/lib/types").Corridor,
       settlementCurrency: body.settlementCurrency as import("@/lib/types").SettlementCurrency,
       lockedRate: body.lockedRate,
-      fiatAmount: 100000,
+      fiatAmount,
       usdtAmount,
       finalAmount,
       legs: [
@@ -80,12 +83,12 @@ export async function POST(request: NextRequest) {
           settlementId: `stl-${Date.now()}`,
           legOrder: 1,
           status: SettlementStatus.INITIATED,
-          amountFrom: 100000,
+          amountFrom: fiatAmount,
           currencyFrom: body.corridor,
           amountTo: usdtAmount,
           currencyTo: "USDT",
           exchangeRate: body.lockedRate,
-          fees: agreement.feeBreakdown.totalFees,
+          fees: totalFees,
           timestamp: null,
           failureReason: null,
         },
@@ -114,12 +117,12 @@ export async function POST(request: NextRequest) {
     writeSeed("settlements.json", settlements);
 
     // Create rate lock record (Epic 3 / Story 3.1)
-    const rateLocks = readSeed<Array<RateLock>>("rate_locks.json");
+    const rateLocks = readSeed<Array<Record<string, unknown>>>("rate_locks.json");
     const expiryAt = new Date(new Date(now).getTime() + 48 * 60 * 60 * 1000).toISOString();
-    const newRateLock: RateLock = {
+    const newRateLock = {
       id: `rl-${Date.now()}`,
       settlementId: newSettlement.id,
-      invoiceId: body.invoiceId,
+      procurementId: body.procurementId,
       status: RateLockStatus.LOCKED,
       lockedRate: body.lockedRate,
       marketRateAtLock: 5.18,
