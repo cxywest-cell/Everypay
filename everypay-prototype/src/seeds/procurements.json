@@ -79,5 +79,29 @@
     "notes": null,
     "createdAt": "2026-03-01T08:00:00.000Z",
     "updatedAt": "2026-03-25T16:00:00.000Z"
+  },
+  {
+    "id": "po-1776396845939",
+    "buyerId": "user-1",
+    "sellerId": "org-alpha",
+    "status": "DRAFT",
+    "corridor": "BRL",
+    "lineItems": [
+      {
+        "id": "li-1776396845939-0",
+        "description": "1",
+        "quantity": 1,
+        "unitPrice": 1000,
+        "currency": "USD",
+        "hsCode": "1",
+        "specs": "1"
+      }
+    ],
+    "totalAmount": 1000,
+    "currency": "USD",
+    "dueDate": null,
+    "notes": null,
+    "createdAt": "2026-04-17T03:34:05.939Z",
+    "updatedAt": "2026-04-17T03:34:05.939Z"
   }
 ]
