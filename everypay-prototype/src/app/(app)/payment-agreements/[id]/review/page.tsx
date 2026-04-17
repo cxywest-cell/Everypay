@@ -1,0 +1,388 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import type { TradePaymentAgreement, FeeBreakdown } from "@/lib/types";
+
+type ProposalVersion = {
+  round: number;
+  proposer: "seller" | "buyer";
+  rate: number;
+  feeBreakdown: FeeBreakdown;
+  status: "proposed" | "countered" | "accepted" | "rejected";
+  timestamp: Date;
+  changes: string[];
+};
+
+export default function PaymentAgreementReviewPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const userId = searchParams.get("userId") || "user-1";
+  const [agreement, setAgreement] = useState<TradePaymentAgreement | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [counterRate, setCounterRate] = useState("");
+  const [showCounter, setShowCounter] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+
+  const role = userId === "user-1" ? "buyer" : userId === "user-2" ? "seller" : "approver";
+
+  // Mock negotiation history
+  const [negotiationHistory] = useState<ProposalVersion[]>([
+    {
+      round: 1,
+      proposer: "seller",
+      rate: 5.18,
+      feeBreakdown: { fxFee: 268.32, platformFee: 134.16, corridorFee: 80.50, totalFees: 482.98 },
+      status: "countered",
+      timestamp: new Date(Date.now() - 86400000 * 2),
+      changes: ["Initial proposal"],
+    },
+    {
+      round: 2,
+      proposer: "buyer",
+      rate: 5.15,
+      feeBreakdown: { fxFee: 265.23, platformFee: 132.61, corridorFee: 79.57, totalFees: 477.41 },
+      status: "countered",
+      timestamp: new Date(Date.now() - 86400000),
+      changes: ["Rate lowered from 5.18 to 5.15 (-0.58%)", "Updated fee breakdown"],
+    },
+    {
+      round: 3,
+      proposer: "seller",
+      rate: 5.16,
+      feeBreakdown: { fxFee: 266.26, platformFee: 133.13, corridorFee: 79.88, totalFees: 479.27 },
+      status: agreement?.status === "ACCEPTED" ? "accepted" : "proposed",
+      timestamp: new Date(Date.now() - 3600000),
+      changes: ["Rate adjusted from 5.15 to 5.16 (+0.19%)", "Compromise on FX fee"],
+    },
+  ]);
+
+  useEffect(() => {
+    fetch(`/api/payment-agreements/${params.id}`)
+      .then((res) => res.json())
+      .then((result) => {
+        if (result.data) setAgreement(result.data as TradePaymentAgreement);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [params.id]);
+
+  const handleAction = async (action: "accept" | "reject" | "counter") => {
+    setActionLoading(true);
+    try {
+      const body: Record<string, unknown> = { action };
+      if (action === "counter") {
+        body.newRate = parseFloat(counterRate);
+      }
+      const res = await fetch(`/api/payment-agreements/${params.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const result = await res.json();
+      if (result.status === "success" && result.data) {
+        setAgreement(result.data as TradePaymentAgreement);
+        setShowCounter(false);
+      }
+    } catch {
+      // Error handled silently
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleInitiateSettlement = async () => {
+    setActionLoading(true);
+    try {
+      const res = await fetch("/api/settlements", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          agreementId: params.id,
+          sellerId: agreement?.sellerId,
+          buyerId: agreement?.buyerId,
+          invoiceId: agreement?.invoiceId,
+          lockedRate: agreement?.proposedRate,
+          corridor: "BRL",
+          settlementCurrency: "USD",
+        }),
+      });
+      const result = await res.json();
+      if (result.status === "success" && result.data) {
+        router.push(`/settlements/${result.data.id}?userId=${userId}`);
+      }
+    } catch {
+      // Error handled silently
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-everypay-200 border-t-everypay-600" />
+      </div>
+    );
+  }
+
+  if (!agreement) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 gap-4">
+        <h2 className="text-lg font-medium text-gray-900">Agreement not found</h2>
+        <Link href="/invoices" className="text-sm text-everypay-600 hover:text-everypay-900">
+          &larr; Back to Invoices
+        </Link>
+      </div>
+    );
+  }
+
+  const STATUS_COLORS: Record<string, string> = {
+    PROPOSED: "bg-blue-100 text-blue-800",
+    ACCEPTED: "bg-green-100 text-green-800",
+    COUNTER_PROPOSED: "bg-yellow-100 text-yellow-800",
+    REJECTED: "bg-red-100 text-red-800",
+  };
+
+  const isExpired = new Date(agreement.createdAt) < new Date(Date.now() - 48 * 60 * 60 * 1000);
+  const marketRate = 5.18;
+  const currentRate = agreement.proposedRate;
+  const deviation = ((currentRate - marketRate) / marketRate * 100).toFixed(1);
+
+  return (
+    <div className="p-4 lg:p-6 space-y-6">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-sm text-gray-500">
+        <Link href={`/invoices?userId=${userId}`} className="hover:text-gray-700">Invoices</Link>
+        <span>/</span>
+        <Link href={`/invoices/${agreement.invoiceId}?userId=${userId}`} className="hover:text-gray-700">{agreement.invoiceId}</Link>
+        <span>/</span>
+        <span className="text-gray-900 font-medium">Payment Agreement</span>
+      </div>
+
+      {/* Status */}
+      <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${STATUS_COLORS[agreement.status]}`}>
+              {agreement.status.replace(/_/g, " ")}
+            </span>
+            {isExpired && agreement.status === "PROPOSED" && (
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                EXPIRED
+              </span>
+            )}
+            <span className="text-xs text-gray-500">Round {negotiationHistory.length}</span>
+          </div>
+          <p className="text-xs text-gray-500">
+            Created {new Date(agreement.createdAt).toLocaleString()}
+          </p>
+        </div>
+      </div>
+
+      {/* Rate details */}
+      <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+        <h2 className="text-sm font-medium text-gray-900 mb-4">Current Proposal</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+          <div>
+            <p className="text-xs text-gray-500 uppercase">Proposed Rate</p>
+            <p className="text-2xl font-bold font-mono text-gray-900">{currentRate.toFixed(2)}</p>
+            <p className={`text-xs mt-1 ${parseFloat(deviation) > 0 ? "text-red-500" : parseFloat(deviation) < 0 ? "text-green-500" : "text-gray-400"}`}>
+              vs Market: {marketRate.toFixed(2)} ({deviation}%)
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 uppercase">Rate Method</p>
+            <p className="text-sm font-medium text-gray-900">{agreement.rateMethod}</p>
+            <p className="text-xs text-gray-400 mt-1">Pre-lock rate for settlement</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 uppercase">Proposed By</p>
+            <p className="text-sm font-medium text-gray-900">
+              {negotiationHistory[negotiationHistory.length - 1]?.proposer === "seller" ? "Wei Zhang (Seller)" : "Carlos (Buyer)"}
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              {negotiationHistory[negotiationHistory.length - 1]?.timestamp.toLocaleDateString()}
+            </p>
+          </div>
+        </div>
+
+        {/* Fee breakdown */}
+        <div className="mt-4 bg-gray-50 rounded-md p-4">
+          <h3 className="text-sm font-medium text-gray-700 mb-2">Fee Breakdown</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+            <div>
+              <p className="text-xs text-gray-500">FX Fee</p>
+              <p className="font-mono font-medium">{agreement.feeBreakdown.fxFee.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500">Platform Fee</p>
+              <p className="font-mono font-medium">{agreement.feeBreakdown.platformFee.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500">Corridor Fee</p>
+              <p className="font-mono font-medium">{agreement.feeBreakdown.corridorFee.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500">Total Fees</p>
+              <p className="font-mono font-bold text-gray-900">{agreement.feeBreakdown.totalFees.toFixed(2)}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Negotiation History */}
+      <div className="bg-white rounded-lg shadow border border-gray-200">
+        <div
+          className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-gray-50"
+          onClick={() => setShowHistory(!showHistory)}
+        >
+          <div>
+            <h2 className="text-sm font-medium text-gray-900">Negotiation History</h2>
+            <p className="text-xs text-gray-500">{negotiationHistory.length} rounds</p>
+          </div>
+          <svg className={`w-5 h-5 text-gray-400 transition-transform ${showHistory ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+
+        {showHistory && (
+          <div className="border-t border-gray-100">
+            <div className="divide-y divide-gray-100">
+              {negotiationHistory.map((round) => (
+                <div key={round.round} className="p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-everypay-100 text-everypay-700 text-xs font-bold">
+                        {round.round}
+                      </span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {round.proposer === "seller" ? "Wei Zhang (Seller)" : "Carlos (Buyer)"}
+                      </span>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                        round.status === "accepted" ? "bg-green-100 text-green-800"
+                          : round.status === "countered" ? "bg-yellow-100 text-yellow-800"
+                          : "bg-blue-100 text-blue-800"
+                      }`}>
+                        {round.status === "countered" ? "Countered" : round.status}
+                      </span>
+                    </div>
+                    <span className="text-xs text-gray-400">{round.timestamp.toLocaleDateString()}</span>
+                  </div>
+
+                  <div className="ml-8">
+                    <div className="flex items-center gap-6 mb-2">
+                      <div>
+                        <span className="text-xs text-gray-500">Rate: </span>
+                        <span className="text-sm font-mono font-bold">{round.rate.toFixed(2)}</span>
+                      </div>
+                      <div>
+                        <span className="text-xs text-gray-500">Fees: </span>
+                        <span className="text-sm font-mono">{round.feeBreakdown.totalFees.toFixed(2)}</span>
+                      </div>
+                    </div>
+
+                    {/* Changes from previous round */}
+                    {round.round > 1 && (
+                      <div className="bg-gray-50 rounded-md p-3 mt-2">
+                        <p className="text-xs font-medium text-gray-700 mb-1">Changes from previous round:</p>
+                        <ul className="space-y-0.5">
+                          {round.changes.map((change, i) => (
+                            <li key={i} className="text-xs text-gray-600 flex items-start gap-1">
+                              <span className="text-everypay-500 mt-0.5">&rarr;</span>
+                              {change}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      {agreement.status === "PROPOSED" && !isExpired && role !== "approver" && (
+        <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+          <h2 className="text-sm font-medium text-gray-900 mb-4">Your Response</h2>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={() => handleAction("accept")}
+              disabled={actionLoading}
+              className="flex-1 px-4 py-2.5 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 disabled:opacity-50"
+            >
+              Accept Rate
+            </button>
+            <button
+              onClick={() => setShowCounter(!showCounter)}
+              disabled={actionLoading}
+              className="flex-1 px-4 py-2.5 bg-yellow-500 text-white text-sm font-medium rounded-md hover:bg-yellow-600 disabled:opacity-50"
+            >
+              Counter-Propose
+            </button>
+            <button
+              onClick={() => handleAction("reject")}
+              disabled={actionLoading}
+              className="flex-1 px-4 py-2.5 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 disabled:opacity-50"
+            >
+              Reject
+            </button>
+          </div>
+
+          {showCounter && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Counter Rate</label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  step={0.01}
+                  value={counterRate}
+                  onChange={(e) => setCounterRate(e.target.value)}
+                  className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-mono"
+                  placeholder="e.g. 5.20"
+                />
+                <button
+                  onClick={() => handleAction("counter")}
+                  disabled={actionLoading || !counterRate}
+                  className="px-4 py-2 bg-everypay-600 text-white text-sm font-medium rounded-md hover:bg-everypay-700 disabled:opacity-50"
+                >
+                  Submit Counter
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Your counter-proposal will require internal team approval before being sent to the counterparty.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {agreement.status === "ACCEPTED" && (
+        <div className="bg-everypay-50 border border-everypay-200 rounded-lg p-6">
+          <h3 className="text-sm font-medium text-everypay-900 mb-1">Agreement Accepted</h3>
+          <p className="text-sm text-everypay-700 mb-3">
+            The rate has been locked after {negotiationHistory.length} round{negotiationHistory.length > 1 ? "s" : ""}. You can now initiate the settlement.
+          </p>
+          <button
+            onClick={handleInitiateSettlement}
+            disabled={actionLoading}
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-everypay-600 hover:bg-everypay-700 disabled:opacity-50"
+          >
+            {actionLoading ? "Initiating..." : "Initiate Settlement"}
+          </button>
+        </div>
+      )}
+
+      {agreement.status === "REJECTED" && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <p className="text-sm font-medium text-red-800">This payment agreement has been rejected.</p>
+        </div>
+      )}
+    </div>
+  );
+}

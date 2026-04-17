@@ -59,6 +59,20 @@ export enum SettlementCurrency {
   HKD = "HKD",
 }
 
+export enum ProcurementStatus {
+  DRAFT = "DRAFT",
+  SENT_TO_SELLER = "SENT_TO_SELLER",
+  SELLER_RESPONDED = "SELLER_RESPONDED",
+  TERMS_PROPOSED = "TERMS_PROPOSED",
+  NEGOTIATING = "NEGOTIATING",
+  TERMS_ACCEPTED = "TERMS_ACCEPTED",
+  PAYMENT_INITIATED = "PAYMENT_INITIATED",
+  IN_TRANSIT = "IN_TRANSIT",
+  RECEIVED = "RECEIVED",
+  SETTLED = "SETTLED",
+  DISPUTED = "DISPUTED",
+}
+
 export enum InvoiceStatus {
   DRAFT = "DRAFT",
   SENT = "SENT",
@@ -114,6 +128,31 @@ export interface BeneficialOwner {
   nationality: string;
   idDocumentType: string;
   idDocumentNumber: string;
+}
+
+export interface ProcurementLineItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  currency: string;
+  hsCode?: string | null;
+  specs?: string | null;
+}
+
+export interface Procurement {
+  id: string;
+  buyerId: string;
+  sellerId: string;
+  status: ProcurementStatus;
+  corridor: string;
+  lineItems: ProcurementLineItem[];
+  totalAmount: number;
+  currency: string;
+  dueDate: Date | null;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface InvoiceLineItem {

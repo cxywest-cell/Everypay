@@ -18,14 +18,14 @@ workflowComplete: true
 
 ### Project Vision
 
-Everypay is a B2B cross-border settlement platform enabling Chinese exporters to receive CNY from international buyers via stablecoin rails. The platform abstracts crypto complexity while providing full settlement transparency and compliance-ready evidence packs.
+Everypay is a B2B cross-border settlement platform enabling Chinese exporters to receive USD or HKD from international buyers via stablecoin rails. The platform abstracts crypto complexity while providing full settlement transparency and compliance-ready evidence packs.
 
 ### Target Users
 
 | User | Role | Key UX Needs |
 |------|------|---------------|
 | **Carlos** | Brazilian importer | Simple BRL payment initiation, no crypto visible, real-time tracking |
-| **Wei** | Chinese exporter | Invoice management, evidence pack download, CNY receipt confirmation |
+| **Wei** | Chinese exporter | Invoice management, evidence pack download, USD/HKD receipt confirmation |
 | **CFO/Treasurer** | High-value approver | Approval queue, FX risk review, liquidity timing decisions |
 | **Ops Team** | Internal monitoring | Settlement pipeline dashboard, dispute handling, oracle failure resolution |
 
@@ -38,7 +38,7 @@ Everypay is a B2B cross-border settlement platform enabling Chinese exporters to
 
 ### Design Opportunities
 
-1. **Anxiety → Relief moment** — Carlos sees "You've locked in X CNY. Your BRL is protected." right after payment
+1. **Anxiety → Relief moment** — Carlos sees "You've locked in X USD/HKD. Your BRL is protected." right after payment
 2. **Evidence pack as product** — Wei downloads a single package for tax/subsidy — this should feel effortless
 3. **Approval workflow elegance** — CFO sees risk summary at a glance, approves in 2 clicks
 
@@ -70,7 +70,7 @@ Everypay is a B2B cross-border settlement platform enabling Chinese exporters to
 ### Critical Success Moments
 
 1. **Carlos pays → "Rate locked"** — Emotional moment with micro-interaction; anxiety→relief arc
-2. **Wei sees "CNY received"** — Arrival moment, not just status update
+2. **Wei sees "USD/HKD received"** — Arrival moment, not just status update
 3. **CFO approves in 2 clicks** — Pre-computed risk summary enables effortless approval
 
 ### Experience Principles
@@ -83,7 +83,7 @@ Everypay is a B2B cross-border settlement platform enabling Chinese exporters to
 
 ### Progressive Disclosure Pattern
 
-- Default view: "Funds secured" or "Supplier will receive CNY"
+- Default view: "Funds secured" or "Supplier will receive USD/HKD"
 - Tap/reveal: "USDT held in Cregis escrow, Dubai — milestone pending"
 - Serves both happy path (clean UI) and edge cases (disputes, trust verification)
 
@@ -130,7 +130,7 @@ Everypay is a B2B cross-border settlement platform enabling Chinese exporters to
 | User | Negative Emotion | Cause |
 |------|-----------------|-------|
 | Carlos | Confusion | Crypto terms, complex status |
-| Wei | Anxiety | "Where is my CNY?" |
+| Wei | Anxiety | "Where is my USD/HKD?" |
 | CFO | Uncertainty | Incomplete risk information |
 
 ### Emotional Design Principles
@@ -138,7 +138,7 @@ Everypay is a B2B cross-border settlement platform enabling Chinese exporters to
 1. **Anxiety → Relief is the core arc** — Every payment flow should resolve tension, not add to it
 2. **Clarity creates confidence** — When users understand what's happening, they trust it
 3. **Momentum matters** — Settlement progress should feel like forward motion, not waiting
-4. **Completion should feel like an arrival** — CNY received is an event, not a notification
+4. **Completion should feel like an arrival** — USD/HKD received is an event, not a notification
 
 ### Design Implications
 
@@ -158,7 +158,7 @@ Everypay is a B2B cross-border settlement platform enabling Chinese exporters to
 | **Wise (TransferWise)** | Complex FX made simple; clear status tracking | Hide currency complexity behind simple flow |
 | **Stripe Dashboard** | Developer clarity meets user simplicity; real-time data | "Where is my payment?" answered instantly |
 | **Airbnb** | Trust through transparency; review/reputation system | Counterparty trust indicators |
-| **Uber/DoorDash** | Real-time tracking with ETA; "arrival" moment | Settlement "CNY received" feels like delivery |
+| **Uber/DoorDash** | Real-time tracking with ETA; "arrival" moment | Settlement "USD/HKD received" feels like delivery |
 | **PayPal** | "Pay without complexity" early pioneer | Abstraction patterns |
 
 ### Transferable UX Patterns
@@ -167,7 +167,7 @@ Everypay is a B2B cross-border settlement platform enabling Chinese exporters to
 |---------|--------|------------------|
 | **Progressive disclosure** | Stripe | Default: simple status. Tap: full technical detail |
 | **Trust badges** | Airbnb | "Cregis Secured" vs "Bank-grade security" |
-| **Real-time ETA** | Uber | Settlement ETA: "CNY arrives ~2hrs after customs" |
+| **Real-time ETA** | Uber | Settlement ETA: "USD/HKD arrives ~2hrs after conversion" |
 | **One-tap approval** | Apple Pay | CFO approval with Face ID confirmation |
 | **Evidence download** | QuickBooks | "Download all documents" — one click, complete |
 
@@ -183,7 +183,7 @@ Everypay is a B2B cross-border settlement platform enabling Chinese exporters to
 ### Design Inspiration Strategy
 
 **Adopt:**
-- Uber's arrival moment → Wei sees "CNY received" as a celebration
+- Uber's arrival moment → Wei sees "USD/HKD received" as a celebration
 - Stripe's status clarity → Real-time settlement tracker
 - Wise's FX transparency → Rate lock confirmation feels secure
 
@@ -245,7 +245,7 @@ Consider if:
 Carlos initiates BRL payment → Everypay locks the FX rate → immediate "Rate locked" confirmation with visual celebration. This is the emotional climax where anxiety transforms to relief. This moment:
 1. Is unique to Everypay (no competitor markets rate lock emotionally)
 2. Creates the trust foundation for the entire settlement
-3. Directly addresses Carlos's primary anxiety: BRL volatility between payment and CNY receipt
+3. Directly addresses Carlos's primary anxiety: BRL volatility between payment and USD/HKD receipt
 4. Generates the compliance-grade audit trail (timestamp, rate, settlement ID)
 
 ### Success Criteria for the Defining Experience
@@ -254,20 +254,20 @@ Carlos initiates BRL payment → Everypay locks the FX rate → immediate "Rate 
 |-----------|--------|
 | Rate lock confirmation display | < 2 seconds after payment initiation |
 | Emotional response | Anxiety → Relief arc completed visually |
-| Information hierarchy | CNY amount (primary), BRL cost (secondary), rate + fees (tertiary) |
-| User comprehension | Carlos knows exactly when Wei will receive CNY |
+| Information hierarchy | USD/HKD amount (primary), BRL cost (secondary), rate + fees (tertiary) |
+| User comprehension | Carlos knows exactly when Wei will receive USD/HKD |
 | Compliance trail | Timestamp, locked rate, settlement ID captured for audit |
 | Lock window | 48 hours maximum (with re-quote flow if expired) |
 
 ### Rate Lock Moment — Information Hierarchy
 
 **Primary (largest, boldest):**
-- "X.XX CNY locked for your supplier"
+- "X.XX USD/HKD locked for your supplier"
 - Visual: Checkmark or lock icon with celebratory micro-animation
 
 **Secondary:**
 - "You'll pay X.XX BRL"
-- Rate: "1 CNY = X.XX BRL"
+- Rate: "1 USD/HKD = X.XX BRL"
 
 **Tertiary (tap to reveal):**
 - Fees breakdown
@@ -285,7 +285,7 @@ Carlos initiates BRL payment → Everypay locks the FX rate → immediate "Rate 
 **State Machine:**
 | Window | State | UI Indication |
 |--------|-------|---------------|
-| 0–44 hours | Active | "Rate locked — CNY arrives by [date]" |
+| 0–44 hours | Active | "Rate locked — USD/HKD arrives by [date]" |
 | 44–48 hours | Warning | "Rate lock expiring soon — confirm to extend" |
 | 48+ hours | Expired | Re-quote flow — new rate presented with explanation |
 
@@ -309,7 +309,7 @@ Carlos initiates BRL payment → Everypay locks the FX rate → immediate "Rate 
 
 **Sally (UX):**
 - Rate lock is emotional climax needing visual celebration
-- Information hierarchy (CNY amount, BRL cost, rate, fees, transfer amount) is critical
+- Information hierarchy (USD/HKD amount, BRL cost, rate, fees, transfer amount) is critical
 - Frame unfavorable rates honestly with user agency
 
 **Mary (Analyst):**
@@ -461,7 +461,7 @@ Carlos initiates BRL payment → Everypay locks the FX rate → immediate "Rate 
 | Moment | Animation |
 |--------|-----------|
 | Rate locked | Checkmark with ripple + confetti particles |
-| CNY received | Celebratory arrival animation (Uber-style) |
+| USD/HKD received | Celebratory arrival animation (Uber-style) |
 | Settlement progress | Smooth step transitions |
 | Button hover | Scale(1.02) + shadow lift |
 | Error state | Subtle shake (3 cycles, 4px) |
@@ -470,7 +470,10 @@ Carlos initiates BRL payment → Everypay locks the FX rate → immediate "Rate 
 
 ### Design Decisions Framework
 
-**Escrow-as-Optional Model**
+**Escrow-as-Optional Model (Phase 2 — NOT in MVP)**
+
+> **Note:** MVP uses NOESCROW model only. The `escrow_required` flag branching described below is Phase 2 functionality.
+
 Every invoice has an `escrow_required` boolean flag. The seller chooses the risk model per buyer. This single flag branches the entire UI:
 
 | State | Risk Bearer | UI Indication |
@@ -478,13 +481,13 @@ Every invoice has an `escrow_required` boolean flag. The seller chooses the risk
 | `escrow_required: true` | Buyer bears capital burden (locked BRL) | "Funds secured" badge, Cregis escrow details |
 | `escrow_required: false` | Seller bears credit risk | No escrow mention, payment-on-delivery model |
 
-**Three Risk Layers**
+**Three Risk Layers (Capital Burden layer is Phase 2 — escrow not in MVP)**
 
 1. **Credit Risk** — Seller bears on non-escrowed settlements. Shown as "Payment on delivery" model with no upfront lock.
-2. **Capital Burden** — Buyer bears on escrowed settlements (BRL locked during settlement). Prominent lock window countdown.
+2. **Capital Burden** — Buyer bears on escrowed settlements (BRL locked during settlement). Prominent lock window countdown. *(Phase 2 — escrow not in MVP)*
 3. **Rate Exposure** — Platform absorbs when settlement exceeds 48h lock window. Internal risk metric, shown to CFO as "Platform risk" in FX exposure views.
 
-**Trust Score → Escrow Score Reframe**
+**Trust Score → Escrow Score Reframe (Escrow Score column is Phase 2 — escrow not in MVP)**
 
 | Metric | Escrowed | Non-Escrowed |
 |--------|----------|--------------|
@@ -511,7 +514,7 @@ All 8 ERP modules are accessible via unified tabbed navigation in `_bmad-output/
 3. **CFO · Approver** (`tab-cfo-approval`) — Card-based approval queue with expandable risk summaries
 4. **Sales Ledger** (`tab-sales-ledger`) — Outgoing invoices, BRL holdings, settlement pipeline
 5. **Purchase Ledger** (`tab-purchase-ledger`) — Incoming invoices from buyers, USDT escrow holdings
-6. **Reconciliation** (`tab-reconciliation`) — USDT/BRL/CNY balances, FX exposure by corridor
+6. **Reconciliation** (`tab-reconciliation`) — USDT/BRL/USD/HKD balances, FX exposure by corridor
 7. **Counterparty CRM** (`tab-counterparty`) — Buyer profiles, Escrow Score, interaction history
 8. **Invoice Creation** (`tab-invoice-create`) — Invoice form with milestone tranches, Trade Payment Agreement attachment
 
@@ -554,7 +557,7 @@ Three primary journeys define Everypay's user experience:
 **Journey 2: Wei — Invoice Creation to Evidence Pack**
 - Entry: Wei logs into Everypay console → New Invoice
 - Core flow: Create invoice → Send link → Track settlement → Download evidence pack
-- Escrow branching: `escrow_required` flag drives all UI labels and risk messaging
+- Escrow branching: `escrow_required` flag drives all UI labels and risk messaging *(Phase 2 — MVP is NOESCROW only)*
 - Key moment: Single-click evidence pack download
 
 **Journey 3: CFO — High-Value Settlement Approval**
@@ -569,10 +572,10 @@ Three primary journeys define Everypay's user experience:
 |---------|-------|
 | One-click primary action | Approve, Rate Lock, Download |
 | Progressive disclosure | Default: simple. Tap: full detail |
-| Escrow branching | `escrow_required` flag drives all UI |
+| Escrow branching | `escrow_required` flag drives all UI *(Phase 2 — MVP is NOESCROW only)* |
 | Real-time tracking | Settlement pipeline with milestone updates |
 | Error → recovery | Clear message + actionable CTA |
-| Confirmation celebration | Rate locked, CNY received — moment of arrival |
+| Confirmation celebration | Rate locked, USD/HKD received — moment of arrival |
 
 ### Flow Optimization Principles
 
@@ -602,20 +605,20 @@ Back-office purchase/sales activities (Purchase Order Management, Sales Ledger R
 | `StatusTracker` | Multi-step settlement progress | All |
 | `ApprovalCard` | CFO risk summary + 1-click actions | CFO |
 | `EvidencePackDownload` | Single-click doc download | Wei |
-| `EscrowBadge` | Branches on `escrow_required` | All |
+| `EscrowBadge` | Branches on `escrow_required` (Phase 2 — escrow not in MVP) | All |
 | `RiskSummaryRow` | Green/yellow/red risk indicators | CFO |
 
 ### RateLockCard
 
 - States: locked, warning (44–48h), expired (re-quote flow)
-- Anatomy: Check icon + CNY amount (hero) + rate/fee row + lock expiry
+- Anatomy: Check icon + USD/HKD amount (hero) + rate/fee row + lock expiry
 - Animation: 600ms spring celebration on lock confirmation
 - Variants: Direction A (celebration), Direction B (minimal)
 
 ### StatusTracker
 
 - States per step: completed, active, pending
-- 5 steps: BRL Received → Rate Locked → In Transit → Customs → CNY Delivered
+- 5 steps: BRL Received → Rate Locked → USDT Converted → USD/HKD Transferred → USD/HKD Delivered
 - Progressive disclosure: step detail on tap
 
 ### ApprovalCard (CFO)
@@ -624,7 +627,9 @@ Back-office purchase/sales activities (Purchase Order Management, Sales Ledger R
 - Anatomy: Settlement ID + amount + parties + RiskSummary + MetricsGrid + ActionButtons
 - Risk indicators: green/yellow/red dots per risk layer
 
-### EscrowBadge
+### EscrowBadge (Phase 2 — escrow not in MVP)
+
+> **Note:** This component is deferred to Phase 2. MVP uses NOESCROW model only.
 
 - Branches on `escrow_required: true/false`
 - True: "Escrow Protected" + Cregis custody detail
@@ -632,8 +637,8 @@ Back-office purchase/sales activities (Purchase Order Management, Sales Ledger R
 
 ### Implementation Roadmap
 
-**Phase 1 (MVP):** RateLockCard, StatusTracker, ApprovalCard, EscrowBadge
-**Phase 2:** EvidencePackDownload, KPICard, RiskSummaryRow
+**Phase 1 (MVP):** RateLockCard, StatusTracker, ApprovalCard
+**Phase 2:** EscrowBadge, EvidencePackDownload, KPICard, RiskSummaryRow
 **Phase 3:** Full library refinement, animation polish
 
 ## Step 12 — UX Consistency Patterns
@@ -653,7 +658,7 @@ Back-office purchase/sales activities (Purchase Order Management, Sales Ledger R
 
 | State | Visual | Example |
 |-------|--------|---------|
-| Success | Green badge + checkmark | "Rate Locked", "CNY Delivered" |
+| Success | Green badge + checkmark | "Rate Locked", "USD/HKD Delivered" |
 | Pending | Amber badge + timestamp | "Pending — awaiting confirmation" |
 | Warning | Amber badge + warning icon | "Rate expires in 4h" (44-48h window) |
 | Error | Red badge | "Transfer Failed" + reason code |

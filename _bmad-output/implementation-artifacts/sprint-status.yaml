@@ -1,0 +1,132 @@
+# generated: 2026-04-14
+# project: Everypay
+# project_key: EP
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-04-14
+project: Everypay
+project_key: EP
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  epic-0: in-progress
+  0-1-initialize-nextjs-project-with-typescript-and-tailwind: review
+  0-2-establish-canonical-type-system: review
+  0-3-establish-mock-api-layer-and-seed-data: review
+  epic-0-retrospective: optional
+
+  epic-1: in-progress
+  1-1-user-registration-with-email: review
+  1-2-individual-kyc-verification-government-id-liveness: review
+  1-3-business-entity-kyb-verification-with-beneficial-ownership: review
+  1-4-rbac-role-assignment-per-user: review
+  1-5-team-member-invitation-and-management: review
+  1-6-risk-based-kyc-tier-configuration: review
+  epic-1-retrospective: optional
+
+  epic-2: backlog
+  2-1-seller-creates-invoice-with-contract-and-line-items: backlog
+  2-2-buyer-views-received-invoices: backlog
+  2-3-seller-proposes-payment-agreement-terms-prelock-rate: backlog
+  2-4-buyer-accepts-or-counter-proposes-payment-terms: backlog
+  2-5-buyer-initiates-payment-with-prelock-rate-selection: backlog
+  2-6-seller-saves-invoice-as-reusable-template: backlog
+  epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-1-initialize-settlement-on-payment-confirmation: backlog
+  3-2-process-fiat-to-usdt-conversion-leg-1: backlog
+  3-3-convert-usdt-to-usd-or-hkd-via-everypay-hk-leg-3: backlog
+  3-4-transfer-usd-hkd-to-sellers-offshore-hong-kong-account-leg-4: backlog
+  3-5-settle-and-confirm-completion-with-sellers-receipt: backlog
+  epic-3-retrospective: optional
+
+  epic-4: backlog
+  4-1-view-real-time-settlement-status: backlog
+  4-2-view-settlement-chain-with-all-conversion-legs: backlog
+  4-3-seller-confirms-usd-hkd-receipt: backlog
+  4-4-view-settlement-in-corridor-appropriate-format: backlog
+  4-5-view-attached-documents-in-settlement: backlog
+  epic-4-retrospective: optional
+
+  epic-5: backlog
+  5-1-propose-prelock-rate: backlog
+  5-2-lock-prelock-rate-upon-payment-confirmation: backlog
+  5-3-display-rate-and-fees-upfront-before-confirmation: backlog
+  5-4-rate-lock-expiration-handling: backlog
+  epic-5-retrospective: optional
+
+  epic-6: backlog
+  6-1-configure-corridor-specific-compliance-rules: backlog
+  6-2-display-settlement-status-in-corridor-appropriate-format: backlog
+  epic-6-retrospective: optional
+
+  epic-7: backlog
+  7-1-use-noescrow-model-for-trusted-relationships: backlog
+  epic-7-retrospective: optional
+
+  epic-8: backlog
+  8-1-configure-approval-chain-for-high-value-settlements: backlog
+  8-2-configure-auto-acceptance-thresholds: backlog
+  8-3-approver-reviews-settlement: backlog
+  8-4-approver-approves-or-rejects-settlement: backlog
+  epic-8-retrospective: optional
+
+  epic-9: backlog
+  9-1-generate-timestamped-evidence-pack-per-settlement: backlog
+  9-2-seller-downloads-evidence-pack: backlog
+  9-3-evidence-pack-retention-for-7-years: backlog
+  9-4-immutable-audit-log-per-settlement: backlog
+  epic-9-retrospective: optional
+
+  epic-10: backlog
+  10-1-sanctions-screening-during-user-onboarding: backlog
+  10-2-maintain-kyc-kyb-records-per-regulatory-requirements: backlog
+  epic-10-retrospective: optional
+
+  epic-11: backlog
+  11-1-view-counterparty-profile-with-settlement-history: backlog
+  11-2-calculate-and-display-trust-indicators: backlog
+  epic-11-retrospective: optional
+
+  epic-12: backlog
+  12-1-view-pending-invoices-and-payment-status: backlog
+  12-2-track-outgoing-payments-and-running-balance: backlog
+  epic-12-retrospective: optional
+
+  epic-13: backlog
+  13-1-view-outstanding-invoices-and-collection-status: backlog
+  13-2-aging-report-and-running-balance-per-buyer: backlog
+  13-3-account-reconciliation-and-fx-exposure-view: backlog
+  epic-13-retrospective: optional

@@ -1,0 +1,83 @@
+[
+  {
+    "id": "po-1",
+    "buyerId": "user-1",
+    "sellerId": "user-2",
+    "status": "TERMS_ACCEPTED",
+    "corridor": "BRL",
+    "lineItems": [
+      {
+        "id": "li-1",
+        "description": "Coffee Beans - Arabica Grade A",
+        "quantity": 500,
+        "unitPrice": 12.5,
+        "currency": "USD",
+        "hsCode": "0901.21",
+        "specs": "Organic, washed process, 12% moisture max"
+      },
+      {
+        "id": "li-2",
+        "description": "Coffee Beans - Robusta",
+        "quantity": 300,
+        "unitPrice": 8,
+        "currency": "USD",
+        "hsCode": "0901.12",
+        "specs": "Natural process, grade 2"
+      }
+    ],
+    "totalAmount": 8650,
+    "currency": "USD",
+    "dueDate": "2026-05-15T00:00:00.000Z",
+    "notes": "Standard delivery to Santos port",
+    "createdAt": "2026-04-10T08:00:00.000Z",
+    "updatedAt": "2026-04-17T03:27:30.496Z"
+  },
+  {
+    "id": "po-2",
+    "buyerId": "user-1",
+    "sellerId": "user-2",
+    "status": "NEGOTIATING",
+    "corridor": "BRL",
+    "lineItems": [
+      {
+        "id": "li-3",
+        "description": "Soybeans - Non-GMO",
+        "quantity": 1000,
+        "unitPrice": 15,
+        "currency": "USD",
+        "hsCode": "1201.10",
+        "specs": "Food grade, moisture 13% max"
+      }
+    ],
+    "totalAmount": 15000,
+    "currency": "USD",
+    "dueDate": "2026-06-01T00:00:00.000Z",
+    "notes": "Requires phytosanitary certificate",
+    "createdAt": "2026-04-14T14:00:00.000Z",
+    "updatedAt": "2026-04-17T03:27:57.133Z"
+  },
+  {
+    "id": "po-3",
+    "buyerId": "user-1",
+    "sellerId": "CP-001",
+    "status": "SETTLED",
+    "corridor": "BRL",
+    "lineItems": [
+      {
+        "id": "li-4",
+        "description": "Sugar - White Refined",
+        "quantity": 2000,
+        "unitPrice": 5,
+        "currency": "USD",
+        "hsCode": "1701.99",
+        "specs": "ICUMSA 45 max"
+      }
+    ],
+    "totalAmount": 10000,
+    "currency": "USD",
+    "dueDate": "2026-03-20T00:00:00.000Z",
+    "notes": null,
+    "createdAt": "2026-03-01T08:00:00.000Z",
+    "updatedAt": "2026-03-25T16:00:00.000Z"
+  }
+]
