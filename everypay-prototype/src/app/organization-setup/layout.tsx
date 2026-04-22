@@ -27,7 +27,7 @@ export default function SetupLayout({
           </p>
 
           <div className="space-y-4">
-            <div className="text-[10px] font-semibold text-everypay-400 uppercase tracking-wider mb-2">Pre-Approval</div>
+            <div className="text-[10px] font-semibold text-everypay-400 uppercase tracking-wider mb-2">Onboarding</div>
             <div className="flex gap-4 items-start">
               <div className="w-8 h-8 rounded-full bg-everypay-500/20 flex-shrink-0 flex items-center justify-center text-everypay-400 text-xs font-bold border border-everypay-500/30">1</div>
               <div>
@@ -49,22 +49,11 @@ export default function SetupLayout({
                 <p className="text-xs text-everypay-500">Organization activation</p>
               </div>
             </div>
-
-            <div className="border-t border-everypay-700/50 my-4" />
-
-            <div className="text-[10px] font-semibold text-everypay-400 uppercase tracking-wider mb-2">Onboarding</div>
             <div className="flex gap-4 items-start opacity-50">
               <div className="w-8 h-8 rounded-full bg-everypay-800 flex-shrink-0 flex items-center justify-center text-everypay-400 text-xs font-bold">4</div>
               <div>
                 <div className="text-sm font-semibold text-everypay-400">Build Your Team</div>
                 <p className="text-xs text-everypay-500">Invite team members</p>
-              </div>
-            </div>
-            <div className="flex gap-4 items-start opacity-50">
-              <div className="w-8 h-8 rounded-full bg-everypay-800 flex-shrink-0 flex items-center justify-center text-everypay-400 text-xs font-bold">5</div>
-              <div>
-                <div className="text-sm font-semibold text-everypay-400">Create Treasury Unit</div>
-                <p className="text-xs text-everypay-500">Set up your first unit</p>
               </div>
             </div>
           </div>

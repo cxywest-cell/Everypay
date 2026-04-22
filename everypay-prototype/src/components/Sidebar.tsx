@@ -109,7 +109,21 @@ export function Sidebar({ collapsed, mobile, onClose }: SidebarProps) {
     ? orgs.find((o) => o.id === orgParam)
     : defaultOrg;
 
-  // Show progress stepper when current org's KYB is still pending
+  const ORG_STEPS: Record<string, number> = {
+    "org-beta": 4,
+    "org-delta": 2,
+  };
+
+  const onboardingStep = ORG_STEPS[currentOrg?.id || ""] || 2;
+
+  const stepLabels = ["Business Identity", "Compliance Review", "Final Approval", "Build Your Team"];
+  const stepStatuses = stepLabels.map((_, i) => {
+    const stepNum = i + 1;
+    if (stepNum < onboardingStep) return "done";
+    if (stepNum === onboardingStep) return "active";
+    return "pending";
+  });
+
   const showProgress = currentOrg?.kybStatus === "PENDING";
 
   const switchOrg = (orgId: string) => {
@@ -149,75 +163,44 @@ export function Sidebar({ collapsed, mobile, onClose }: SidebarProps) {
       <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-6">
         {showProgress ? (
           <div className="px-1">
-            <div className="text-[11px] font-semibold text-everypay-300 uppercase tracking-wider mb-4">Progress</div>
+            <div className="text-[11px] font-semibold text-everypay-300 uppercase tracking-wider mb-4">Onboarding</div>
 
-            {/* Pre-Approval */}
-            <div className="mb-6">
-              <div className="text-[10px] font-semibold text-everypay-400 uppercase tracking-wider mb-3">Pre-Approval</div>
-              <div className="relative">
-                <div className="absolute left-[8px] top-3 bottom-0 w-0.5 bg-everypay-700" />
-                <div className="space-y-3 relative">
-                  {/* Step 1: Business Identity — Completed */}
-                  <div className="flex items-center gap-3 pl-0.5">
-                    <div className="w-[18px] h-[18px] rounded-full bg-everypay-700 border-2 border-everypay-400 flex items-center justify-center z-10 flex-shrink-0">
-                      <svg className="w-2 h-2 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+            <div className="relative">
+              <div className="absolute left-[8px] top-3 bottom-3 w-0.5 bg-everypay-700" />
+              <div className="space-y-3 relative">
+                {stepLabels.map((label, i) => {
+                  const status = stepStatuses[i];
+                  const num = i + 1;
+                  return (
+                    <div key={label} className="flex items-center gap-3 pl-0.5">
+                      <div className={`w-[18px] h-[18px] rounded-full flex items-center justify-center z-10 flex-shrink-0 ${
+                        status === "done"
+                          ? "bg-everypay-700 border-2 border-everypay-400"
+                          : status === "active"
+                          ? "bg-blue-500 animate-pulse shadow-lg shadow-blue-500/30"
+                          : "bg-everypay-800 border-2 border-everypay-600"
+                      }`}>
+                        {status === "done" ? (
+                          <svg className="w-2 h-2 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                        ) : status === "active" ? (
+                          <svg className="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 8v4l3 3" /></svg>
+                        ) : (
+                          <span className="text-[10px] font-medium text-everypay-500">{num}</span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className={`text-sm font-medium ${
+                          status === "done" ? "text-everypay-200" : status === "active" ? "text-blue-400 font-semibold" : "text-everypay-500"
+                        }`}>{label}</div>
+                        {!collapsed && (
+                          <div className={`text-xs ${
+                            status === "done" ? "text-everypay-500" : status === "active" ? "text-blue-500/70 font-medium" : "text-everypay-600"
+                          }`}>{status === "done" ? "Completed" : status === "active" ? "In Progress" : "Pending"}</div>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-everypay-200">Business Identity</div>
-                      {!collapsed && <div className="text-xs text-everypay-500">Completed</div>}
-                    </div>
-                  </div>
-                  {/* Step 2: Compliance Review — In Progress */}
-                  <div className="flex items-center gap-3 pl-0.5">
-                    <div className="w-[18px] h-[18px] rounded-full bg-blue-500 flex items-center justify-center z-10 flex-shrink-0 animate-pulse shadow-lg shadow-blue-500/30">
-                      <svg className="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 8v4l3 3" /></svg>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-blue-400">Compliance Review</div>
-                      {!collapsed && <div className="text-xs text-blue-500/70 font-medium">In Progress</div>}
-                    </div>
-                  </div>
-                  {/* Step 3: Final Approval — Pending */}
-                  <div className="flex items-center gap-3 pl-0.5">
-                    <div className="w-[18px] h-[18px] rounded-full bg-everypay-800 border-2 border-everypay-600 flex items-center justify-center z-10 flex-shrink-0">
-                      <span className="text-[10px] font-medium text-everypay-500">3</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-everypay-500">Final Approval</div>
-                      {!collapsed && <div className="text-xs text-everypay-600">Pending</div>}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Onboarding */}
-            <div>
-              <div className="text-[10px] font-semibold text-everypay-400 uppercase tracking-wider mb-3">Onboarding</div>
-              <div className="relative">
-                <div className="absolute left-[8px] top-[22px] w-0.5 h-[24px] bg-everypay-800" />
-                <div className="space-y-3 relative">
-                  {/* Step 4: Build Your Team — Pending */}
-                  <div className="flex items-center gap-3 pl-0.5">
-                    <div className="w-[18px] h-[18px] rounded-full bg-everypay-800 border-2 border-everypay-600 flex items-center justify-center z-10 flex-shrink-0">
-                      <span className="text-[10px] font-medium text-everypay-500">4</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-everypay-500">Build Your Team</div>
-                      {!collapsed && <div className="text-xs text-everypay-600">Pending</div>}
-                    </div>
-                  </div>
-                  {/* Step 5: Create Treasury Unit — Pending */}
-                  <div className="flex items-center gap-3 pl-0.5">
-                    <div className="w-[18px] h-[18px] rounded-full bg-everypay-800 border-2 border-everypay-600 flex items-center justify-center z-10 flex-shrink-0">
-                      <span className="text-[10px] font-medium text-everypay-500">5</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-everypay-500">Create Treasury Unit</div>
-                      {!collapsed && <div className="text-xs text-everypay-600">Pending</div>}
-                    </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </div>
           </div>

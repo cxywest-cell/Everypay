@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isInviteMode = searchParams.get("invite") === "true";
+
   const [email, setEmail] = useState("alice.liu@globaltech.com");
   const [password, setPassword] = useState("Password123!");
   const [rememberMe, setRememberMe] = useState(false);
@@ -14,6 +17,22 @@ export default function LoginPage() {
   const [isVerified, setIsVerified] = useState(false);
   const [recaptchaState, setRecaptchaState] = useState<"idle" | "checking" | "challenge" | "verified">("idle");
   const [challengeSelected, setChallengeSelected] = useState<number[]>([]);
+
+  // Invitation form state
+  const [inviteFirst, setInviteFirst] = useState("Alice");
+  const [inviteLast, setInviteLast] = useState("Liu");
+  const [invitePassword, setInvitePassword] = useState("Password123!");
+  const [inviteConfirm, setInviteConfirm] = useState("Password123!");
+  const [inviteCode, setInviteCode] = useState("123456");
+  const [inviteTerms, setInviteTerms] = useState(true);
+
+  // Auto-trigger verification when entering invite mode via login button
+  const handleInviteSubmit = () => {
+    if (invitePassword !== inviteConfirm) return;
+    if (inviteCode !== "123456") return;
+    // Account created, redirect to login
+    router.push("/login");
+  };
 
   const handleLogin = () => {
     if (!isVerified) {
@@ -70,8 +89,116 @@ export default function LoginPage() {
   return (
     <>
       <div className="w-full max-w-md">
-      {/* Login Form */}
+      {/* Demo: Simulate Invitation Email */}
+      {!isInviteMode && (
+        <div className="-mt-6 mb-4 px-4 py-2 bg-amber-50 border border-amber-200 rounded-t-lg flex items-center justify-between shadow-sm">
+          <span className="text-xs text-amber-700">Demo: Simulate receiving an invitation email</span>
+          <Link href="/invitation-email" className="px-3 py-1 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-semibold rounded transition-all duration-200">
+            View Invitation Email
+          </Link>
+        </div>
+      )}
+
       <div className="bg-white p-8 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100">
+        {/* Invitation Signup View */}
+        {isInviteMode ? (
+        <>
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-slate-900">Accept Invitation</h2>
+            <p className="text-sm text-slate-500 mt-1">Complete account creation to join GlobalTech Solutions</p>
+          </div>
+
+          {/* Tip Message */}
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <div className="text-sm text-amber-700">
+                <p className="font-medium mb-1">Email not registered</p>
+                <p className="text-xs">The email <strong>alice.liu@globaltech.com</strong> is not associated with an Everypay account. Create an account to finalize your invitation acceptance.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-5">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">First name</label>
+                <input type="text" value={inviteFirst} onChange={(e) => setInviteFirst(e.target.value)} placeholder="Alice"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-everypay-500/20 focus:border-everypay-500 transition-all text-sm" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Last name</label>
+                <input type="text" value={inviteLast} onChange={(e) => setInviteLast(e.target.value)} placeholder="Liu"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-everypay-500/20 focus:border-everypay-500 transition-all text-sm" />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Email address</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.206" /></svg>
+                </div>
+                <input type="email" value="alice.liu@globaltech.com" disabled
+                  className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl bg-slate-100 text-sm text-slate-500 cursor-not-allowed" />
+              </div>
+              <p className="text-xs text-slate-400 mt-1">Email is pre-filled from your invitation</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                  </div>
+                  <input type="password" value={invitePassword} onChange={(e) => setInvitePassword(e.target.value)} placeholder="••••••••"
+                    className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-everypay-500/20 focus:border-everypay-500 transition-all text-sm" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Confirm</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                  </div>
+                  <input type="password" value={inviteConfirm} onChange={(e) => setInviteConfirm(e.target.value)} placeholder="••••••••"
+                    className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-everypay-500/20 focus:border-everypay-500 transition-all text-sm" />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Verification Code</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <input type="text" value={inviteCode} onChange={(e) => setInviteCode(e.target.value)} placeholder="Enter 6-digit code"
+                  className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-everypay-500/20 focus:border-everypay-500 transition-all text-sm" />
+              </div>
+            </div>
+
+            <div className="flex items-start pt-1">
+              <input id="invite-terms" type="checkbox" checked={inviteTerms} onChange={(e) => setInviteTerms(e.target.checked)}
+                className="h-4 w-4 text-everypay-600 focus:ring-everypay-500 border-slate-300 rounded" />
+              <label htmlFor="invite-terms" className="ml-2 block text-xs text-slate-600">I agree to the <Link href="#" className="text-everypay-600 font-semibold hover:text-everypay-500">Terms of Service</Link> and <Link href="#" className="text-everypay-600 font-semibold hover:text-everypay-500">Privacy Policy</Link>.</label>
+            </div>
+
+            <div className="flex gap-3">
+              <Link href="/invitation-email"
+                className="flex-1 px-4 py-3 text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all duration-200 text-center">
+                Decline
+              </Link>
+              <button type="button" onClick={handleInviteSubmit}
+                className="flex-1 px-4 py-3 text-sm font-semibold text-white bg-everypay-900 rounded-xl hover:bg-everypay-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-everypay-900 transition-all shadow-lg shadow-slate-200">
+                Create Account
+              </button>
+            </div>
+          </div>
+        </>
+        ) : (
+        <>
         <div className="mb-6">
           <Link href="/" className="inline-flex items-center justify-center h-10 w-10 bg-everypay-600 text-xl font-bold text-white rounded-lg shadow-lg hover:bg-everypay-700 transition-colors mb-4">
             E
@@ -283,7 +410,8 @@ export default function LoginPage() {
             Don&apos;t have an account? <Link href="/register" className="font-semibold text-everypay-600 hover:text-everypay-500">Get started</Link>
           </p>
         </div>
-        </div>
+        </>
+        )}
       </div>
 
       <p className="mt-8 text-center text-xs text-slate-400">
@@ -363,6 +491,7 @@ export default function LoginPage() {
           </div>
         </div>
       )}
+      </div>
     </>
   );
 }
