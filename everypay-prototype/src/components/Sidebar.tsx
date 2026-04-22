@@ -52,10 +52,11 @@ export function Sidebar({ collapsed, mobile, onClose }: SidebarProps) {
   const role: DashboardRole =
     userId === "user-3" ? "approver" : userId === "user-2" ? "seller" : "buyer";
 
-  const [orgs, setOrgs] = useState<Array<{ id: string; name: string }>>([
-    { id: "org-alpha", name: "Alpha Supplies Ltda." },
-    { id: "org-beta", name: "Beta Trading Co., Ltd." },
-    { id: "org-gamma", name: "Global Payments Ltd." },
+  const [orgs, setOrgs] = useState<Array<{ id: string; name: string; kybStatus: string }>>([
+    { id: "org-alpha", name: "Alpha Supplies Ltda.", kybStatus: "VERIFIED" },
+    { id: "org-beta", name: "Beta Trading Co., Ltd.", kybStatus: "PENDING" },
+    { id: "org-delta", name: "Digital Account Foundation", kybStatus: "PENDING" },
+    { id: "org-gamma", name: "Global Payments Ltd.", kybStatus: "VERIFIED" },
   ]);
   const [orgOpen, setOrgOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -108,8 +109,8 @@ export function Sidebar({ collapsed, mobile, onClose }: SidebarProps) {
     ? orgs.find((o) => o.id === orgParam)
     : defaultOrg;
 
-  // Progress stepper only shown on the compliance-pending page itself
-  const showProgress = pathname === "/compliance-pending";
+  // Show progress stepper when current org's KYB is still pending
+  const showProgress = currentOrg?.kybStatus === "PENDING";
 
   const switchOrg = (orgId: string) => {
     setOrgOpen(false);
@@ -271,21 +272,16 @@ export function Sidebar({ collapsed, mobile, onClose }: SidebarProps) {
             </div>
             {!collapsed && (
               <div className="min-w-0 flex-1">
-                {showProgress ? (
-                  <>
-                    <div className="text-xs text-everypay-300 font-medium">Organization</div>
-                    <div className="text-sm font-bold text-white truncate">{currentOrg.name}</div>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[10px] text-everypay-300">Owner</span>
-                      <span className="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-bold">Pending</span>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="text-[10px] text-everypay-300 font-medium">Organization</div>
-                    <div className="text-sm font-bold text-white truncate">{currentOrg.name}</div>
-                  </>
-                )}
+                <div className="text-xs text-everypay-300 font-medium">Organization</div>
+                <div className="text-sm font-bold text-white truncate">{currentOrg.name}</div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="text-[10px] text-everypay-300">Owner</span>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                    currentOrg?.kybStatus === "PENDING" ? "bg-amber-500/20 text-amber-300" : "bg-green-500/20 text-green-300"
+                  }`}>
+                    {currentOrg?.kybStatus === "PENDING" ? "Pending" : "Verified"}
+                  </span>
+                </div>
               </div>
             )}
             {!collapsed && (
@@ -319,16 +315,14 @@ export function Sidebar({ collapsed, mobile, onClose }: SidebarProps) {
                         <div className={`text-sm font-medium truncate ${isSelected ? "text-blue-700" : "text-gray-900"}`}>
                           {org.name}
                         </div>
-                        {showProgress && (
-                          <div className="flex items-center gap-2 flex-wrap mt-0.5">
-                            <span className="text-xs text-gray-500">Owner</span>
-                            <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
-                              org.id === "org-delta" ? "bg-amber-100 text-amber-700" : "bg-green-100 text-green-700"
-                            }`}>
-                              {org.id === "org-delta" ? "Pending" : "VASP"}
-                            </span>
-                          </div>
-                        )}
+                        <div className="flex items-center gap-2 flex-wrap mt-0.5">
+                          <span className="text-xs text-gray-500">Owner</span>
+                          <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                            org.kybStatus === "PENDING" ? "bg-amber-100 text-amber-700" : "bg-green-100 text-green-700"
+                          }`}>
+                            {org.kybStatus === "PENDING" ? "Pending" : "Verified"}
+                          </span>
+                        </div>
                       </div>
                       {isSelected && (
                         <svg className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

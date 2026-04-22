@@ -3,7 +3,7 @@
     "id": "org-alpha",
     "name": "Alpha Supplies Ltda.",
     "registrationNumber": "BR-11.222.333/0001-44",
-    "kybStatus": "PENDING",
+    "kybStatus": "VERIFIED",
     "beneficialOwners": [],
     "authorizedSignatories": ["user-1"],
     "businessActivity": "",
@@ -25,7 +25,7 @@
     "id": "org-beta",
     "name": "Beta Trading Co., Ltd.",
     "registrationNumber": "HK-12345678",
-    "kybStatus": "VERIFIED",
+    "kybStatus": "PENDING",
     "beneficialOwners": [
       {
         "id": "bo-1",
