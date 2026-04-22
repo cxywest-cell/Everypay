@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import type { Settlement } from "@/lib/types";
 import { formatCorridorAmount, getCorridorComplianceNotation } from "@/lib/corridorFormat";
+
+const PENDING_ORGS = new Set(["org-alpha", "org-beta", "org-delta"]);
 
 const STATUS_COLORS: Record<string, string> = {
   INITIATED: "bg-gray-100 text-gray-800",
@@ -25,10 +27,20 @@ const STATUS_COLORS: Record<string, string> = {
 export default function SettlementsPage() {
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId") || "user-1";
+  const orgParam = searchParams.get("org");
+  const router = useRouter();
   const [settlements, setSettlements] = useState<Settlement[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (PENDING_ORGS.has(orgParam || "")) {
+      const params = new URLSearchParams();
+      params.set("userId", userId);
+      params.set("org", orgParam!);
+      window.location.href = `/compliance-pending?${params.toString()}`;
+      return;
+    }
+
     fetch(`/api/settlements?buyerId=${userId}`)
       .then((res) => res.json())
       .then((result) => {

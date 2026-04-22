@@ -88,21 +88,19 @@ export function Sidebar({ collapsed, mobile, onClose }: SidebarProps) {
     return pathname.startsWith(href);
   };
 
-  const withUserId = (href: string) => {
-    const separator = href.includes("?") ? "&" : "?";
-    return `${href}${separator}userId=${userId}`;
+  const navigateTo = (href: string) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentOrg = urlParams.get("org");
+    urlParams.set("userId", userId);
+    if (currentOrg) urlParams.set("org", currentOrg);
+    if (mobile && onClose) onClose();
+    router.push(`${href}?${urlParams.toString()}`);
   };
 
-  const withParams = (href: string, newOrgId?: string) => {
-    const params = new URLSearchParams();
-    params.set("userId", userId);
-    if (newOrgId) params.set("org", newOrgId);
-    return `${href}?${params.toString()}`;
-  };
-
-  // Default to org-delta (pending org) when no org param is set
-  const defaultOrg = orgs.find((o) => o.id === "org-delta")
-    ?? (userId === "user-2" ? orgs.find((o) => o.id === "org-beta") : orgs.find((o) => o.id === "org-alpha"))
+  // Default org: user-1 -> org-alpha (verified), user-2 -> org-beta (pending)
+  const defaultOrg = userId === "user-2"
+    ? orgs.find((o) => o.id === "org-beta")
+    : orgs.find((o) => o.id === "org-alpha")
     ?? orgs[0];
 
   const currentOrg = orgParam
@@ -142,14 +140,17 @@ export function Sidebar({ collapsed, mobile, onClose }: SidebarProps) {
     <div className={`flex h-full flex-col bg-everypay-900 text-white ${mobile ? "shadow-2xl" : ""}`}>
       {/* Logo */}
       <div className={`flex h-14 items-center ${collapsed ? "justify-center px-2" : "px-4 gap-3"}`}>
-        <Link href={withUserId("/")} className="flex items-center gap-2" onClick={mobile ? onClose : undefined}>
+        <button
+          onClick={() => navigateTo("/")}
+          className="flex items-center gap-2"
+        >
           <div className="h-8 w-8 rounded-lg bg-everypay-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
             E
           </div>
           {!collapsed && (
             <span className="text-lg font-semibold tracking-tight">Everypay</span>
           )}
-        </Link>
+        </button>
         {mobile && (
           <button onClick={onClose} className="ml-auto p-1.5 rounded-md hover:bg-everypay-800">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -218,10 +219,9 @@ export function Sidebar({ collapsed, mobile, onClose }: SidebarProps) {
                   const active = isActive(item.href);
                   return (
                     <li key={item.href}>
-                      <Link
-                        href={withUserId(item.href)}
-                        onClick={mobile ? onClose : undefined}
-                        className={`flex items-center gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors ${
+                      <button
+                        onClick={() => navigateTo(item.href)}
+                        className={`flex items-center gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors w-full text-left ${
                           collapsed ? "justify-center px-1" : ""
                         } ${
                           active
@@ -231,7 +231,7 @@ export function Sidebar({ collapsed, mobile, onClose }: SidebarProps) {
                       >
                         {Icon && <Icon className="h-5 w-5 flex-shrink-0" />}
                         {!collapsed && <span className="truncate">{item.label}</span>}
-                      </Link>
+                      </button>
                     </li>
                   );
                 })}
