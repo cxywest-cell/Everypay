@@ -9,12 +9,14 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const sellerId = searchParams.get("sellerId");
     const buyerId = searchParams.get("buyerId");
+    const userId = searchParams.get("userId");
 
     let filtered = procurements;
-    if (sellerId) {
+    if (userId) {
+      filtered = filtered.filter((p: Procurement) => p.sellerId === userId || p.buyerId === userId);
+    } else if (sellerId) {
       filtered = filtered.filter((p: Procurement) => p.sellerId === sellerId);
-    }
-    if (buyerId) {
+    } else if (buyerId) {
       filtered = filtered.filter((p: Procurement) => p.buyerId === buyerId);
     }
 

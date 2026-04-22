@@ -5,7 +5,10 @@
     "firstName": "Carlos",
     "lastName": "Silva",
     "kycStatus": "VERIFIED",
-    "roles": ["OPERATOR", "ADMIN"],
+    "roles": [
+      "OPERATOR",
+      "ADMIN"
+    ],
     "organizationId": "org-alpha",
     "createdAt": "2026-03-01T10:00:00Z",
     "updatedAt": "2026-03-15T14:30:00Z"
@@ -16,7 +19,10 @@
     "firstName": "Wei",
     "lastName": "Zhang",
     "kycStatus": "VERIFIED",
-    "roles": ["OPERATOR", "ADMIN"],
+    "roles": [
+      "OPERATOR",
+      "ADMIN"
+    ],
     "organizationId": "org-beta",
     "createdAt": "2026-03-05T08:00:00Z",
     "updatedAt": "2026-03-20T09:15:00Z"
@@ -27,9 +33,23 @@
     "firstName": "Li",
     "lastName": "Chen",
     "kycStatus": "VERIFIED",
-    "roles": ["APPROVER", "COMPLIANCE"],
+    "roles": [
+      "APPROVER",
+      "COMPLIANCE"
+    ],
     "organizationId": "org-beta",
     "createdAt": "2026-03-05T08:00:00Z",
     "updatedAt": "2026-03-20T09:15:00Z"
+  },
+  {
+    "id": "user-1776758892317",
+    "email": "1@t.com",
+    "firstName": "1",
+    "lastName": "1",
+    "kycStatus": "PENDING",
+    "roles": [],
+    "organizationId": null,
+    "createdAt": "2026-04-21T08:08:12.317Z",
+    "updatedAt": "2026-04-21T08:08:12.317Z"
   }
 ]

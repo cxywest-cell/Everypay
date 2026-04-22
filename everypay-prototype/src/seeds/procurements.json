@@ -81,6 +81,54 @@
     "updatedAt": "2026-03-25T16:00:00.000Z"
   },
   {
+    "id": "po-sale-1",
+    "buyerId": "user-3",
+    "sellerId": "user-1",
+    "status": "SENT_TO_SELLER",
+    "corridor": "BRL",
+    "lineItems": [
+      {
+        "id": "li-5",
+        "description": "Copper Cathodes - Grade A",
+        "quantity": 100,
+        "unitPrice": 8500,
+        "currency": "USD",
+        "hsCode": "7403.11",
+        "specs": "99.99% purity, LME registered brand"
+      }
+    ],
+    "totalAmount": 850000,
+    "currency": "USD",
+    "dueDate": "2026-05-30T00:00:00.000Z",
+    "notes": "Deliver to warehouse in Shanghai",
+    "createdAt": "2026-04-18T10:00:00.000Z",
+    "updatedAt": "2026-04-18T10:00:00.000Z"
+  },
+  {
+    "id": "po-sale-2",
+    "buyerId": "user-3",
+    "sellerId": "user-1",
+    "status": "TERMS_ACCEPTED",
+    "corridor": "BRL",
+    "lineItems": [
+      {
+        "id": "li-6",
+        "description": "Aluminum Ingots - A7",
+        "quantity": 50,
+        "unitPrice": 2400,
+        "currency": "USD",
+        "hsCode": "7601.10",
+        "specs": "99.7% purity minimum"
+      }
+    ],
+    "totalAmount": 120000,
+    "currency": "USD",
+    "dueDate": "2026-06-15T00:00:00.000Z",
+    "notes": "Phased delivery requested",
+    "createdAt": "2026-04-12T08:00:00.000Z",
+    "updatedAt": "2026-04-16T14:00:00.000Z"
+  },
+  {
     "id": "po-1776396845939",
     "buyerId": "user-1",
     "sellerId": "org-alpha",

@@ -82,8 +82,10 @@ export enum InvoiceStatus {
 
 export enum TradePaymentAgreementStatus {
   PROPOSED = "PROPOSED",
+  SENT_TO_BUYER = "SENT_TO_BUYER",
   ACCEPTED = "ACCEPTED",
   COUNTER_PROPOSED = "COUNTER_PROPOSED",
+  SENT_TO_SELLER = "SENT_TO_SELLER",
   REJECTED = "REJECTED",
 }
 
@@ -229,9 +231,12 @@ export interface ProposalVersion {
   proposer: "seller" | "buyer";
   rate: number;
   feeBreakdown: FeeBreakdown;
-  status: "proposed" | "countered" | "accepted" | "rejected";
+  status: "proposed" | "countered" | "accepted" | "rejected" | "approved";
   timestamp: Date;
   changes: string[];
+  approvedBy?: string;
+  approvedAt?: string;
+  approvalComment?: string | null;
 }
 
 export interface TradePaymentAgreement {

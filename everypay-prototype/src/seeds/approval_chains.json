@@ -1,8 +1,8 @@
 [
   {
-    "id": "ac-1",
+    "id": "ac-org-beta",
     "organizationId": "org-beta",
-    "threshold": 100000,
+    "threshold": 10000,
     "approvers": [
       {
         "userId": "user-3",
@@ -13,7 +13,41 @@
         "timestamp": null
       }
     ],
-    "createdAt": "2026-03-05T08:00:00Z",
-    "updatedAt": "2026-03-05T08:00:00Z"
+    "createdAt": "2026-03-01T00:00:00Z",
+    "updatedAt": "2026-03-01T00:00:00Z"
+  },
+  {
+    "id": "ac-org-alpha",
+    "organizationId": "org-alpha",
+    "threshold": 50000,
+    "approvers": [
+      {
+        "userId": "user-3",
+        "role": "APPROVER",
+        "order": 1,
+        "status": "pending",
+        "comment": null,
+        "timestamp": null
+      }
+    ],
+    "createdAt": "2026-03-01T00:00:00Z",
+    "updatedAt": "2026-03-01T00:00:00Z"
+  },
+  {
+    "id": "ac-org-gamma",
+    "organizationId": "org-gamma",
+    "threshold": 25000,
+    "approvers": [
+      {
+        "userId": "user-3",
+        "role": "APPROVER",
+        "order": 1,
+        "status": "pending",
+        "comment": null,
+        "timestamp": null
+      }
+    ],
+    "createdAt": "2026-03-15T00:00:00Z",
+    "updatedAt": "2026-03-15T00:00:00Z"
   }
 ]

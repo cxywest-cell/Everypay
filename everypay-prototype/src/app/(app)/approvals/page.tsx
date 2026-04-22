@@ -3,153 +3,81 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import type { Procurement, TradePaymentAgreement } from "@/lib/types";
 
-type ApprovalItem = {
+type TaskItem = {
   id: string;
-  type: "terms" | "prepayment" | "counter_proposal";
+  type: "terms_approval" | "payment_approval" | "counter_approval";
   title: string;
+  description: string;
   counterparty: string;
   amount: number;
   currency: string;
   status: "pending" | "approved" | "rejected";
   riskLevel: "green" | "yellow" | "red";
+  workflowStep: "initiated" | "risk_check" | "awaiting_approval" | "execution";
   submittedBy: string;
-  submittedAt: Date;
+  submittedAt: string;
   round: number;
-  documents: { type: string; name: string }[];
-  riskNotes: string[];
-  myAction: boolean;
   procurementId?: string;
   agreementId?: string;
+  agreementStatus?: string;
+  proposedRate?: number;
+  marketRate?: number;
+  feeBreakdown?: { fxFee: number; platformFee: number; corridorFee: number; totalFees: number };
 };
 
-type ApprovalTab = "queue" | "settings";
+const TYPE_COLORS: Record<string, string> = {
+  terms_approval: "bg-blue-50 text-blue-700 border-blue-100",
+  payment_approval: "bg-purple-50 text-purple-700 border-purple-100",
+  counter_approval: "bg-amber-50 text-amber-800 border-amber-100",
+};
+
+const TYPE_LABELS: Record<string, string> = {
+  terms_approval: "Terms Approval",
+  payment_approval: "Payment Approval",
+  counter_approval: "Counter Approval",
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  pending: "bg-amber-50 text-amber-700 border-amber-100",
+  approved: "bg-green-50 text-green-700 border-green-100",
+  rejected: "bg-red-50 text-red-700 border-red-100",
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  pending: "Wait for Sign",
+  approved: "Signed",
+  rejected: "Rejected",
+};
 
 export default function ApprovalsPage() {
   const searchParams = useSearchParams();
-  const userId = searchParams.get("userId") || "user-3";
-  const [activeTab, setActiveTab] = useState<ApprovalTab>("queue");
+  const userId = searchParams.get("userId") || "user-1";
   const [loading, setLoading] = useState(true);
-  const [items, setItems] = useState<ApprovalItem[]>([]);
-  const [selectedItem, setSelectedItem] = useState<ApprovalItem | null>(null);
-  const [comment, setComment] = useState("");
-  const [actionLoading, setActionLoading] = useState(false);
-  const [bulkMode, setBulkMode] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
 
-  // Build approval queue from real procurement + payment agreement data
   useEffect(() => {
-    Promise.all([
-      fetch("/api/procurements").then((r) => r.json()),
-      fetch("/api/payment-agreements").then((r) => r.json()),
-    ]).then(([procResult, agrResult]) => {
-      const procurements = (procResult.data || []) as Procurement[];
-      const agreements = (agrResult.data || []) as TradePaymentAgreement[];
-      const queue: ApprovalItem[] = [];
-
-      // Payment agreements with PROPOSED or COUNTER_PROPOSED status need approval
-      agreements.forEach((agr) => {
-        if (agr.status === "PROPOSED" || agr.status === "COUNTER_PROPOSED") {
-          const isSellerSide = userId === agr.sellerId;
-          const isBuyerSide = userId === agr.buyerId;
-          // In prototype, approver (user-3) sees all items
-          const procurement = procurements.find((p) => p.id === agr.procurementId);
-          const roundNum = agr.proposalHistory?.length || 1;
-          const lastProposal = agr.proposalHistory?.[agr.proposalHistory.length - 1];
-
-          queue.push({
-            id: `APR-${agr.id}`,
-            type: agr.status === "COUNTER_PROPOSED" ? "counter_proposal" : "terms",
-            title: `Payment Terms — Round ${roundNum}`,
-            counterparty: isSellerSide ? `${procurement?.buyerId || "Buyer"} (buyer)` : `${procurement?.sellerId || "Seller"} (seller)`,
-            amount: procurement?.totalAmount || 0,
-            currency: procurement?.currency || "USD",
-            status: "pending",
-            riskLevel: agr.proposedRate > 5.25 ? "red" : agr.proposedRate > 5.20 ? "yellow" : "green",
-            submittedBy: lastProposal?.proposer === "seller" ? agr.sellerId : agr.buyerId,
-            submittedAt: new Date(agr.updatedAt),
-            round: roundNum,
-            documents: [
-              { type: "contract", name: `Sales_Contract_${agr.procurementId}.pdf` },
-              { type: "po", name: `PO_${agr.procurementId}.pdf` },
-            ],
-            riskNotes: [
-              `Rate: ${agr.proposedRate.toFixed(2)} (market: 5.18, deviation: ${((agr.proposedRate - 5.18) / 5.18 * 100).toFixed(1)}%)`,
-              `Corridor: ${procurement?.corridor || "BRL"}`,
-              roundNum > 1 ? `Negotiation round ${roundNum}` : "Initial proposal",
-            ],
-            myAction: true,
-            procurementId: agr.procurementId,
-            agreementId: agr.id,
-          });
-        }
-      });
-
-      // Procurements in NEGOTIATING or TERMS_PROPOSED that may need internal review
-      procurements.forEach((proc) => {
-        if (proc.status === "TERMS_PROPOSED" || proc.status === "NEGOTIATING") {
-          const alreadyHasAgreement = agreements.some((a) => a.procurementId === proc.id);
-          if (!alreadyHasAgreement) {
-            queue.push({
-              id: `APR-${proc.id}`,
-              type: "terms",
-              title: `Procurement ${proc.id} — Awaiting Terms`,
-              counterparty: `${proc.sellerId} (seller)`,
-              amount: proc.totalAmount,
-              currency: proc.currency,
-              status: "pending",
-              riskLevel: "yellow",
-              submittedBy: proc.buyerId,
-              submittedAt: new Date(proc.createdAt),
-              round: 0,
-              documents: [{ type: "po", name: `PO_${proc.id}.pdf` }],
-              riskNotes: [`Corridor: ${proc.corridor}`, "Terms proposal pending"],
-              myAction: true,
-              procurementId: proc.id,
-            });
-          }
-        }
-      });
-
-      setItems(queue);
-      setLoading(false);
-    }).catch(() => {
-      setLoading(false);
-    });
+    fetch(`/api/approvals/queue?userId=${userId}`)
+      .then((r) => r.json())
+      .then((result) => {
+        if (result.data) setTasks(result.data as TaskItem[]);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [userId]);
 
-  const handleAction = async (itemId: string, action: "approve" | "reject") => {
-    if (action === "reject" && !comment.trim()) {
-      alert("Rejection reason is required");
-      return;
-    }
-    setActionLoading(true);
-    setTimeout(() => {
-      setItems(items.map((item) =>
-        item.id === itemId ? { ...item, status: action as "approved" | "rejected" } : item
-      ));
-      setSelectedItem(null);
-      setComment("");
-      setActionLoading(false);
-    }, 500);
-  };
+  const pendingTasks = tasks.filter((t) => t.status === "pending");
+  const approvedTasks = tasks.filter((t) => t.status === "approved");
+  const rejectedTasks = tasks.filter((t) => t.status === "rejected");
 
-  const handleBulkAction = async (action: "approve") => {
-    setActionLoading(true);
-    setTimeout(() => {
-      setItems(items.map((item) =>
-        selectedIds.includes(item.id) ? { ...item, status: "approved" as const } : item
-      ));
-      setSelectedIds([]);
-      setBulkMode(false);
-      setActionLoading(false);
-    }, 500);
-  };
-
-  const pendingItems = items.filter((i) => i.status === "pending");
-  const approvedItems = items.filter((i) => i.status === "approved");
-  const rejectedItems = items.filter((i) => i.status === "rejected");
+  const filteredTasks = filter === "all"
+    ? tasks
+    : filter === "pending"
+      ? pendingTasks
+      : filter === "approved"
+        ? approvedTasks
+        : rejectedTasks;
 
   if (loading) {
     return (
@@ -160,446 +88,173 @@ export default function ApprovalsPage() {
   }
 
   return (
-    <div className="p-4 lg:p-6 space-y-6">
-      {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-lg p-1 w-fit">
-        <button
-          onClick={() => { setActiveTab("queue"); setSelectedItem(null); }}
-          className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-            activeTab === "queue" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
-          }`}
-        >
-          Queue ({pendingItems.length})
-        </button>
-        <button
-          onClick={() => { setActiveTab("settings"); setSelectedItem(null); }}
-          className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-            activeTab === "settings" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
-          }`}
-        >
-          Settings
-        </button>
+    <div className="p-4 lg:p-8 space-y-6 bg-gray-50 min-h-screen">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold text-gray-900">Tasks</h1>
       </div>
 
-      {activeTab === "queue" && !selectedItem && (
-        <>
-          {/* Risk summary cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-white rounded-lg shadow border border-gray-200 p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-3 h-3 rounded-full bg-green-500" />
-                <span className="text-sm font-medium text-gray-900">Low Risk</span>
-              </div>
-              <p className="text-2xl font-mono font-bold text-green-600">
-                {pendingItems.filter((i) => i.riskLevel === "green").length}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                ${pendingItems.filter((i) => i.riskLevel === "green").reduce((s, i) => s + i.amount, 0).toLocaleString()} total
-              </p>
-            </div>
-            <div className="bg-white rounded-lg shadow border border-gray-200 p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-3 h-3 rounded-full bg-yellow-500" />
-                <span className="text-sm font-medium text-gray-900">Medium Risk</span>
-              </div>
-              <p className="text-2xl font-mono font-bold text-yellow-600">
-                {pendingItems.filter((i) => i.riskLevel === "yellow").length}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                ${pendingItems.filter((i) => i.riskLevel === "yellow").reduce((s, i) => s + i.amount, 0).toLocaleString()} total
-              </p>
-            </div>
-            <div className="bg-white rounded-lg shadow border border-gray-200 p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-3 h-3 rounded-full bg-red-500" />
-                <span className="text-sm font-medium text-gray-900">High Risk</span>
-              </div>
-              <p className="text-2xl font-mono font-bold text-red-600">
-                {pendingItems.filter((i) => i.riskLevel === "red").length}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                ${pendingItems.filter((i) => i.riskLevel === "red").reduce((s, i) => s + i.amount, 0).toLocaleString()} total
-              </p>
-            </div>
-          </div>
-
-          {/* Bulk actions */}
-          {pendingItems.length > 1 && (
-            <div className="flex items-center justify-between">
-              <button
-                onClick={() => setBulkMode(!bulkMode)}
-                className="text-sm text-everypay-600 hover:text-everypay-900 font-medium"
-              >
-                {bulkMode ? "Cancel Bulk" : "Bulk Review"}
-              </button>
-              {bulkMode && selectedIds.length > 0 && (
-                <button
-                  onClick={() => handleBulkAction("approve")}
-                  disabled={actionLoading}
-                  className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 disabled:opacity-50"
-                >
-                  Approve Selected ({selectedIds.length})
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Approval queue */}
-          <div className="space-y-4">
-            {pendingItems.length === 0 ? (
-              <div className="bg-white rounded-lg shadow border border-gray-200 py-16 text-center">
-                <svg className="mx-auto h-12 w-12 text-green-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <h3 className="text-sm font-medium text-gray-900">All caught up!</h3>
-                <p className="text-sm text-gray-500 mt-1">No pending approvals.</p>
-              </div>
-            ) : (
-              pendingItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden"
-                >
-                  {/* Header */}
-                  <div className="flex items-start justify-between p-5">
-                    <div className="flex items-start gap-3">
-                      {bulkMode && (
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.includes(item.id)}
-                          onChange={(e) => {
-                            setSelectedIds(
-                              e.target.checked
-                                ? [...selectedIds, item.id]
-                                : selectedIds.filter((id) => id !== item.id)
-                            );
-                          }}
-                          className="mt-1"
-                        />
-                      )}
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-semibold text-gray-900">{item.id}</h3>
-                          <RiskBadge level={item.riskLevel} />
-                          <TypeBadge type={item.type} round={item.round} />
-                        </div>
-                        <p className="text-sm text-gray-600 mt-1">{item.title}</p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {item.counterparty} &middot; {item.submittedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                        </p>
-                      </div>
-                    </div>
-                    <span className="text-lg font-mono font-bold text-gray-900">
-                      ${item.amount.toLocaleString()} {item.currency}
-                    </span>
-                  </div>
-
-                  {/* Risk indicators */}
-                  <div className="px-5 pb-3">
-                    <div className="flex flex-wrap gap-2">
-                      {item.riskNotes.map((note, i) => (
-                        <span
-                          key={i}
-                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                            item.riskLevel === "green"
-                              ? "bg-green-50 text-green-700"
-                              : item.riskLevel === "yellow"
-                                ? "bg-yellow-50 text-yellow-700"
-                                : "bg-red-50 text-red-700"
-                          }`}
-                        >
-                          {item.riskLevel === "green" ? "✓" : item.riskLevel === "yellow" ? "⚠" : "✕"} {note}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Documents preview */}
-                  <div className="px-5 pb-3 flex flex-wrap gap-2">
-                    {item.documents.map((doc, i) => (
-                      <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-xs text-gray-600">
-                        <DocIcon type={doc.type} /> {doc.name}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Actions */}
-                  <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 flex justify-between">
-                    <button
-                      onClick={() => setSelectedItem(item)}
-                      className="text-sm text-everypay-600 hover:text-everypay-900 font-medium"
-                    >
-                      Review Details &rarr;
-                    </button>
-                    {item.myAction && (
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => {
-                            setSelectedItem(item);
-                            setTimeout(() => handleAction(item.id, "approve"), 0);
-                          }}
-                          disabled={actionLoading}
-                          className="px-4 py-1.5 bg-green-600 text-white text-xs font-medium rounded-md hover:bg-green-700 disabled:opacity-50"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => setSelectedItem(item)}
-                          className="px-4 py-1.5 bg-red-600 text-white text-xs font-medium rounded-md hover:bg-red-700 disabled:opacity-50"
-                        >
-                          Reject
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-
-            {/* History */}
-            {approvedItems.length > 0 && (
-              <div className="mt-8">
-                <h3 className="text-sm font-medium text-gray-500 mb-3">Recently Approved</h3>
-                <div className="space-y-2">
-                  {approvedItems.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between py-2 bg-white rounded-lg border border-gray-200 px-4">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-green-500" />
-                        <span className="text-sm font-medium text-gray-900">{item.id}</span>
-                        <span className="text-xs text-gray-500">{item.title}</span>
-                      </div>
-                      <span className="text-sm font-mono text-gray-600">${item.amount.toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {rejectedItems.length > 0 && (
-              <div className="mt-4">
-                <h3 className="text-sm font-medium text-gray-500 mb-3">Rejected</h3>
-                <div className="space-y-2">
-                  {rejectedItems.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between py-2 bg-white rounded-lg border border-gray-200 px-4">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-red-500" />
-                        <span className="text-sm font-medium text-gray-900">{item.id}</span>
-                        <span className="text-xs text-gray-500">{item.title}</span>
-                      </div>
-                      <span className="text-sm font-mono text-gray-600">${item.amount.toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </>
-      )}
-
-      {/* Detail view */}
-      {activeTab === "queue" && selectedItem && (
-        <div className="space-y-6">
-          <button
-            onClick={() => setSelectedItem(null)}
-            className="text-sm text-everypay-600 hover:text-everypay-900 font-medium"
-          >
-            &larr; Back to Queue
-          </button>
-
-          {/* Item details */}
-          <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-semibold text-gray-900">{selectedItem.id}</h2>
-                  <RiskBadge level={selectedItem.riskLevel} />
-                </div>
-                <p className="text-sm text-gray-600 mt-1">{selectedItem.title}</p>
-              </div>
-              <span className="text-xl font-mono font-bold text-gray-900">
-                ${selectedItem.amount.toLocaleString()} {selectedItem.currency}
-              </span>
-            </div>
-
-            {/* Risk summary */}
-            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-xs font-medium text-gray-700 mb-2">Risk Summary</h3>
-              <div className="space-y-1">
-                {selectedItem.riskNotes.map((note, i) => (
-                  <p key={i} className="text-sm text-gray-600 flex items-start gap-2">
-                    <span className={
-                      selectedItem.riskLevel === "green" ? "text-green-600" :
-                      selectedItem.riskLevel === "yellow" ? "text-yellow-600" : "text-red-600"
-                    }>
-                      {selectedItem.riskLevel === "green" ? "✓" : selectedItem.riskLevel === "yellow" ? "⚠" : "✕"}
-                    </span>
-                    {note}
-                  </p>
-                ))}
-              </div>
-            </div>
-
-            {/* Documents */}
-            <div className="mb-4">
-              <h3 className="text-xs font-medium text-gray-700 mb-2">Attached Documents</h3>
-              <div className="space-y-1">
-                {selectedItem.documents.map((doc, i) => (
-                  <div key={i} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                    <div className="flex items-center gap-2">
-                      <DocIcon type={doc.type} />
-                      <span className="text-sm text-gray-900">{doc.name}</span>
-                    </div>
-                    <span className="text-xs text-everypay-600 cursor-pointer">View &rarr;</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Counterparty profile */}
-            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-xs font-medium text-gray-700 mb-2">Counterparty</h3>
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <p className="text-xs text-gray-500">Name</p>
-                  <p className="font-medium text-gray-900">{selectedItem.counterparty.split("(")[0].trim()}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Trust Score</p>
-                  <p className="font-mono font-bold text-green-600">92%</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Prior Disputes</p>
-                  <p className="font-mono text-gray-900">0</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Linked procurement / agreement */}
-            <div className="mb-4 flex gap-3 text-sm">
-              {selectedItem.procurementId && (
-                <Link
-                  href={`/procurement/${selectedItem.procurementId}?userId=${userId}`}
-                  className="text-everypay-600 hover:text-everypay-900 font-medium"
-                >
-                  View Procurement &rarr;
-                </Link>
-              )}
-              {selectedItem.agreementId && (
-                <Link
-                  href={`/payment-agreements/${selectedItem.agreementId}/review?userId=${userId}`}
-                  className="text-everypay-600 hover:text-everypay-900 font-medium"
-                >
-                  View Payment Agreement &rarr;
-                </Link>
-              )}
-            </div>
-
-            {/* Action */}
-            <div className="pt-4 border-t border-gray-200">
-              <input
-                type="text"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm mb-3"
-                placeholder="Add a comment (required for rejection)"
-              />
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleAction(selectedItem.id, "approve")}
-                  disabled={actionLoading}
-                  className="px-6 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 disabled:opacity-50"
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={() => handleAction(selectedItem.id, "reject")}
-                  disabled={actionLoading}
-                  className="px-6 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 disabled:opacity-50"
-                >
-                  Reject
-                </button>
-              </div>
-            </div>
-          </div>
+      {/* Summary cards */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <p className="text-xs text-gray-500 font-medium">Pending</p>
+          <p className="text-xl font-bold font-mono text-amber-600 mt-1">{pendingTasks.length}</p>
         </div>
-      )}
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <p className="text-xs text-gray-500 font-medium">Approved</p>
+          <p className="text-xl font-bold font-mono text-green-600 mt-1">{approvedTasks.length}</p>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <p className="text-xs text-gray-500 font-medium">Rejected</p>
+          <p className="text-xl font-bold font-mono text-red-600 mt-1">{rejectedTasks.length}</p>
+        </div>
+      </div>
 
-      {/* Settings Tab */}
-      {activeTab === "settings" && (
-        <div className="space-y-6">
-          <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
-            <h2 className="text-sm font-medium text-gray-900 mb-4">Approval Chain Configuration</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Auto-Acceptance Threshold (USD)</label>
-                <input
-                  type="number"
-                  defaultValue={100000}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-                />
-                <p className="text-xs text-gray-500 mt-1">Settlements below this amount are auto-approved</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Approvers</label>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between py-2 border border-gray-200 rounded-md px-3">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">user-3</p>
-                      <p className="text-xs text-gray-500">APPROVER &middot; Order 1</p>
+      {/* Filter tabs */}
+      <div className="flex gap-2">
+        {[
+          { value: "pending" as const, label: "Pending" },
+          { value: "approved" as const, label: "Approved" },
+          { value: "rejected" as const, label: "Rejected" },
+          { value: "all" as const, label: "All" },
+        ].map((f) => (
+          <button
+            key={f.value}
+            onClick={() => setFilter(f.value)}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium border ${
+              filter === f.value
+                ? "bg-gray-900 text-white border-gray-900"
+                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Task table */}
+      {filteredTasks.length === 0 ? (
+        <div className="bg-white rounded-xl border border-gray-200 py-16 text-center">
+          <svg className="mx-auto h-12 w-12 text-green-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h3 className="text-sm font-medium text-gray-900">All caught up!</h3>
+          <p className="text-sm text-gray-500 mt-1">No {filter === "all" ? "" : filter.toLowerCase()} tasks.</p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-100">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Task</th>
+                <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Type</th>
+                <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
+                <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Workflow</th>
+                <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Created</th>
+                <th className="px-4 py-3 text-right text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-100">
+              {filteredTasks.map((task) => (
+                <tr key={task.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="text-sm font-semibold text-gray-900">{task.id}</div>
+                    <div className="text-xs text-gray-500 truncate max-w-[200px]">{task.title}</div>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${TYPE_COLORS[task.type]}`}>
+                      {TYPE_LABELS[task.type]}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="text-sm font-mono font-bold text-gray-900">
+                      {task.currency} {task.amount.toLocaleString()}
                     </div>
-                    <span className="text-xs text-green-600 font-medium">Active</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium border ${STATUS_COLORS[task.status]}`}>
+                      {task.status === "pending" && <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />}
+                      {STATUS_LABELS[task.status]}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <WorkflowStep step={task.workflowStep} />
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500">
+                    {new Date(task.submittedAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-right">
+                    {task.status === "pending" ? (
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/approvals/${task.agreementId}?userId=${userId}&action=review`}
+                          className="px-3 py-1 rounded-lg text-xs font-medium text-everypay-600 hover:bg-everypay-50 transition-colors"
+                        >
+                          Review
+                        </Link>
+                        <button
+                          onClick={() => handleQuickAction(task, "approve", userId, setTasks)}
+                          className="px-3 py-1 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition-colors"
+                        >
+                          Sign
+                        </button>
+                      </div>
+                    ) : (
+                      <Link
+                        href={`/approvals/${task.agreementId}?userId=${userId}`}
+                        className="text-xs text-gray-400 hover:text-gray-600"
+                      >
+                        View →
+                      </Link>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
   );
 }
 
-function RiskBadge({ level }: { level: "green" | "yellow" | "red" }) {
-  const map = {
-    green: "bg-green-100 text-green-800",
-    yellow: "bg-yellow-100 text-yellow-800",
-    red: "bg-red-100 text-red-800",
+function WorkflowStep({ step }: { step: string }) {
+  const steps: Record<string, { label: string; color: string }> = {
+    initiated: { label: "Initiated", color: "text-green-600" },
+    risk_check: { label: "Risk Check", color: "text-green-600" },
+    awaiting_approval: { label: "Awaiting Sign", color: "text-amber-600" },
+    execution: { label: "Execution", color: "text-gray-400" },
   };
-  const label = { green: "Low Risk", yellow: "Medium Risk", red: "High Risk" };
+  const s = steps[step] || steps.initiated;
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${map[level]}`}>
-      {label[level]}
+    <span className={`text-xs font-medium ${s.color}`}>
+      {s.label}
     </span>
   );
 }
 
-function TypeBadge({ type, round }: { type: string; round: number }) {
-  const map: Record<string, string> = {
-    terms: "bg-blue-50 text-blue-700",
-    prepayment: "bg-purple-50 text-purple-700",
-    counter_proposal: "bg-amber-50 text-amber-700",
-  };
-  const label: Record<string, string> = {
-    terms: "Terms",
-    prepayment: "Pre-Payment",
-    counter_proposal: "Counter",
-  };
-  return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${map[type] || "bg-gray-100 text-gray-800"}`}>
-      {label[type] || type} (R{round})
-    </span>
-  );
-}
-
-function DocIcon({ type }: { type: string }) {
-  const icons: Record<string, string> = {
-    contract: "📄",
-    invoice: "📋",
-    po: "📦",
-    logistics: "🚢",
-    customs: "🛃",
-    bank_transfer: "🏦",
-    insurance: "🛡️",
-  };
-  return <span>{icons[type] || "📎"}</span>;
+async function handleQuickAction(
+  task: TaskItem,
+  action: "approve" | "reject",
+  userId: string,
+  setTasks: React.Dispatch<React.SetStateAction<TaskItem[]>>,
+) {
+  if (!task.agreementId) return;
+  const apiAction = action === "approve" ? "approve" : "reject_approval";
+  try {
+    const res = await fetch(`/api/payment-agreements/${task.agreementId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: apiAction, userId }),
+    });
+    const result = await res.json();
+    if (result.status === "success") {
+      const queueRes = await fetch(`/api/approvals/queue?userId=${userId}`);
+      const queueData = await queueRes.json();
+      if (queueData.data) setTasks(queueData.data as TaskItem[]);
+    }
+  } catch {
+    // Error handled silently
+  }
 }

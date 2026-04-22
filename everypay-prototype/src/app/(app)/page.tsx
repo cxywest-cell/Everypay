@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import type { User, Invoice, Settlement, Procurement } from "@/lib/types";
+import { useSearchParams } from "next/navigation";
+import type { Procurement, Settlement, TradePaymentAgreement } from "@/lib/types";
 
 type DashboardRole = "buyer" | "seller" | "approver";
 
@@ -11,27 +11,35 @@ export default function HomePage() {
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId") || "user-1";
 
-  const [user, setUser] = useState<User | null>(null);
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [settlements, setSettlements] = useState<Settlement[]>([]);
-  const [procurements, setProcurements] = useState<Procurement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [procurements, setProcurements] = useState<Procurement[]>([]);
+  const [settlements, setSettlements] = useState<Settlement[]>([]);
+  const [agreements, setAgreements] = useState<TradePaymentAgreement[]>([]);
+
+  const role: DashboardRole =
+    userId === "user-3" ? "approver" : userId === "user-2" ? "seller" : "buyer";
+
+  const fetchData = async (url: string) => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    try {
+      const res = await fetch(url, { signal: controller.signal });
+      return await res.json();
+    } finally {
+      clearTimeout(timeout);
+    }
+  };
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/users").then((r) => r.json()),
-      fetch(`/api/invoices`).then((r) => r.json()),
-      fetch(`/api/settlements`).then((r) => r.json()),
-      fetch(`/api/procurements`).then((r) => r.json()),
+      fetchData("/api/procurements"),
+      fetchData("/api/settlements"),
+      fetchData("/api/payment-agreements"),
     ])
-      .then(([userRes, invRes, stlRes, poRes]) => {
-        if (userRes.data) {
-          const found = (userRes.data as User[]).find((u: User) => u.id === userId);
-          setUser(found || null);
-        }
-        if (invRes.data) setInvoices(invRes.data as Invoice[]);
-        if (stlRes.data) setSettlements(stlRes.data as Settlement[]);
+      .then(([poRes, stlRes, agrRes]) => {
         if (poRes.data) setProcurements(poRes.data as Procurement[]);
+        if (stlRes.data) setSettlements(stlRes.data as Settlement[]);
+        if (agrRes.data) setAgreements(agrRes.data as TradePaymentAgreement[]);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -45,235 +53,152 @@ export default function HomePage() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center p-8 gap-4">
-        <p className="text-gray-600">No user found. Use the demo switcher above to select a user.</p>
-      </div>
-    );
-  }
-
-  const role: DashboardRole =
-    user.id === "user-3" ? "approver" : user.id === "user-2" ? "seller" : "buyer";
-
-  const myInvoices = invoices.filter(
-    (i) => (role === "buyer" ? i.buyerId === user.id : i.sellerId === user.id)
+  // Filter data by role
+  const myProcurements = procurements.filter((p) =>
+    role === "buyer" ? p.buyerId === userId : p.sellerId === userId
   );
   const mySettlements = settlements.filter(
-    (s) => s.buyerId === user.id || s.sellerId === user.id
+    (s) => s.buyerId === userId || s.sellerId === userId
   );
 
-  const activeProcurementStatuses = ["SENT_TO_SELLER", "SELLER_RESPONDED", "TERMS_PROPOSED", "NEGOTIATING", "TERMS_ACCEPTED", "PAYMENT_INITIATED"];
-  const myProcurements = procurements.filter((p) => p.buyerId === user.id);
-
-  const pendingInvoices = myInvoices.filter((i) => i.status === "SENT");
-  const overdueInvoices = myInvoices.filter((i) => i.status === "OVERDUE");
+  const activeStatuses = ["DRAFT", "SENT_TO_SELLER", "SELLER_RESPONDED", "TERMS_PROPOSED", "NEGOTIATING", "TERMS_ACCEPTED", "PAYMENT_INITIATED"];
+  const activeProcurements = myProcurements.filter((p) => activeStatuses.includes(p.status));
+  const negotiatingProcurements = myProcurements.filter((p) =>
+    ["TERMS_PROPOSED", "NEGOTIATING", "SELLER_RESPONDED"].includes(p.status)
+  );
   const activeSettlements = mySettlements.filter(
     (s) => s.status !== "SETTLED" && s.status !== "FAILED"
   );
-  const completedSettlements = mySettlements.filter((s) => s.status === "SETTLED");
 
-  const now = new Date();
+  // Agreements needing action
+  const pendingAgreements = agreements.filter(
+    (a) => a.status === "SENT_TO_BUYER" && role === "buyer"
+      || a.status === "SENT_TO_SELLER" && role === "seller"
+  );
 
-  // Compute per-section data
-  const procurementAwaitingPayment = role === "buyer"
-    ? myProcurements.filter((p) => activeProcurementStatuses.includes(p.status))
-    : [];
-  const salesAwaitingPayment = role === "seller"
-    ? myInvoices.filter((i) => i.status === "SENT" || i.status === "OVERDUE")
-    : [];
+  const totalVolume = myProcurements.reduce((sum, p) => sum + p.totalAmount, 0);
+  const inFlightValue = activeSettlements.reduce((sum, s) => sum + s.fiatAmount, 0);
 
-  // Asset balances (mock)
-  const assets = {
-    totalUSD: 142850,
-    BRL: 285000,
-    ARS: 0,
-    USDOffshore: 52400,
-    HKDOffshore: 180000,
-    USDT: 15000,
-  };
-
-  // Stats (mock)
-  const stats = {
-    trustScore: 92,
-    counterpartyCount: 8,
-    settlementSuccessRate: 99.2,
-    corridorExposure: "$12,400 BRL",
-    complianceFlags: 0,
-  };
-
-  // Recent activity feed
-  const recentActivity = [
-    { type: "settlement", id: "STL-001", desc: "BRL → USDT → USD", amount: "$25,000", status: "USDT_CONFIRMED", time: "2 min ago" },
-    { type: "invoice", id: "INV-007", desc: "Invoice received from Wei Zhang", amount: "$12,400", status: "SENT", time: "1 hour ago" },
-    { type: "payment", id: "PAY-014", desc: "Payment confirmed — rate locked", amount: "$8,200", status: "LOCKED", time: "3 hours ago" },
-    { type: "settlement", id: "STL-003", desc: "USD delivered to offshore HK account", amount: "$45,000", status: "SETTLED", time: "1 day ago" },
-    { type: "approval", id: "APR-002", desc: "Terms approved by CFO", amount: "$32,000", status: "ACCEPTED", time: "1 day ago" },
-  ];
+  const activityTitle = role === "seller" ? "Active Sales" : "Active Procurements";
+  const activitySubtitle = role === "seller"
+    ? "Sales orders you're currently fulfilling"
+    : "Procurement orders needing your attention";
 
   return (
     <div className="p-4 lg:p-6 space-y-6">
-      {/* Welcome */}
-      <div>
-        <h1 className="text-xl font-semibold text-gray-900">
-          Welcome, {user.firstName} {user.lastName}
-        </h1>
-        <p className="text-sm text-gray-500">
-          {user.email} &middot; {role} &middot; {user.roles.join(", ")}
-        </p>
+      {/* Quick stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <StatCard
+          label={activityTitle}
+          value={activeProcurements.length.toString()}
+          accent
+        />
+        <StatCard
+          label="Active Settlements"
+          value={activeSettlements.length.toString()}
+        />
+        <StatCard
+          label="Total Volume"
+          value={`$${totalVolume.toLocaleString()}`}
+        />
+        <StatCard
+          label="In-Flight Value"
+          value={`$${inFlightValue.toLocaleString()}`}
+        />
       </div>
 
-      {/* Assets Section */}
-      <Section title="Assets" subtitle="Current balance across all currencies">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <AssetCard label="Total (USD equiv.)" value={`$${assets.totalUSD.toLocaleString()}`} accent />
-          <AssetCard label="BRL Holdings" value={`${assets.BRL.toLocaleString()} BRL`} />
-          <AssetCard label="ARS Holdings" value={assets.ARS > 0 ? `${assets.ARS.toLocaleString()} ARS` : "$0"} />
-          <AssetCard label="USD Offshore" value={`$${assets.USDOffshore.toLocaleString()}`} />
-          <AssetCard label="HKD Offshore" value={`${assets.HKDOffshore.toLocaleString()} HKD`} />
-          <AssetCard label="USDT Balance" value={`${assets.USDT.toLocaleString()} USDT`} />
-        </div>
-      </Section>
-
-      {/* Sales Awaiting Payment (Seller) */}
-      {role === "seller" && (
-        <Section
-          title="Sales Awaiting Payment"
-          subtitle="Outbound invoices sent to buyers, waiting for payment"
-          action={<Link href={`/templates?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">View all &rarr;</Link>}
+      {/* Buyer: Approvals awaiting response */}
+      {role === "buyer" && pendingAgreements.length > 0 && (
+        <Card
+          title="Payment Terms Awaiting Your Response"
+          subtitle="Agreements ready for you to accept or counter"
+          action={<Link href={`/trading?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">View all →</Link>}
         >
-          {salesAwaitingPayment.length === 0 ? (
-            <EmptyState message="No outstanding invoices" />
-          ) : (
-            <div className="space-y-3">
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <p className="text-xs text-gray-500">Count Outstanding</p>
-                  <p className="text-lg font-mono font-bold text-amber-600">{salesAwaitingPayment.length}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Total Value</p>
-                  <p className="text-lg font-mono font-bold text-gray-900">
-                    ${salesAwaitingPayment.reduce((s, i) => s + i.totalAmount, 0).toLocaleString()}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Overdue</p>
-                  <p className="text-lg font-mono font-bold text-red-600">{overdueInvoices.length}</p>
-                </div>
-              </div>
-              {overdueInvoices.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-gray-700 mb-2">Top Overdue</p>
-                  {overdueInvoices.slice(0, 3).map((inv) => {
-                    const dueDate = inv.dueDate ? new Date(inv.dueDate) : null;
-                    const daysOverdue = dueDate ? Math.floor((now.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24)) : 0;
-                    return (
-                      <div key={inv.id} className="flex items-center justify-between py-2 border-t border-gray-100">
-                        <div>
-                          <span className="text-sm font-medium text-gray-900">{inv.id}</span>
-                          <span className="ml-2 text-xs text-red-500">{daysOverdue} days overdue</span>
-                        </div>
-                        <span className="font-mono text-sm font-medium">${inv.totalAmount.toLocaleString()}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-        </Section>
-      )}
-
-      {/* Procurement Awaiting Payment (Buyer) */}
-      {role === "buyer" && (
-        <Section
-          title="Procurement Awaiting Payment"
-          subtitle="Active procurement orders needing your attention"
-          action={<Link href={`/procurement?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">View all &rarr;</Link>}
-        >
-          {procurementAwaitingPayment.length === 0 ? (
-            <EmptyState message="No pending procurements" />
-          ) : (
-            <div className="space-y-3">
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <p className="text-xs text-gray-500">Active</p>
-                  <p className="text-lg font-mono font-bold text-amber-600">{procurementAwaitingPayment.length}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Total Value</p>
-                  <p className="text-lg font-mono font-bold text-gray-900">
-                    ${procurementAwaitingPayment.reduce((s, p) => s + p.totalAmount, 0).toLocaleString()}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Due Soon</p>
-                  <p className="text-lg font-mono font-bold text-everypay-600">
-                    {procurementAwaitingPayment.filter((p) => {
-                      if (!p.dueDate) return false;
-                      const days = Math.floor((new Date(p.dueDate).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-                      return days <= 7;
-                    }).length}
-                  </p>
-                </div>
-              </div>
-              {procurementAwaitingPayment.slice(0, 3).map((po) => (
+          <div className="space-y-2">
+            {pendingAgreements.slice(0, 3).map((agr) => {
+              const po = procurements.find((p) => p.id === agr.procurementId);
+              return (
                 <Link
-                  key={po.id}
-                  href={`/procurement/${po.id}?userId=${userId}`}
-                  className="flex items-center justify-between py-2 border-t border-gray-100 hover:bg-gray-50 -mx-2 px-2 rounded"
+                  key={agr.id}
+                  href={`/payment-agreements/${agr.id}/review?userId=${userId}`}
+                  className="flex items-center justify-between py-2 hover:bg-gray-50 -mx-2 px-2 rounded"
                 >
                   <div>
-                    <span className="text-sm font-medium text-gray-900">{po.id}</span>
-                    <span className="ml-2 text-xs text-gray-500">{po.sellerId}</span>
-                    <span className="ml-2 text-xs text-amber-600">{po.status.replace(/_/g, " ")}</span>
+                    <span className="text-sm font-medium text-gray-900">{po?.id || agr.procurementId}</span>
+                    <span className="ml-2 text-xs text-gray-500">Rate: {agr.proposedRate.toFixed(2)}</span>
                   </div>
-                  <span className="font-mono text-sm font-medium">${po.totalAmount.toLocaleString()}</span>
+                  <span className="font-mono text-sm font-medium">
+                    ${(po?.totalAmount || 0).toLocaleString()} {po?.currency || "USD"}
+                  </span>
                 </Link>
-              ))}
-            </div>
-          )}
-        </Section>
+              );
+            })}
+          </div>
+        </Card>
       )}
 
+      {/* Active Trading Activities */}
+      <Card
+        title={activityTitle}
+        subtitle={activitySubtitle}
+        action={<Link href={`/trading?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">View all →</Link>}
+      >
+        {activeProcurements.length === 0 ? (
+          <EmptyState message={role === "seller" ? "No active sales" : "No active procurements"} />
+        ) : (
+          <div className="space-y-2">
+            {activeProcurements.slice(0, 5).map((po) => (
+              <Link
+                key={po.id}
+                href={`/trading/${po.id}?userId=${userId}`}
+                className="flex items-center justify-between py-2 hover:bg-gray-50 -mx-2 px-2 rounded"
+              >
+                <div className="flex items-center gap-3">
+                  <StatusDot status={po.status} />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{po.id}</p>
+                    <p className="text-xs text-gray-500">
+                      {role === "seller" ? po.buyerId : po.sellerId} · {po.status.replace(/_/g, " ")}
+                    </p>
+                  </div>
+                </div>
+                <span className="font-mono text-sm font-medium">
+                  {po.currency} {po.totalAmount.toLocaleString()}
+                </span>
+              </Link>
+            ))}
+            {negotiatingProcurements.length > 0 && (
+              <div className="pt-2 mt-2 border-t border-gray-100">
+                <p className="text-xs text-amber-600 font-medium">
+                  {negotiatingProcurements.length} in negotiation
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </Card>
+
       {/* Active Settlements */}
-      <Section
+      <Card
         title="Active Settlements"
         subtitle="In-progress settlements with real-time status"
-        action={<Link href={`/settlements?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">View all &rarr;</Link>}
+        action={<Link href={`/settlements?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">View all →</Link>}
       >
         {activeSettlements.length === 0 ? (
           <EmptyState message="No active settlements" />
         ) : (
-          <div className="space-y-3">
-            <div className="grid grid-cols-3 gap-4 text-sm">
-              <div>
-                <p className="text-xs text-gray-500">Count Active</p>
-                <p className="text-lg font-mono font-bold text-everypay-600">{activeSettlements.length}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">Total In-Flight</p>
-                <p className="text-lg font-mono font-bold text-gray-900">
-                  ${activeSettlements.reduce((s, st) => s + st.fiatAmount, 0).toLocaleString()}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">Completed</p>
-                <p className="text-lg font-mono font-bold text-green-600">{completedSettlements.length}</p>
-              </div>
-            </div>
+          <div className="space-y-2">
             {activeSettlements.slice(0, 4).map((stl) => (
               <Link
                 key={stl.id}
                 href={`/settlements/${stl.id}?userId=${userId}`}
-                className="flex items-center justify-between py-2 border-t border-gray-100 hover:bg-gray-50 -mx-2 px-2 rounded"
+                className="flex items-center justify-between py-2 hover:bg-gray-50 -mx-2 px-2 rounded"
               >
                 <div className="flex items-center gap-3">
                   <StatusDot status={stl.status} />
                   <div>
                     <p className="text-sm font-medium text-gray-900">{stl.id}</p>
-                    <p className="text-xs text-gray-500">{stl.corridor} &rarr; {stl.settlementCurrency}</p>
+                    <p className="text-xs text-gray-500">{stl.corridor} → {stl.settlementCurrency}</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -284,78 +209,53 @@ export default function HomePage() {
             ))}
           </div>
         )}
-      </Section>
+      </Card>
 
-      {/* Pending Approvals (Approver) */}
+      {/* Approver: Pending Approvals */}
       {role === "approver" && (
-        <Section
+        <Card
           title="Pending Approvals"
-          subtitle="Settlements requiring your review"
-          action={<Link href={`/approvals?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">View queue &rarr;</Link>}
+          subtitle="Items requiring your review"
+          action={<Link href={`/approvals?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">View queue →</Link>}
         >
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div>
               <p className="text-xs text-gray-500">Pending Review</p>
-              <p className="text-lg font-mono font-bold text-amber-600">3</p>
+              <p className="text-lg font-mono font-bold text-amber-600">—</p>
+              <p className="text-xs text-gray-400 mt-0.5">Check approval queue</p>
             </div>
             <div>
               <p className="text-xs text-gray-500">Total Value Awaiting</p>
-              <p className="text-lg font-mono font-bold text-gray-900">$89,000</p>
+              <p className="text-lg font-mono font-bold text-gray-900">—</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500">Oldest Pending</p>
-              <p className="text-lg font-mono font-bold text-gray-900">2h 15m</p>
+              <p className="text-xs text-gray-500">Team Members</p>
+              <p className="text-lg font-mono font-bold text-gray-900">1</p>
             </div>
           </div>
-        </Section>
+        </Card>
       )}
 
       {/* Recent Activity */}
-      <Section title="Recent Activity" subtitle="Chronological feed of recent events">
-        <div className="space-y-3">
-          {recentActivity.map((event) => (
-            <div key={event.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-              <div className="flex items-center gap-3">
-                <ActivityDot type={event.type} />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{event.desc}</p>
-                  <p className="text-xs text-gray-500">{event.time}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-mono font-medium text-gray-900">{event.amount}</p>
-                <p className="text-xs text-gray-500">{event.status}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* Stats */}
-      <Section title="Stats" subtitle="Quick metrics across all domains">
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-          <StatCard label="Trust Score" value={`${stats.trustScore}%`} />
-          <StatCard label="Counterparties" value={stats.counterpartyCount.toString()} />
-          <StatCard label="Settlement Success" value={`${stats.settlementSuccessRate}%`} />
-          <StatCard label="Corridor Exposure" value={stats.corridorExposure} />
-          <StatCard label="Compliance Flags" value={stats.complianceFlags.toString()} color={stats.complianceFlags === 0 ? "green" : "red"} />
-        </div>
-      </Section>
+      <Card title="Recent Activity" subtitle="Latest events across your activities">
+        <RecentActivityFeed userId={userId} role={role} />
+      </Card>
     </div>
   );
 }
 
-function Section({
-  title,
-  subtitle,
-  action,
-  children,
-}: {
-  title: string;
-  subtitle: string;
-  action?: React.ReactNode;
-  children: React.ReactNode;
-}) {
+function StatCard({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className={`rounded-lg p-4 ${accent ? "bg-everypay-50 border border-everypay-200" : "bg-white border border-gray-200 shadow-sm"}`}>
+      <p className="text-xs text-gray-500">{label}</p>
+      <p className={`text-xl font-mono font-bold mt-1 ${accent ? "text-everypay-700" : "text-gray-900"}`}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function Card({ title, subtitle, action, children }: { title: string; subtitle: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="bg-white rounded-lg shadow border border-gray-200">
       <div className="flex items-start justify-between px-6 py-4 border-b border-gray-100">
@@ -370,46 +270,6 @@ function Section({
   );
 }
 
-function AssetCard({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: string;
-  accent?: boolean;
-}) {
-  return (
-    <div className={`rounded-lg p-4 ${accent ? "bg-everypay-50 border border-everypay-200" : "bg-gray-50"}`}>
-      <p className="text-xs text-gray-500">{label}</p>
-      <p className={`text-lg font-mono font-bold mt-1 ${accent ? "text-everypay-700" : "text-gray-900"}`}>
-        {value}
-      </p>
-    </div>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: string;
-  color?: string;
-}) {
-  const colorMap: Record<string, string> = {
-    green: "text-green-600",
-    red: "text-red-600",
-  };
-  return (
-    <div className="bg-gray-50 rounded-lg p-4 text-center">
-      <p className="text-xs text-gray-500">{label}</p>
-      <p className={`text-xl font-mono font-bold mt-1 ${colorMap[color || ""] || "text-gray-900"}`}>{value}</p>
-    </div>
-  );
-}
-
 function EmptyState({ message }: { message: string }) {
   return (
     <div className="py-8 text-center">
@@ -419,8 +279,7 @@ function EmptyState({ message }: { message: string }) {
 }
 
 function StatusDot({ status }: { status: string }) {
-  const isActive =
-    status !== "SETTLED" && status !== "FAILED" && status !== "TRANSFERRED";
+  const isActive = status !== "SETTLED" && status !== "FAILED" && status !== "TRANSFERRED";
   return (
     <span
       className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
@@ -430,11 +289,78 @@ function StatusDot({ status }: { status: string }) {
   );
 }
 
+function RecentActivityFeed({ userId, role }: { userId: string; role: string }) {
+  const [items, setItems] = useState<Array<{ type: string; desc: string; amount: string; status: string; time: string }>>([]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    Promise.all([
+      fetch("/api/settlements", { signal: controller.signal }).then((r) => r.json()),
+      fetch("/api/procurements", { signal: controller.signal }).then((r) => r.json()),
+    ])
+      .then(([stlRes, poRes]) => {
+        const settlements = (stlRes.data || []).slice(0, 3);
+        const procurements = (poRes.data || []).slice(0, 2);
+
+        const feed: Array<{ type: string; desc: string; amount: string; status: string; time: string }> = [];
+
+        settlements.forEach((s: Record<string, unknown>) => {
+          feed.push({
+            type: "settlement",
+            desc: `${s.corridor} → ${s.settlementCurrency}`,
+            amount: `$${(s.fiatAmount as number)?.toLocaleString() || "—"}`,
+            status: (s.status as string)?.replace(/_/g, " ") || "",
+            time: new Date(s.createdAt as string).toLocaleDateString(),
+          });
+        });
+
+        procurements.forEach((p: Record<string, unknown>) => {
+          feed.push({
+            type: "trading",
+            desc: `${p.id} with ${role === "buyer" ? p.sellerId : p.buyerId}`,
+            amount: `${(p.currency as string)} ${(p.totalAmount as number)?.toLocaleString() || "—"}`,
+            status: (p.status as string)?.replace(/_/g, " ") || "",
+            time: new Date(p.createdAt as string).toLocaleDateString(),
+          });
+        });
+
+        setItems(feed);
+      })
+      .catch(() => {})
+      .finally(() => clearTimeout(timeout));
+  }, [userId, role]);
+
+  if (items.length === 0) {
+    return <EmptyState message="No recent activity" />;
+  }
+
+  return (
+    <div className="space-y-3">
+      {items.map((event, i) => (
+        <div key={i} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+          <div className="flex items-center gap-3">
+            <ActivityDot type={event.type} />
+            <div>
+              <p className="text-sm font-medium text-gray-900">{event.desc}</p>
+              <p className="text-xs text-gray-500">{event.time}</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-sm font-mono font-medium text-gray-900">{event.amount}</p>
+            <p className="text-xs text-gray-500">{event.status}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function ActivityDot({ type }: { type: string }) {
   const colorMap: Record<string, string> = {
     settlement: "bg-everypay-600",
-    invoice: "bg-blue-500",
-    payment: "bg-green-500",
+    trading: "bg-blue-500",
     approval: "bg-amber-500",
   };
   return (
