@@ -59,6 +59,7 @@ export async function POST(request: NextRequest) {
       kycStatus: KYCStatus.PENDING,
       roles: [],
       organizationId: null,
+      walletAddress: null,
       createdAt: new Date(now),
       updatedAt: new Date(now),
     };

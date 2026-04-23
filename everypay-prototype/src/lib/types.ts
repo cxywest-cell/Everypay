@@ -107,6 +107,7 @@ export interface User {
   kycStatus: KYCStatus;
   roles: Role[];
   organizationId: string | null;
+  walletAddress: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -292,10 +293,17 @@ export interface Counterparty {
   lastInteractionAt: Date | null;
 }
 
+export enum ApprovalFlowType {
+  SETTLEMENT = "SETTLEMENT",
+  PAYMENT_TERMS = "PAYMENT_TERMS",
+  ACTIVITY = "ACTIVITY",
+}
+
 export interface ApprovalChain {
   id: string;
   organizationId: string;
-  threshold: number; // amount threshold to trigger approval
+  type: ApprovalFlowType;
+  status: "active" | "draft";
   approvers: Approver[];
   createdAt: Date;
   updatedAt: Date;

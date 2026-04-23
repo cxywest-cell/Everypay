@@ -4,38 +4,34 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
+type ActivityType = "settlement" | "payment_agreement" | "procurement" | "sale";
+
 type TaskItem = {
   id: string;
-  type: "terms_approval" | "payment_approval" | "counter_approval";
+  type: ActivityType;
   title: string;
   description: string;
-  counterparty: string;
-  amount: number;
-  currency: string;
+  proposer: string;
   status: "pending" | "approved" | "rejected";
-  riskLevel: "green" | "yellow" | "red";
-  workflowStep: "initiated" | "risk_check" | "awaiting_approval" | "execution";
-  submittedBy: string;
   submittedAt: string;
-  round: number;
   procurementId?: string;
+  settlementId?: string;
   agreementId?: string;
   agreementStatus?: string;
-  proposedRate?: number;
-  marketRate?: number;
-  feeBreakdown?: { fxFee: number; platformFee: number; corridorFee: number; totalFees: number };
 };
 
-const TYPE_COLORS: Record<string, string> = {
-  terms_approval: "bg-blue-50 text-blue-700 border-blue-100",
-  payment_approval: "bg-purple-50 text-purple-700 border-purple-100",
-  counter_approval: "bg-amber-50 text-amber-800 border-amber-100",
+const TYPE_COLORS: Record<ActivityType, string> = {
+  settlement: "bg-indigo-100 text-indigo-700",
+  payment_agreement: "bg-purple-100 text-purple-700",
+  procurement: "bg-blue-100 text-blue-700",
+  sale: "bg-green-100 text-green-700",
 };
 
-const TYPE_LABELS: Record<string, string> = {
-  terms_approval: "Terms Approval",
-  payment_approval: "Payment Approval",
-  counter_approval: "Counter Approval",
+const TYPE_LABELS: Record<ActivityType, string> = {
+  settlement: "Settlement",
+  payment_agreement: "Payment Agreement",
+  procurement: "Procurement",
+  sale: "Sale",
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -45,8 +41,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  pending: "Wait for Sign",
-  approved: "Signed",
+  pending: "Pending",
+  approved: "Approved",
   rejected: "Rejected",
 };
 
@@ -55,7 +51,8 @@ export default function ApprovalsPage() {
   const userId = searchParams.get("userId") || "user-1";
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
-  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
+  const [typeFilter, setTypeFilter] = useState<ActivityType | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
 
   useEffect(() => {
     fetch(`/api/approvals/queue?userId=${userId}`)
@@ -71,13 +68,25 @@ export default function ApprovalsPage() {
   const approvedTasks = tasks.filter((t) => t.status === "approved");
   const rejectedTasks = tasks.filter((t) => t.status === "rejected");
 
-  const filteredTasks = filter === "all"
+  let filteredTasks = statusFilter === "all"
     ? tasks
-    : filter === "pending"
+    : statusFilter === "pending"
       ? pendingTasks
-      : filter === "approved"
+      : statusFilter === "approved"
         ? approvedTasks
         : rejectedTasks;
+
+  if (typeFilter !== "all") {
+    filteredTasks = filteredTasks.filter((t) => t.type === typeFilter);
+  }
+
+  const counts = {
+    all: tasks.length,
+    settlement: tasks.filter((t) => t.type === "settlement").length,
+    payment_agreement: tasks.filter((t) => t.type === "payment_agreement").length,
+    procurement: tasks.filter((t) => t.type === "procurement").length,
+    sale: tasks.filter((t) => t.type === "sale").length,
+  };
 
   if (loading) {
     return (
@@ -91,7 +100,7 @@ export default function ApprovalsPage() {
     <div className="p-4 lg:p-8 space-y-6 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Tasks</h1>
+        <h1 className="text-xl font-bold text-gray-900">Task Review</h1>
       </div>
 
       {/* Summary cards */}
@@ -110,19 +119,45 @@ export default function ApprovalsPage() {
         </div>
       </div>
 
-      {/* Filter tabs */}
+      {/* Type filter */}
+      <div className="flex gap-2 flex-wrap">
+        {(
+          [
+            { value: "all" as const, label: "All" },
+            { value: "settlement" as const, label: "Settlement" },
+            { value: "payment_agreement" as const, label: "Payment Agreement" },
+            { value: "procurement" as const, label: "Procurement" },
+            { value: "sale" as const, label: "Sale" },
+          ] as const
+        ).map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => setTypeFilter(tab.value)}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium border ${
+              typeFilter === tab.value
+                ? "bg-everypay-100 text-everypay-800 border-everypay-300"
+                : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
+            }`}
+          >
+            {tab.label}
+            <span className="ml-1 text-xs opacity-60">({counts[tab.value === "all" ? "all" : tab.value]})</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Status filter */}
       <div className="flex gap-2">
         {[
+          { value: "all" as const, label: "All Status" },
           { value: "pending" as const, label: "Pending" },
           { value: "approved" as const, label: "Approved" },
           { value: "rejected" as const, label: "Rejected" },
-          { value: "all" as const, label: "All" },
         ].map((f) => (
           <button
             key={f.value}
-            onClick={() => setFilter(f.value)}
+            onClick={() => setStatusFilter(f.value)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium border ${
-              filter === f.value
+              statusFilter === f.value
                 ? "bg-gray-900 text-white border-gray-900"
                 : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
             }`}
@@ -139,7 +174,7 @@ export default function ApprovalsPage() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <h3 className="text-sm font-medium text-gray-900">All caught up!</h3>
-          <p className="text-sm text-gray-500 mt-1">No {filter === "all" ? "" : filter.toLowerCase()} tasks.</p>
+          <p className="text-sm text-gray-500 mt-1">No tasks to show.</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -148,10 +183,9 @@ export default function ApprovalsPage() {
               <tr>
                 <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Task</th>
                 <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Type</th>
-                <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
+                <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Proposer</th>
                 <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Workflow</th>
-                <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Created</th>
+                <th className="px-4 py-3 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Date</th>
                 <th className="px-4 py-3 text-right text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -159,18 +193,16 @@ export default function ApprovalsPage() {
               {filteredTasks.map((task) => (
                 <tr key={task.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="text-sm font-semibold text-gray-900">{task.id}</div>
+                    <div className="text-sm font-mono font-semibold text-gray-900">{task.id}</div>
                     <div className="text-xs text-gray-500 truncate max-w-[200px]">{task.title}</div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${TYPE_COLORS[task.type]}`}>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${TYPE_COLORS[task.type]}`}>
                       {TYPE_LABELS[task.type]}
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="text-sm font-mono font-bold text-gray-900">
-                      {task.currency} {task.amount.toLocaleString()}
-                    </div>
+                    <div className="text-sm text-gray-900">{task.proposer}</div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium border ${STATUS_COLORS[task.status]}`}>
@@ -178,36 +210,16 @@ export default function ApprovalsPage() {
                       {STATUS_LABELS[task.status]}
                     </span>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <WorkflowStep step={task.workflowStep} />
-                  </td>
                   <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500">
                     {new Date(task.submittedAt).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-right">
-                    {task.status === "pending" ? (
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/approvals/${task.agreementId}?userId=${userId}&action=review`}
-                          className="px-3 py-1 rounded-lg text-xs font-medium text-everypay-600 hover:bg-everypay-50 transition-colors"
-                        >
-                          Review
-                        </Link>
-                        <button
-                          onClick={() => handleQuickAction(task, "approve", userId, setTasks)}
-                          className="px-3 py-1 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition-colors"
-                        >
-                          Sign
-                        </button>
-                      </div>
-                    ) : (
-                      <Link
-                        href={`/approvals/${task.agreementId}?userId=${userId}`}
-                        className="text-xs text-gray-400 hover:text-gray-600"
-                      >
-                        View →
-                      </Link>
-                    )}
+                  <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                    <Link
+                      href={task.settlementId ? `/settlements/${task.settlementId}?userId=${userId}` : task.agreementId ? `/approvals/${task.agreementId}?userId=${userId}&action=review` : `/trading/${task.procurementId}?userId=${userId}`}
+                      className="text-everypay-600 hover:text-everypay-900"
+                    >
+                      Review
+                    </Link>
                   </td>
                 </tr>
               ))}
@@ -217,44 +229,4 @@ export default function ApprovalsPage() {
       )}
     </div>
   );
-}
-
-function WorkflowStep({ step }: { step: string }) {
-  const steps: Record<string, { label: string; color: string }> = {
-    initiated: { label: "Initiated", color: "text-green-600" },
-    risk_check: { label: "Risk Check", color: "text-green-600" },
-    awaiting_approval: { label: "Awaiting Sign", color: "text-amber-600" },
-    execution: { label: "Execution", color: "text-gray-400" },
-  };
-  const s = steps[step] || steps.initiated;
-  return (
-    <span className={`text-xs font-medium ${s.color}`}>
-      {s.label}
-    </span>
-  );
-}
-
-async function handleQuickAction(
-  task: TaskItem,
-  action: "approve" | "reject",
-  userId: string,
-  setTasks: React.Dispatch<React.SetStateAction<TaskItem[]>>,
-) {
-  if (!task.agreementId) return;
-  const apiAction = action === "approve" ? "approve" : "reject_approval";
-  try {
-    const res = await fetch(`/api/payment-agreements/${task.agreementId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: apiAction, userId }),
-    });
-    const result = await res.json();
-    if (result.status === "success") {
-      const queueRes = await fetch(`/api/approvals/queue?userId=${userId}`);
-      const queueData = await queueRes.json();
-      if (queueData.data) setTasks(queueData.data as TaskItem[]);
-    }
-  } catch {
-    // Error handled silently
-  }
 }

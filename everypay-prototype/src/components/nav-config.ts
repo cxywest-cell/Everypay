@@ -47,7 +47,7 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     label: "Organization",
     items: [
-      { label: "Counterparties", href: "/counterparties", icon: "counterparties", roles: [...ALL_ROLES] },
+      { label: "Suppliers", href: "/suppliers", icon: "counterparties", roles: [...ALL_ROLES] },
       { label: "Approval Flow", href: "/approval-flow", icon: "approvalFlow", roles: [...ALL_ROLES] },
       { label: "Team", href: "/team", icon: "team", roles: [...ALL_ROLES] },
     ],

@@ -10,24 +10,18 @@ import type { TeamInvitation } from "@/lib/teamTypes";
 const ROLE_COLORS: Record<Role, string> = {
   ADMIN: "bg-red-100 text-red-800",
   APPROVER: "bg-purple-100 text-purple-800",
-  COMPLIANCE: "bg-yellow-100 text-yellow-800",
   OPERATOR: "bg-blue-100 text-blue-800",
-  VIEWER: "bg-gray-100 text-gray-800",
-};
+} as Record<Role, string>;
 
 const ROLE_LABELS: Record<Role, string> = {
   ADMIN: "Admin",
   APPROVER: "Approver",
-  COMPLIANCE: "Compliance",
   OPERATOR: "Operator",
-  VIEWER: "Viewer",
-};
+} as Record<Role, string>;
 
-const ALL_ROLES: Role[] = [
-  Role.VIEWER,
+const TEAM_ROLES: Role[] = [
   Role.OPERATOR,
   Role.APPROVER,
-  Role.COMPLIANCE,
   Role.ADMIN,
 ];
 
@@ -54,7 +48,7 @@ export default function TeamPage() {
   const [invitations, setInvitations] = useState<TeamInvitation[]>([]);
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRoles, setInviteRoles] = useState<Role[]>([Role.VIEWER]);
+  const [inviteRoles, setInviteRoles] = useState<Role[]>([Role.OPERATOR]);
   const [inviteMessage, setInviteMessage] = useState("");
   const [inviting, setInviting] = useState(false);
 
@@ -199,7 +193,7 @@ export default function TeamPage() {
         setInvitations((prev) => [...prev, result.data as TeamInvitation]);
         setSuccess(`Invitation sent to ${inviteEmail}`);
         setInviteEmail("");
-        setInviteRoles([Role.VIEWER]);
+        setInviteRoles([Role.OPERATOR]);
         setInviteMessage("");
         setShowInviteForm(false);
       } else {
@@ -333,6 +327,9 @@ export default function TeamPage() {
                     User
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Sign Key
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     KYC Status
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -351,7 +348,7 @@ export default function TeamPage() {
               {showInviteForm && (
                 <thead>
                   <tr className="bg-everypay-50">
-                    <td colSpan={5} className="px-4 py-4">
+                    <td colSpan={6} className="px-4 py-4">
                       <div className="space-y-3">
                         <div>
                           <label className="block text-sm font-medium text-gray-700">Email Address</label>
@@ -366,7 +363,7 @@ export default function TeamPage() {
                         <div>
                           <label className="block text-sm font-medium text-gray-700">Assign Role</label>
                           <div className="mt-1 flex flex-wrap gap-2">
-                            {ALL_ROLES.map((role) => (
+                            {TEAM_ROLES.map((role) => (
                               <button
                                 key={role}
                                 type="button"
@@ -430,6 +427,13 @@ export default function TeamPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
+                      {user.walletAddress ? (
+                        <span className="text-xs font-mono text-everypay-600 bg-everypay-50 px-2 py-1 rounded">{user.walletAddress}</span>
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                           user.kycStatus === "VERIFIED"
@@ -445,7 +449,7 @@ export default function TeamPage() {
                     <td className="px-4 py-3 whitespace-nowrap">
                       {editingUserId === user.id ? (
                         <div className="flex flex-wrap gap-1">
-                          {ALL_ROLES.map((role) => (
+                          {TEAM_ROLES.map((role) => (
                             <button
                               key={role}
                               onClick={() => toggleRole(role)}
@@ -578,10 +582,8 @@ export default function TeamPage() {
               <h4 className="text-sm font-medium text-blue-800">Role Permissions</h4>
               <div className="mt-2 text-sm text-blue-700">
                 <ul className="list-disc pl-5 space-y-1">
-                  <li><strong>Viewer:</strong> Read-only access to settlements and invoices</li>
-                  <li><strong>Operator:</strong> Create invoices, initiate payments, manage settlements</li>
-                  <li><strong>Approver:</strong> Approve high-value settlements above threshold</li>
-                  <li><strong>Compliance:</strong> Access KYC/KYB records, audit logs, evidence packs</li>
+                  <li><strong>Operator:</strong> Create trades, initiate payments, manage settlements</li>
+                  <li><strong>Approver:</strong> Approve/reject financial decisions and payment releases</li>
                   <li><strong>Admin:</strong> Full access including team management and role assignment</li>
                 </ul>
               </div>

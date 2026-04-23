@@ -5,13 +5,30 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type { Procurement } from "@/lib/types";
 
-type TradingActivity = Procurement & {
-  myRole: "buyer" | "seller";
-  agreementStatus?: string;
-  agreementId?: string;
+type ActivityType = "SALE" | "PROCUREMENT";
+
+type UnifiedTask = {
+  type: ActivityType;
+  id: string;
+  counterparty: string;
+  amount: string;
+  currency: string;
+  status: string;
+  date: string;
+  href: string;
 };
 
-const STATUS_COLORS: Record<string, string> = {
+const TYPE_LABELS: Record<ActivityType, string> = {
+  SALE: "Sale",
+  PROCUREMENT: "Procurement",
+};
+
+const TYPE_COLORS: Record<ActivityType, string> = {
+  SALE: "bg-green-100 text-green-700",
+  PROCUREMENT: "bg-blue-100 text-blue-700",
+};
+
+const PROCUREMENT_STATUS_COLORS: Record<string, string> = {
   DRAFT: "bg-gray-100 text-gray-800",
   SENT_TO_SELLER: "bg-blue-100 text-blue-800",
   SELLER_RESPONDED: "bg-purple-100 text-purple-800",
@@ -25,71 +42,85 @@ const STATUS_COLORS: Record<string, string> = {
   DISPUTED: "bg-red-100 text-red-800",
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  DRAFT: "Draft",
-  SENT_TO_SELLER: "Sent to Seller",
-  SELLER_RESPONDED: "Seller Responded",
-  TERMS_PROPOSED: "Terms Proposed",
-  NEGOTIATING: "Negotiating",
-  TERMS_ACCEPTED: "Terms Accepted",
-  PAYMENT_INITIATED: "Payment Initiated",
-  IN_TRANSIT: "In Transit",
-  RECEIVED: "Received",
-  SETTLED: "Settled",
-  DISPUTED: "Disputed",
-};
+function getStatusColor(type: ActivityType, status: string): string {
+  return PROCUREMENT_STATUS_COLORS[status] || "bg-gray-100 text-gray-800";
+}
 
-export default function TradingActivitiesPage() {
+function formatStatus(status: string): string {
+  return status.replace(/_/g, " ");
+}
+
+export default function ActivitiesPage() {
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId") || "user-1";
 
-  const [activities, setActivities] = useState<TradingActivity[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<string>("all");
-  const [roleFilter, setRoleFilter] = useState<"all" | "buyer" | "seller">("all");
+  const [tasks, setTasks] = useState<UnifiedTask[]>([]);
+  const [typeFilter, setTypeFilter] = useState<ActivityType | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
-    Promise.all([
-      fetch(`/api/procurements?userId=${userId}`)
-        .then((r) => r.json()),
-      fetch("/api/payment-agreements").then((r) => r.json()),
-    ])
-      .then(([procResult, agrResult]) => {
-        const procurements = (procResult.data || []) as Procurement[];
-        const agreements = agrResult.data || [];
+    fetch(`/api/procurements?userId=${userId}`)
+      .then((r) => r.json())
+      .then((procurementsRes) => {
+        const procurements = (procurementsRes.data || []) as Procurement[];
+        const unified: UnifiedTask[] = [];
 
-        const enriched = procurements.map((p) => ({
-          ...p,
-          myRole: p.buyerId === userId ? "buyer" as const : "seller" as const,
-          agreementStatus: agreements.find((a: Record<string, unknown>) => a.procurementId === p.id)?.status as string | undefined,
-          agreementId: agreements.find((a: Record<string, unknown>) => a.procurementId === p.id)?.id as string | undefined,
-        }));
+        procurements.forEach((p) => {
+          const role = p.buyerId === userId ? "buyer" : "seller";
+          if (role === "buyer") {
+            unified.push({
+              type: "PROCUREMENT",
+              id: p.id,
+              counterparty: p.sellerId,
+              amount: `${p.totalAmount.toLocaleString()}`,
+              currency: p.currency,
+              status: p.status,
+              date: p.createdAt?.toString() || "",
+              href: `/trading/${p.id}`,
+            });
+          } else if (role === "seller") {
+            unified.push({
+              type: "SALE",
+              id: p.id,
+              counterparty: p.buyerId,
+              amount: `${p.totalAmount.toLocaleString()}`,
+              currency: p.currency,
+              status: p.status,
+              date: p.createdAt?.toString() || "",
+              href: `/trading/${p.id}`,
+            });
+          }
+        });
 
-        enriched.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-
-        setActivities(enriched);
+        unified.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        setTasks(unified);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [userId]);
 
-  const activeStatuses = ["DRAFT", "SENT_TO_SELLER", "SELLER_RESPONDED", "TERMS_PROPOSED", "NEGOTIATING"];
-  const completedStatuses = ["TERMS_ACCEPTED", "PAYMENT_INITIATED", "IN_TRANSIT", "RECEIVED", "SETTLED"];
-
-  let filteredActivities = activities;
-
-  if (roleFilter !== "all") {
-    filteredActivities = filteredActivities.filter((a) => a.myRole === roleFilter);
+  let filtered = tasks;
+  if (typeFilter !== "all") {
+    filtered = filtered.filter((t) => t.type === typeFilter);
+  }
+  if (statusFilter !== "all") {
+    if (statusFilter === "active") {
+      const activeStatuses = ["DRAFT", "SENT_TO_SELLER", "SELLER_RESPONDED", "TERMS_PROPOSED", "NEGOTIATING"];
+      filtered = filtered.filter((t) => activeStatuses.includes(t.status));
+    } else if (statusFilter === "completed") {
+      const completedStatuses = ["TERMS_ACCEPTED", "SETTLED", "RECEIVED"];
+      filtered = filtered.filter((t) => completedStatuses.includes(t.status));
+    } else {
+      filtered = filtered.filter((t) => t.status === statusFilter);
+    }
   }
 
-  filteredActivities =
-    filter === "all"
-      ? filteredActivities
-      : filter === "active"
-        ? filteredActivities.filter((a) => activeStatuses.includes(a.status))
-        : filter === "completed"
-          ? filteredActivities.filter((a) => completedStatuses.includes(a.status))
-          : filteredActivities.filter((a) => a.status === filter);
+  const counts = {
+    all: tasks.length,
+    SALE: tasks.filter((t) => t.type === "SALE").length,
+    PROCUREMENT: tasks.filter((t) => t.type === "PROCUREMENT").length,
+  };
 
   if (loading) {
     return (
@@ -103,7 +134,7 @@ export default function TradingActivitiesPage() {
     <div className="p-4 lg:p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold text-gray-900">Trading Activities</h1>
+        <h1 className="text-xl font-semibold text-gray-900">Activities</h1>
         <Link
           href={`/trading/create?userId=${userId}`}
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-everypay-600 hover:bg-everypay-700"
@@ -115,23 +146,26 @@ export default function TradingActivitiesPage() {
         </Link>
       </div>
 
-      {/* Role filter */}
+      {/* Type tabs */}
       <div className="flex space-x-2 mb-3">
-        {[
-          { value: "all" as const, label: "All" },
-          { value: "buyer" as const, label: "Buying" },
-          { value: "seller" as const, label: "Selling" },
-        ].map((f) => (
+        {(
+          [
+            { value: "all" as const, label: "All" },
+            { value: "SALE" as const, label: "Sale" },
+            { value: "PROCUREMENT" as const, label: "Procurement" },
+          ] as const
+        ).map((tab) => (
           <button
-            key={f.value}
-            onClick={() => setRoleFilter(f.value)}
+            key={tab.value}
+            onClick={() => { setTypeFilter(tab.value); setStatusFilter("all"); }}
             className={`px-3 py-1.5 rounded-full text-sm font-medium border ${
-              roleFilter === f.value
+              typeFilter === tab.value
                 ? "bg-everypay-100 text-everypay-800 border-everypay-300"
                 : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
             }`}
           >
-            {f.label}
+            {tab.label}
+            <span className="ml-1 text-xs opacity-60">({counts[tab.value]})</span>
           </button>
         ))}
       </div>
@@ -142,14 +176,12 @@ export default function TradingActivitiesPage() {
           { value: "all", label: "All" },
           { value: "active", label: "Active" },
           { value: "completed", label: "Completed" },
-          { value: "TERMS_PROPOSED", label: "Terms Proposed" },
-          { value: "NEGOTIATING", label: "Negotiating" },
         ].map((f) => (
           <button
             key={f.value}
-            onClick={() => setFilter(f.value)}
+            onClick={() => setStatusFilter(f.value)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium border ${
-              filter === f.value
+              statusFilter === f.value
                 ? "bg-everypay-100 text-everypay-800 border-everypay-300"
                 : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
             }`}
@@ -159,16 +191,14 @@ export default function TradingActivitiesPage() {
         ))}
       </div>
 
-      {/* Activity List */}
-      {filteredActivities.length === 0 ? (
+      {/* Task list */}
+      {filtered.length === 0 ? (
         <div className="bg-white rounded-lg shadow border border-gray-200 py-16 text-center">
           <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No trading activities yet</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Create your first trading activity to get started.
-          </p>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">No activities yet</h3>
+          <p className="mt-1 text-sm text-gray-500">Create your first trading activity to get started.</p>
           <div className="mt-6">
             <Link
               href={`/trading/create?userId=${userId}`}
@@ -186,103 +216,46 @@ export default function TradingActivitiesPage() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Activity
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Role
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Counterparty
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Agreement
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Due Date
-                </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Counterparty</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredActivities.map((activity) => (
-                <tr key={activity.id} className="hover:bg-gray-50">
+              {filtered.map((task) => (
+                <tr key={`${task.type}-${task.id}`} className="hover:bg-gray-50">
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{activity.id}</div>
-                    <div className="text-xs text-gray-500">
-                      {activity.lineItems.length} item(s)
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                      activity.myRole === "buyer"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-green-100 text-green-800"
-                    }`}>
-                      {activity.myRole === "buyer" ? "Buyer" : "Seller"}
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${TYPE_COLORS[task.type]}`}>
+                      {TYPE_LABELS[task.type]}
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {activity.myRole === "buyer" ? activity.sellerId : activity.buyerId}
-                    </div>
+                    <div className="text-sm font-mono text-gray-900">{task.id}</div>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{task.counterparty}</div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <div className="text-sm font-mono font-medium text-gray-900">
-                      {activity.currency} {activity.totalAmount.toLocaleString()}
+                      {task.currency} {task.amount}
                     </div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        STATUS_COLORS[activity.status] || "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {STATUS_LABELS[activity.status] || activity.status}
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(task.type, task.status)}`}>
+                      {formatStatus(task.status)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    {activity.agreementId ? (
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        activity.agreementStatus === "ACCEPTED" ? "bg-green-100 text-green-800" :
-                        activity.agreementStatus === "SENT_TO_BUYER" || activity.agreementStatus === "SENT_TO_SELLER" ? "bg-indigo-100 text-indigo-800" :
-                        activity.agreementStatus === "PROPOSED" || activity.agreementStatus === "COUNTER_PROPOSED" ? "bg-amber-100 text-amber-800" :
-                        "bg-gray-100 text-gray-600"
-                      }`}>
-                        {activity.agreementStatus?.replace(/_/g, " ")}
-                      </span>
-                    ) : (
-                      <span className="text-xs text-gray-400">Not yet created</span>
-                    )}
-                  </td>
                   <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                    {activity.dueDate
-                      ? new Date(activity.dueDate).toLocaleDateString()
-                      : "—"}
+                    {new Date(task.date).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    <Link
-                      href={`/trading/${activity.id}?userId=${userId}`}
-                      className="text-everypay-600 hover:text-everypay-900"
-                    >
+                  <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                    <Link href={`${task.href}?userId=${userId}`} className="text-everypay-600 hover:text-everypay-900">
                       View
                     </Link>
-                    {activity.agreementId && (
-                      <Link
-                        href={`/payment-agreements/${activity.agreementId}/review?userId=${userId}`}
-                        className="text-everypay-500 hover:text-everypay-700"
-                      >
-                        Terms
-                      </Link>
-                    )}
                   </td>
                 </tr>
               ))}

@@ -4,7 +4,8 @@ import { readSeed, writeSeed, withMockError } from "../helpers";
 type ApprovalChain = {
   id: string;
   organizationId: string;
-  threshold: number;
+  type: string;
+  status: string;
   approvers: Array<{
     userId: string;
     role: string;
@@ -24,51 +25,15 @@ export async function GET() {
   });
 }
 
-export async function POST(request: NextRequest) {
-  const body = (await request.json()) as {
-    organizationId: string;
-    threshold: number;
-    approvers: Array<{
-      userId: string;
-      role: string;
-      order: number;
-    }>;
-  };
-
-  return withMockError(() => {
-    const chains = readSeed<ApprovalChain[]>("approval_chains.json");
-    const now = new Date().toISOString();
-
-    const newChain: ApprovalChain = {
-      id: `ac-${Date.now()}`,
-      organizationId: body.organizationId,
-      threshold: body.threshold,
-      approvers: body.approvers.map((a) => ({
-        ...a,
-        status: "pending",
-        comment: null,
-        timestamp: null,
-      })),
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    chains.push(newChain);
-    writeSeed("approval_chains.json", chains);
-
-    return NextResponse.json({ data: newChain, status: "success" }, { status: 201 });
-  });
-}
-
 export async function PATCH(request: NextRequest) {
   const body = (await request.json()) as {
     chainId?: string;
     approverUserId?: string;
     action?: "approve" | "reject";
     comment?: string;
-    threshold?: number;
-    // Approver management
+    status?: "active" | "draft";
     addApproverUserId?: string;
+    approverOrder?: number;
     removeApproverUserId?: string;
     moveApproverUserId?: string;
     moveDirection?: "up" | "down";
@@ -77,13 +42,13 @@ export async function PATCH(request: NextRequest) {
   return withMockError(() => {
     const chains = readSeed<ApprovalChain[]>("approval_chains.json");
 
-    // Handle threshold update
-    if (body.threshold !== undefined && body.chainId) {
+    // Handle status confirmation
+    if (body.status && body.chainId) {
       const chainIndex = chains.findIndex((c) => c.id === body.chainId);
       if (chainIndex === -1) {
         return NextResponse.json({ data: null, status: "error", error: "Approval chain not found" }, { status: 404 });
       }
-      chains[chainIndex].threshold = body.threshold;
+      chains[chainIndex].status = body.status;
       chains[chainIndex].updatedAt = new Date().toISOString();
       writeSeed("approval_chains.json", chains);
       return NextResponse.json({ data: chains[chainIndex], status: "success" });
@@ -100,15 +65,16 @@ export async function PATCH(request: NextRequest) {
       if (existing) {
         return NextResponse.json({ data: null, status: "error", error: "User already an approver" }, { status: 400 });
       }
-      const maxOrder = chain.approvers.length > 0 ? Math.max(...chain.approvers.map((a) => a.order)) : 0;
+      const order = body.approverOrder || chain.approvers.length + 1;
       chain.approvers.push({
         userId: body.addApproverUserId,
         role: "APPROVER",
-        order: maxOrder + 1,
+        order,
         status: "pending",
         comment: null,
         timestamp: null,
       });
+      if (body.status) chain.status = body.status;
       chain.updatedAt = new Date().toISOString();
       writeSeed("approval_chains.json", chains);
       return NextResponse.json({ data: chain, status: "success" });
@@ -122,8 +88,8 @@ export async function PATCH(request: NextRequest) {
       }
       const chain = chains[chainIndex];
       chain.approvers = chain.approvers.filter((a) => a.userId !== body.removeApproverUserId);
-      // Reorder
       chain.approvers.forEach((a, i) => { a.order = i + 1; });
+      if (body.status) chain.status = body.status;
       chain.updatedAt = new Date().toISOString();
       writeSeed("approval_chains.json", chains);
       return NextResponse.json({ data: chain, status: "success" });
@@ -143,10 +109,10 @@ export async function PATCH(request: NextRequest) {
       if (swapIdx < 0 || swapIdx >= sorted.length) {
         return NextResponse.json({ data: null, status: "error", error: "Cannot move further" }, { status: 400 });
       }
-      // Swap orders
       const tempOrder = sorted[idx].order;
       sorted[idx].order = sorted[swapIdx].order;
       sorted[swapIdx].order = tempOrder;
+      if (body.status) chain.status = body.status;
       chain.updatedAt = new Date().toISOString();
       writeSeed("approval_chains.json", chains);
       return NextResponse.json({ data: chain, status: "success" });
@@ -158,7 +124,6 @@ export async function PATCH(request: NextRequest) {
     }
 
     const chainIndex = chains.findIndex((c) => c.id === body.chainId);
-
     if (chainIndex === -1) {
       return NextResponse.json({ data: null, status: "error", error: "Approval chain not found" }, { status: 404 });
     }
