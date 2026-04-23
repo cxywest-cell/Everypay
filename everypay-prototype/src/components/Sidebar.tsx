@@ -13,6 +13,7 @@ import {
   IconApprovals,
   IconApprovalFlow,
   IconTeam,
+  IconCounterparties,
 } from "./icons";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -24,6 +25,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   approvals: IconApprovals,
   approvalFlow: IconApprovalFlow,
   team: IconTeam,
+  counterparties: IconCounterparties,
 };
 
 const ORG_COLORS = [
