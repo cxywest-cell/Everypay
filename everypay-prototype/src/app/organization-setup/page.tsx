@@ -94,7 +94,7 @@ export default function OrganizationSetupPage() {
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
-      router.push("/compliance-pending");
+      router.push("/compliance-pending?org=org-delta");
     }, 1500);
   };
 

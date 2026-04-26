@@ -100,14 +100,21 @@ export function Sidebar({ collapsed, mobile, onClose }: SidebarProps) {
   };
 
   // Default org: user-1 -> org-alpha (verified), user-2 -> org-beta (pending)
+  // Default org: user-2 -> org-beta (pending), otherwise org-alpha (verified)
   const defaultOrg = userId === "user-2"
     ? orgs.find((o) => o.id === "org-beta")
     : orgs.find((o) => o.id === "org-alpha")
     ?? orgs[0];
 
+  // On /compliance-pending without org param, default to first PENDING org
+  const isComplianceRoute = pathname === "/compliance-pending";
+  const fallbackOrg = isComplianceRoute
+    ? orgs.find((o) => o.kybStatus === "PENDING")
+    : undefined;
+
   const currentOrg = orgParam
     ? orgs.find((o) => o.id === orgParam)
-    : defaultOrg;
+    : fallbackOrg ?? defaultOrg;
 
   const ORG_STEPS: Record<string, number> = {
     "org-beta": 4,
