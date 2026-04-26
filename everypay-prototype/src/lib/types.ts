@@ -185,7 +185,7 @@ export interface Invoice {
 export interface SettlementLeg {
   id: string;
   settlementId: string;
-  legOrder: number; // 1: fiat→USDT, 2: USDT→USD/HKD, 3: bank transfer
+  legOrder: number;
   status: SettlementStatus;
   amountFrom: number;
   currencyFrom: string;
@@ -193,6 +193,8 @@ export interface SettlementLeg {
   currencyTo: string;
   exchangeRate: number;
   fees: number;
+  fromAccount: { type: string; accountId: string; address: string | null; name: string };
+  toAccount: { type: string; accountId: string; address: string | null; name: string };
   timestamp: Date | null;
   failureReason: string | null;
 }
@@ -201,6 +203,7 @@ export interface Settlement {
   id: string;
   buyerId: string;
   sellerId: string;
+  procurementId: string;
   agreementId: string;
   status: SettlementStatus;
   corridor: Corridor;
@@ -210,6 +213,8 @@ export interface Settlement {
   usdtAmount: number;
   finalAmount: number;
   legs: SettlementLeg[];
+  sourceAccount: { type: string; accountId: string; address: string | null; name: string; entity: string };
+  destinationAccount: { type: string; accountId: string; address: string | null; name: string; entity: string };
   createdAt: Date;
   updatedAt: Date;
   completedAt: Date | null;
