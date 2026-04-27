@@ -6,7 +6,7 @@ import Link from "next/link";
 import type { Settlement } from "@/lib/types";
 import { formatCorridorAmount, getCorridorComplianceNotation } from "@/lib/corridorFormat";
 
-const PENDING_ORGS = new Set(["org-alpha", "org-beta", "org-delta"]);
+const PENDING_ORGS = new Set(["org-beta", "org-delta"]);
 
 const STATUS_COLORS: Record<string, string> = {
   INITIATED: "bg-gray-100 text-gray-800",
@@ -73,7 +73,7 @@ export default function SettlementsPage() {
           {settlements.map((settlement) => (
             <Link
               key={settlement.id}
-              href={`/settlements/${settlement.id}?userId=${userId}`}
+              href={`/settlements/${settlement.id}?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`}
               className="block bg-white rounded-lg shadow border border-gray-200 p-6 hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-center justify-between mb-3">

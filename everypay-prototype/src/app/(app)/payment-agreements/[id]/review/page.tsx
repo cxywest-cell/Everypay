@@ -64,8 +64,8 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
           buyerId: agreement?.buyerId,
           procurementId: agreement?.procurementId,
           lockedRate: agreement?.proposedRate,
-          corridor: "BRL",
-          settlementCurrency: "USD",
+          corridor: agreement.corridor || "BRL",
+          settlementCurrency: agreement.settlementCurrency || "USD",
         }),
       });
       const result = await res.json();
@@ -91,8 +91,8 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
     return (
       <div className="flex flex-col items-center justify-center p-8 gap-4">
         <h2 className="text-lg font-medium text-gray-900">Agreement not found</h2>
-        <Link href={`/procurement?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">
-          &larr; Back to Procurement
+        <Link href={`/trading?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">
+          &larr; Back to Trading
         </Link>
       </div>
     );
@@ -108,7 +108,7 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
   };
 
   const isExpired = new Date(agreement.createdAt) < new Date(Date.now() - 48 * 60 * 60 * 1000);
-  const marketRate = 5.18;
+  const marketRate = agreement.marketRate ?? 5.18;
   const currentRate = agreement.proposedRate;
   const deviation = ((currentRate - marketRate) / marketRate * 100).toFixed(1);
 
@@ -121,9 +121,9 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
     <div className="p-4 lg:p-6 space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-500">
-        <Link href={`/procurement?userId=${userId}`} className="hover:text-gray-700">Procurement</Link>
+        <Link href={`/trading?userId=${userId}`} className="hover:text-gray-700">Trading</Link>
         <span>/</span>
-        <Link href={`/procurement/${agreement.procurementId}?userId=${userId}`} className="hover:text-gray-700">{agreement.procurementId}</Link>
+        <Link href={`/trading/${agreement.procurementId}?userId=${userId}`} className="hover:text-gray-700">{agreement.procurementId}</Link>
         <span>/</span>
         <span className="text-gray-900 font-medium">Payment Agreement</span>
       </div>
@@ -187,8 +187,8 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
             <p className="text-xs text-gray-500 uppercase">Proposed By</p>
             <p className="text-sm font-medium text-gray-900">
               {agreement.proposalHistory && agreement.proposalHistory.length > 0
-                ? (agreement.proposalHistory[agreement.proposalHistory.length - 1].proposer === "seller" ? "Wei Zhang (Seller)" : "Carlos (Buyer)")
-                : "Wei Zhang (Seller)"}
+                ? (agreement.proposalHistory[agreement.proposalHistory.length - 1].proposer === "seller" ? `${agreement.sellerId} (Seller)` : `${agreement.buyerId} (Buyer)`)
+                : `${agreement.sellerId} (Seller)`}
             </p>
             <p className="text-xs text-gray-400 mt-1">
               {agreement.proposalHistory && agreement.proposalHistory.length > 0
@@ -248,7 +248,7 @@ export default function PaymentAgreementReviewPage({ params }: { params: { id: s
                         {round.round}
                       </span>
                       <span className="text-sm font-medium text-gray-900">
-                        {round.proposer === "seller" ? "Wei Zhang (Seller)" : "Carlos (Buyer)"}
+                        {round.proposer === "seller" ? `${agreement.sellerId} (Seller)` : `${agreement.buyerId} (Buyer)`}
                       </span>
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                         round.status === "accepted" ? "bg-green-100 text-green-800"

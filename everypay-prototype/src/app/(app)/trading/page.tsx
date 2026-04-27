@@ -53,6 +53,15 @@ function formatStatus(status: string): string {
 export default function ActivitiesPage() {
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId") || "user-1";
+  const orgParam = searchParams.get("org");
+
+  const PENDING_ORGS = new Set(["org-beta", "org-delta"]);
+  if (typeof window !== "undefined" && PENDING_ORGS.has(orgParam || "")) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("userId", userId);
+    params.set("org", orgParam!);
+    window.location.href = `/compliance-pending?${params.toString()}`;
+  }
 
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState<UnifiedTask[]>([]);
@@ -136,7 +145,7 @@ export default function ActivitiesPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-semibold text-gray-900">Activities</h1>
         <Link
-          href={`/trading/create?userId=${userId}`}
+          href={`/trading/create?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`}
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-everypay-600 hover:bg-everypay-700"
         >
           <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,7 +210,7 @@ export default function ActivitiesPage() {
           <p className="mt-1 text-sm text-gray-500">Create your first trading activity to get started.</p>
           <div className="mt-6">
             <Link
-              href={`/trading/create?userId=${userId}`}
+              href={`/trading/create?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`}
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-everypay-600 hover:bg-everypay-700"
             >
               <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -253,7 +262,7 @@ export default function ActivitiesPage() {
                     {new Date(task.date).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                    <Link href={`${task.href}?userId=${userId}`} className="text-everypay-600 hover:text-everypay-900">
+                    <Link href={`${task.href}?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`} className="text-everypay-600 hover:text-everypay-900">
                       View
                     </Link>
                   </td>

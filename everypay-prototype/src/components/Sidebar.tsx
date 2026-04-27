@@ -135,9 +135,18 @@ export function Sidebar({ collapsed, mobile, onClose }: SidebarProps) {
 
   const switchOrg = (orgId: string) => {
     setOrgOpen(false);
+    const targetOrg = orgs.find((o) => o.id === orgId);
     const params = new URLSearchParams(searchParams.toString());
     params.set("org", orgId);
-    window.location.search = params.toString();
+
+    // Navigate to a valid default route for the target org
+    if (targetOrg?.kybStatus === "PENDING") {
+      params.set("userId", userId);
+      window.location.href = `/compliance-pending?${params.toString()}`;
+    } else {
+      params.set("userId", userId);
+      window.location.href = `/?${params.toString()}`;
+    }
   };
 
   const getOrgColor = (id: string) => {

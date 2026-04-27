@@ -83,6 +83,8 @@ export default function SettlementDetailPage({ params }: { params: { id: string 
   const [loading, setLoading] = useState(true);
   const [advancing, setAdvancing] = useState(false);
 
+  const role = userId === "user-1" ? "buyer" : userId === "user-2" ? "seller" : "approver";
+
   useEffect(() => {
     Promise.all([
       fetch(`/api/settlements/${params.id}`).then((r) => r.json()),
@@ -390,7 +392,7 @@ export default function SettlementDetailPage({ params }: { params: { id: string 
           Reviewing settlement <span className="font-mono text-gray-900">#{settlement.id}</span>
         </div>
         <div className="flex items-center gap-3">
-          {settlement.status !== "SETTLED" && settlement.status !== "FAILED" && settlement.status !== "DISPUTED" && (
+          {settlement.status !== "SETTLED" && settlement.status !== "FAILED" && settlement.status !== "DISPUTED" && role !== "approver" && (
             <button
               onClick={handleAdvance}
               disabled={advancing}
@@ -398,6 +400,9 @@ export default function SettlementDetailPage({ params }: { params: { id: string 
             >
               {advancing ? "Advancing..." : "Advance Stage"}
             </button>
+          )}
+          {settlement.status !== "SETTLED" && settlement.status !== "FAILED" && settlement.status !== "DISPUTED" && role === "approver" && (
+            <span className="text-sm text-gray-400">Only buyer/seller can advance settlement</span>
           )}
           {settlement.status === "SETTLED" && (
             <span className="text-sm font-medium text-green-600">Settlement completed</span>

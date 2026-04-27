@@ -10,6 +10,16 @@ type DashboardRole = "buyer" | "seller" | "approver";
 export default function HomePage() {
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId") || "user-1";
+  const orgParam = searchParams.get("org");
+
+  const PENDING_ORGS = new Set(["org-beta", "org-delta"]);
+  if (typeof window !== "undefined" && PENDING_ORGS.has(orgParam || "")) {
+    const params = new URLSearchParams();
+    params.set("userId", userId);
+    params.set("org", orgParam!);
+    window.location.href = `/compliance-pending?${params.toString()}`;
+    return null;
+  }
 
   const [loading, setLoading] = useState(true);
   const [procurements, setProcurements] = useState<Procurement[]>([]);
@@ -112,7 +122,7 @@ export default function HomePage() {
         <Card
           title="Payment Terms Awaiting Your Response"
           subtitle="Agreements ready for you to accept or counter"
-          action={<Link href={`/trading?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">View all →</Link>}
+          action={<Link href={`/trading?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`} className="text-sm text-everypay-600 hover:text-everypay-900">View all →</Link>}
         >
           <div className="space-y-2">
             {pendingAgreements.slice(0, 3).map((agr) => {
@@ -120,7 +130,7 @@ export default function HomePage() {
               return (
                 <Link
                   key={agr.id}
-                  href={`/payment-agreements/${agr.id}/review?userId=${userId}`}
+                  href={`/payment-agreements/${agr.id}/review?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`}
                   className="flex items-center justify-between py-2 hover:bg-gray-50 -mx-2 px-2 rounded"
                 >
                   <div>
@@ -141,7 +151,7 @@ export default function HomePage() {
       <Card
         title={activityTitle}
         subtitle={activitySubtitle}
-        action={<Link href={`/trading?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">View all →</Link>}
+        action={<Link href={`/trading?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`} className="text-sm text-everypay-600 hover:text-everypay-900">View all →</Link>}
       >
         {activeProcurements.length === 0 ? (
           <EmptyState message={role === "seller" ? "No active sales" : "No active procurements"} />
@@ -150,7 +160,7 @@ export default function HomePage() {
             {activeProcurements.slice(0, 5).map((po) => (
               <Link
                 key={po.id}
-                href={`/trading/${po.id}?userId=${userId}`}
+                href={`/trading/${po.id}?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`}
                 className="flex items-center justify-between py-2 hover:bg-gray-50 -mx-2 px-2 rounded"
               >
                 <div className="flex items-center gap-3">
@@ -182,7 +192,7 @@ export default function HomePage() {
       <Card
         title="Active Settlements"
         subtitle="In-progress settlements with real-time status"
-        action={<Link href={`/settlements?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">View all →</Link>}
+        action={<Link href={`/settlements?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`} className="text-sm text-everypay-600 hover:text-everypay-900">View all →</Link>}
       >
         {activeSettlements.length === 0 ? (
           <EmptyState message="No active settlements" />
@@ -191,7 +201,7 @@ export default function HomePage() {
             {activeSettlements.slice(0, 4).map((stl) => (
               <Link
                 key={stl.id}
-                href={`/settlements/${stl.id}?userId=${userId}`}
+                href={`/settlements/${stl.id}?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`}
                 className="flex items-center justify-between py-2 hover:bg-gray-50 -mx-2 px-2 rounded"
               >
                 <div className="flex items-center gap-3">
@@ -216,7 +226,7 @@ export default function HomePage() {
         <Card
           title="Pending Approvals"
           subtitle="Items requiring your review"
-          action={<Link href={`/approvals?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">View queue →</Link>}
+          action={<Link href={`/approvals?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`} className="text-sm text-everypay-600 hover:text-everypay-900">View queue →</Link>}
         >
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div>

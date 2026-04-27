@@ -49,6 +49,17 @@ const STATUS_LABELS: Record<string, string> = {
 export default function ApprovalsPage() {
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId") || "user-1";
+  const orgParam = searchParams.get("org");
+
+  const PENDING_ORGS = new Set(["org-beta", "org-delta"]);
+  if (typeof window !== "undefined" && PENDING_ORGS.has(orgParam || "")) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("userId", userId);
+    params.set("org", orgParam!);
+    window.location.href = `/compliance-pending?${params.toString()}`;
+    return null;
+  }
+
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [typeFilter, setTypeFilter] = useState<ActivityType | "all">("all");
@@ -215,7 +226,12 @@ export default function ApprovalsPage() {
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                     <Link
-                      href={task.settlementId ? `/settlements/${task.settlementId}?userId=${userId}` : task.agreementId ? `/approvals/${task.agreementId}?userId=${userId}&action=review` : `/trading/${task.procurementId}?userId=${userId}`}
+                      href={
+                        task.settlementId ? `/settlements/${task.settlementId}?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`
+                        : task.agreementId ? `/approvals/${task.agreementId}?userId=${userId}&action=review${orgParam ? `&org=${orgParam}` : ""}`
+                        : task.procurementId ? `/trading/${task.procurementId}?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`
+                        : `/approvals?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`
+                      }
                       className="text-everypay-600 hover:text-everypay-900"
                     >
                       Review

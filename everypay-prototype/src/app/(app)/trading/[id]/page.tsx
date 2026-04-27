@@ -58,6 +58,7 @@ type AttachedDoc = {
 export default function TradingActivityDetailPage({ params }: { params: { id: string } }) {
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId") || "user-1";
+  const orgParam = searchParams.get("org");
   const [procurement, setProcurement] = useState<Procurement | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -206,7 +207,7 @@ export default function TradingActivityDetailPage({ params }: { params: { id: st
     return (
       <div className="flex flex-col items-center justify-center p-8 gap-4">
         <h2 className="text-lg font-medium text-gray-900">Activity not found</h2>
-        <Link href={`/trading?userId=${userId}`} className="text-sm text-everypay-600 hover:text-everypay-900">
+        <Link href={`/trading?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`} className="text-sm text-everypay-600 hover:text-everypay-900">
           &larr; Back to Trading Activities
         </Link>
       </div>
@@ -221,7 +222,7 @@ export default function TradingActivityDetailPage({ params }: { params: { id: st
     <div className="p-4 lg:p-6 space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-500">
-        <Link href={`/trading?userId=${userId}`} className="hover:text-gray-700">Trading</Link>
+        <Link href={`/trading?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`} className="hover:text-gray-700">Trading</Link>
         <span>/</span>
         <span className="text-gray-900 font-medium">{procurement.id}</span>
       </div>
@@ -692,7 +693,7 @@ export default function TradingActivityDetailPage({ params }: { params: { id: st
                   <p className="text-sm font-medium text-everypay-900 mb-1">Agreement Accepted</p>
                   <p className="text-xs text-everypay-700 mb-3">Rate locked. You can now initiate settlement.</p>
                   <Link
-                    href={`/settlements/new?agreementId=${agreement.id}&userId=${userId}`}
+                    href={`/settlements?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`}
                     className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-everypay-600 hover:bg-everypay-700"
                   >
                     Initiate Settlement →

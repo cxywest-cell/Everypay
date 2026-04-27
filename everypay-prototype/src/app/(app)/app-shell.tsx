@@ -46,7 +46,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined") {
       const loggedIn = localStorage.getItem("loggedIn") === "true";
       if (!loggedIn) {
-        router.push("/login");
+        // Auto-set for prototype demo — no hard redirect
+        localStorage.setItem("loggedIn", "true");
+        setIsAuthenticated(true);
       } else {
         setIsAuthenticated(true);
       }

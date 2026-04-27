@@ -78,6 +78,16 @@ const ORG_CONFIG: Record<string, {
 export default function CompliancePendingPage() {
   const searchParams = useSearchParams();
   const orgParam = searchParams.get("org") || "org-delta";
+  const userId = searchParams.get("userId") || "user-1";
+
+  const PENDING_ORGS = ["org-beta", "org-delta"];
+  if (!PENDING_ORGS.includes(orgParam)) {
+    // Redirect VERIFIED orgs to dashboard
+    if (typeof window !== "undefined") {
+      window.location.href = `/?org=${orgParam}&userId=${userId}`;
+    }
+    return null;
+  }
   const config = ORG_CONFIG[orgParam] || ORG_CONFIG["org-delta"];
 
   const [logEntries, setLogEntries] = useState(LOG_ENTRIES);
