@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import type { Settlement, SettlementLeg, Procurement } from "@/lib/types";
-import { formatCorridorAmount } from "@/lib/corridorFormat";
 
 const STATUS_BADGE: Record<string, { label: string; color: string }> = {
   INITIATED: { label: "Initiated", color: "bg-gray-100 text-gray-700 border-gray-200" },
@@ -168,38 +167,133 @@ export default function SettlementDetailPage({ params }: { params: { id: string 
       <div className="flex-1 overflow-y-auto p-8">
         <div className="max-w-6xl mx-auto space-y-6">
 
-          {/* ── Ultimate Source & Destination ── */}
-          <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl border border-gray-200 p-5">
-            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Fund Flow</div>
-            <div className="flex items-center gap-4">
-              <div className="flex-1 bg-white rounded-lg border border-blue-200 p-4">
-                <div className="text-[10px] font-medium text-blue-500 uppercase tracking-wide">Ultimate Source</div>
-                <div className="text-sm font-bold text-gray-900 mt-1">{settlement.sourceAccount.entity}</div>
-                <div className="text-xs text-gray-500">{settlement.sourceAccount.name}</div>
-                <div className="text-[10px] font-mono text-gray-400 mt-0.5">ID: {settlement.sourceAccount.accountId}</div>
-                {settlement.sourceAccount.address && (
-                  <div className="text-[10px] font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded mt-1 inline-block">{settlement.sourceAccount.address}</div>
-                )}
+          {/* ── Dynamic Asset Path from actual legs ── */}
+          {(() => {
+            const legs = settlement.legs;
+            const firstLeg = legs[0];
+            const lastLeg = legs[legs.length - 1];
+
+            // Determine corridor type from actual leg data
+            const isCryptoOnly =
+              legs.length >= 2 &&
+              firstLeg.currencyFrom === lastLeg.currencyTo &&
+              legs.every(l => l.fromAccount.type === 'wallet' && l.toAccount.type === 'wallet');
+            const isUsdtOnly =
+              legs.length === 2 &&
+              firstLeg.currencyFrom === 'USDT' && firstLeg.currencyTo === 'USDT' &&
+              lastLeg.currencyFrom === 'USDT' && lastLeg.currencyTo === 'USD' &&
+              firstLeg.fromAccount.type === 'bank';
+
+            const corridorLabel = isCryptoOnly
+              ? `${lastLeg.currencyTo} Only`
+              : isUsdtOnly
+              ? 'USDT Corridor'
+              : `${firstLeg.currencyFrom} Exchange`;
+
+            // Corridor accent color
+            const corridorAccent = isCryptoOnly ? 'from-purple-50 via-purple-50 to-purple-50' : 'from-blue-50 via-emerald-50 to-green-50';
+
+            const totalFees = legs.reduce((sum, l) => sum + (l.fees || 0), 0);
+
+            // Direction
+            const po = procurement;
+            const isPayer = po ? po.buyerId === userId : settlement.buyerId === userId;
+            const dir = isPayer
+              ? { label: 'Pay Out', icon: '\u2191', accent: 'text-red-600 bg-red-50' }
+              : { label: 'Receive', icon: '\u2193', accent: 'text-emerald-600 bg-emerald-50' };
+
+            return (
+              <div className={`bg-gradient-to-r ${corridorAccent} rounded-xl border border-gray-200 p-5`}>
+                {/* Header row */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Asset Path</div>
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${dir.accent}`}>
+                      <span>{dir.icon}</span>
+                      {dir.label}
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-white border border-gray-200 text-gray-700">
+                      {corridorLabel}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs text-gray-500">Total Fees</div>
+                    <div className="text-sm font-semibold text-gray-900 font-mono">
+                      {totalFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {lastLeg.currencyTo}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dynamic flow: uniform box size, equal spacing */}
+                <div className="flex items-center justify-center gap-4">
+                  {/* Origin */}
+                  <div className="flex-shrink-0 w-36 h-[128px] bg-white rounded-lg border border-gray-200 p-3 flex flex-col items-center text-center">
+                    <div className="text-[10px] font-medium text-gray-400 uppercase">Origin</div>
+                    <div className="text-xs font-bold text-gray-900 mt-1">{firstLeg.fromAccount.name}</div>
+                    <div className="text-[10px] text-gray-500 font-mono mt-0.5">{firstLeg.currencyFrom}</div>
+                    <div className="text-sm font-bold text-gray-900 font-mono mt-2">
+                      {firstLeg.amountFrom.toLocaleString(undefined, { maximumFractionDigits: 4 })} {firstLeg.currencyFrom}
+                    </div>
+                  </div>
+
+                  {legs.map((leg, i) => (
+                    <div key={leg.id} className="flex-shrink-0 flex items-center gap-4">
+                      {/* Arrow + per-leg metadata */}
+                      <div className="flex flex-col items-center gap-1 w-16">
+                        {leg.exchangeRate !== 1 && (
+                          <div className="text-[10px] text-gray-500 font-mono">{leg.exchangeRate.toFixed(4)}</div>
+                        )}
+                        <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                        {leg.fees > 0 && (
+                          <div className="text-[9px] text-gray-400">fee {leg.fees.toLocaleString(undefined, { maximumFractionDigits: 4 })}</div>
+                        )}
+                      </div>
+                      <div className="flex-shrink-0 w-36 h-[128px] bg-white rounded-lg border border-gray-200 p-3 flex flex-col items-center text-center">
+                        {leg.currencyFrom !== leg.currencyTo ? (
+                          <>
+                            <div className="text-[10px] font-medium text-gray-400 uppercase">Exchange {i + 1}</div>
+                            <div className="text-xs font-bold text-gray-900 mt-1">{leg.currencyFrom} → {leg.currencyTo}</div>
+                            <div className="text-[10px] text-gray-500 font-mono mt-0.5">{leg.toAccount.name}</div>
+                            <div className="text-sm font-bold text-emerald-700 font-mono mt-2">
+                              {leg.amountTo.toLocaleString(undefined, { maximumFractionDigits: 4 })} {leg.currencyTo}
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="text-[10px] font-medium text-gray-400 uppercase">Transfer {i + 1}</div>
+                            <div className="text-xs font-bold text-gray-900 mt-1">{leg.currencyFrom}</div>
+                            <div className="text-[10px] text-gray-500 font-mono mt-0.5">{leg.toAccount.name}</div>
+                            <div className="text-sm font-bold text-gray-900 font-mono mt-2">
+                              {leg.amountTo.toLocaleString(undefined, { maximumFractionDigits: 4 })} {leg.currencyTo}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Destination */}
+                  <div className="flex-shrink-0 flex items-center gap-4">
+                    <div className="flex flex-col items-center w-16">
+                      <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </div>
+                    <div className="flex-shrink-0 w-36 h-[128px] bg-white rounded-lg border border-green-200 p-3 flex flex-col items-center text-center">
+                      <div className="text-[10px] font-medium text-green-500 uppercase">Destination</div>
+                      <div className="text-xs font-bold text-gray-900 mt-1">{lastLeg.toAccount.name}</div>
+                      <div className="text-[10px] text-gray-500 font-mono mt-0.5">{lastLeg.currencyTo}</div>
+                      <div className="text-sm font-bold text-green-700 font-mono mt-2">
+                        {lastLeg.amountTo.toLocaleString(undefined, { maximumFractionDigits: 4 })} {lastLeg.currencyTo}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex flex-col items-center gap-1">
-                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-                <span className="text-[10px] text-gray-400 font-medium">
-                  {formatCorridorAmount(settlement.fiatAmount, settlement.corridor)}
-                </span>
-              </div>
-              <div className="flex-1 bg-white rounded-lg border border-green-200 p-4">
-                <div className="text-[10px] font-medium text-green-500 uppercase tracking-wide">Ultimate Destination</div>
-                <div className="text-sm font-bold text-gray-900 mt-1">{settlement.destinationAccount.entity}</div>
-                <div className="text-xs text-gray-500">{settlement.destinationAccount.name}</div>
-                <div className="text-[10px] font-mono text-gray-400 mt-0.5">ID: {settlement.destinationAccount.accountId}</div>
-                {settlement.destinationAccount.address && (
-                  <div className="text-[10px] font-mono text-green-600 bg-green-50 px-1.5 py-0.5 rounded mt-1 inline-block">{settlement.destinationAccount.address}</div>
-                )}
-              </div>
-            </div>
-          </div>
+            );
+          })()}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column: Details (2/3) */}

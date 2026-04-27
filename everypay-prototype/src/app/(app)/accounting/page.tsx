@@ -174,7 +174,11 @@ export default function AccountingPage() {
                         <span className="text-sm font-mono font-medium text-gray-900">{s.id}</span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className="text-sm text-gray-900">{s.corridor} → {s.settlementCurrency}</span>
+                        <span className="text-sm text-gray-900">{s.corridor}</span>
+                        <span className="text-xs text-gray-400 mx-0.5"> → </span>
+                        <span className="text-xs font-mono font-semibold text-emerald-600 bg-emerald-50 px-1 py-0.5 rounded">USDT</span>
+                        <span className="text-xs text-gray-400 mx-0.5"> → </span>
+                        <span className="text-sm text-gray-900">{s.settlementCurrency}</span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-right">
                         <span className="text-sm font-mono text-gray-900">{s.fiatAmount.toLocaleString()}</span>

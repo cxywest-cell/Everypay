@@ -173,7 +173,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 <span className="font-mono text-sm font-medium">
-                  {po.currency} {po.totalAmount.toLocaleString()}
+                  {po.currency} {(po.totalAmount ?? 0).toLocaleString()}
                 </span>
               </Link>
             ))}
@@ -212,7 +212,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-mono font-medium">${stl.fiatAmount.toLocaleString()}</p>
+                  <p className="text-sm font-mono font-medium">${(stl.fiatAmount ?? 0).toLocaleString()}</p>
                   <p className="text-xs text-gray-500">{stl.status.replace(/_/g, " ")}</p>
                 </div>
               </Link>

@@ -129,6 +129,30 @@
     "updatedAt": "2026-04-16T14:00:00.000Z"
   },
   {
+    "id": "po-sale-3",
+    "buyerId": "user-1",
+    "sellerId": "user-2",
+    "status": "TERMS_ACCEPTED",
+    "corridor": "USDT",
+    "lineItems": [
+      {
+        "id": "li-7",
+        "description": "Electronic Components - PCB Boards",
+        "quantity": 5000,
+        "unitPrice": 10,
+        "currency": "USD",
+        "hsCode": "8534.00",
+        "specs": "Multi-layer, lead-free"
+      }
+    ],
+    "totalAmount": 50000,
+    "currency": "USD",
+    "dueDate": "2026-05-15T00:00:00.000Z",
+    "notes": "USDT settlement corridor",
+    "createdAt": "2026-04-20T10:00:00.000Z",
+    "updatedAt": "2026-04-22T14:00:00.000Z"
+  },
+  {
     "id": "po-1776396845939",
     "buyerId": "user-1",
     "sellerId": "org-alpha",

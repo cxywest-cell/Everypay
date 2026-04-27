@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import type { Settlement } from "@/lib/types";
 
 type AssetBalance = {
@@ -23,6 +24,7 @@ const CURRENCIES = [
 export default function AssetsPage() {
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId") || "user-1";
+  const orgParam = searchParams.get("org");
   const [loading, setLoading] = useState(true);
   const [settlements, setSettlements] = useState<Settlement[]>([]);
   const [balances, setBalances] = useState<AssetBalance[]>([]);
@@ -139,7 +141,7 @@ export default function AssetsPage() {
         {balances.map((b) => {
           const info = CURRENCIES.find((c) => c.symbol === b.currency)!;
           return (
-            <div key={b.currency} className="bg-white rounded-lg shadow border border-gray-200 p-5">
+            <Link key={b.currency} href={`/assets/${b.currency}?userId=${userId}${orgParam ? `&org=${orgParam}` : ""}`} className="block bg-white rounded-lg shadow border border-gray-200 p-5 hover:border-everypay-300 hover:shadow-md transition-all">
               <div className="flex items-center gap-2 mb-3">
                 <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white ${
                   b.currency === "USDT" ? "bg-green-500" :
@@ -180,7 +182,8 @@ export default function AssetsPage() {
               </div>
 
               <p className="text-xs text-gray-400 mt-3">{info.chain}</p>
-            </div>
+              <p className="text-xs text-everypay-600 mt-2">Click to manage &rarr;</p>
+            </Link>
           );
         })}
       </div>
