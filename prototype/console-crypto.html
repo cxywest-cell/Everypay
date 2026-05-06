@@ -490,7 +490,7 @@
                                                 <th class="px-6 py-3 font-semibold">Status</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="divide-y divide-gray-50">
+                                        <tbody id="offramp-history-body" class="divide-y divide-gray-50">
                                             <tr class="hover:bg-gray-50 transition-colors">
                                                 <td class="px-6 py-4 font-mono text-xs text-slate-700">TXF-20250428-003</td>
                                                 <td class="px-6 py-4 text-gray-500">2025-04-28 14:22</td>
@@ -537,7 +537,7 @@
                             <!-- Flow Step Indicators -->
                             <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                                 <div class="flex items-center justify-center flex-1">
-                                    <div class="flex items-center w-full max-w-md">
+                                    <div class="flex items-center w-full max-w-xs">
                                         <div id="flow-step-1" class="flex items-center gap-2">
                                             <div class="w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold">1</div>
                                             <span class="text-xs font-medium text-slate-700 hidden sm:inline">Quote</span>
@@ -545,12 +545,7 @@
                                         <div class="w-8 sm:w-12 h-0.5 bg-gray-200 mx-1"></div>
                                         <div id="flow-step-2" class="flex items-center gap-2">
                                             <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</div>
-                                            <span class="text-xs font-medium text-gray-400 hidden sm:inline">Fund</span>
-                                        </div>
-                                        <div class="w-8 sm:w-12 h-0.5 bg-gray-200 mx-1"></div>
-                                        <div id="flow-step-3" class="flex items-center gap-2">
-                                            <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">3</div>
-                                            <span class="text-xs font-medium text-gray-400 hidden sm:inline">Track</span>
+                                            <span class="text-xs font-medium text-gray-400 hidden sm:inline">Withdraw</span>
                                         </div>
                                     </div>
                                 </div>
@@ -644,146 +639,62 @@
                                 </button>
                             </div>
 
-                            <!-- Step 2: Transfer Created -->
+                            <!-- Step 2: Withdraw (auto-processed, no TX input needed) -->
                             <div id="transfer-panel" class="hidden p-6">
                                 <div class="mb-6">
                                     <div class="flex items-center gap-2 mb-2">
                                         <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
                                             <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                         </div>
-                                        <span class="text-sm font-bold text-green-700">Transfer Created</span>
+                                        <span class="text-sm font-bold text-green-700">Ready to Withdraw</span>
                                     </div>
-                                    <h3 class="text-lg font-bold text-slate-800 mb-1">Fund Your Transfer</h3>
-                                    <p class="text-sm text-gray-500">Send the exact stablecoin amount to the deposit address below. OSN will process your transfer once the blockchain confirms receipt.</p>
+                                    <h3 class="text-lg font-bold text-slate-800 mb-1">Confirm Withdrawal Details</h3>
+                                    <p class="text-sm text-gray-500">Review the details below. OSN will automatically process the on-chain transfer and fiat settlement.</p>
                                 </div>
 
-                                <!-- Transfer Summary -->
+                                <!-- Withdrawal Summary -->
                                 <div class="bg-gray-50 rounded-lg p-4 mb-6 space-y-2">
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-500">Transfer ID</span>
                                         <span class="font-medium text-slate-700 font-mono" id="transfer-id">TXF-20250506-001</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-500">Amount</span>
+                                        <span class="text-gray-500">You Send</span>
                                         <span class="font-medium text-slate-700 font-mono" id="transfer-amount">50,000 USDT</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-500">Asset</span>
+                                        <span class="text-gray-500">Network</span>
                                         <span class="font-medium text-slate-700" id="transfer-asset">USDT — Ethereum (ERC-20)</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">You Receive</span>
+                                        <span class="font-medium text-green-700 font-mono" id="transfer-receive">HK$391,250.00</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-500">Recipient</span>
                                         <span class="font-medium text-slate-700" id="transfer-recipient">HSBC Hong Kong ****6789 (HKD)</span>
                                     </div>
-                                </div>
-
-                                <!-- Deposit Address -->
-                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-6">
-                                    <div class="text-sm font-bold text-blue-800 mb-3">Deposit Address (Send Here)</div>
-                                    <div class="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-blue-100">
-                                        <span class="font-mono text-sm text-slate-800 flex-1 truncate" id="deposit-address">0xIDA-7B3C9E2A1F8D4560E3C7A92B1F84D6E5</span>
-                                        <button onclick="copyAddress()" class="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 flex-shrink-0">Copy</button>
-                                    </div>
-                                    <div class="mt-3 flex items-center gap-2 text-xs text-blue-600">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        <span id="deposit-network-note">Send exactly the amount shown. Network: Ethereum (ERC-20 USDT)</span>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">OSN Fee</span>
+                                        <span class="font-medium text-slate-700 font-mono" id="transfer-fee">HK$195.63</span>
                                     </div>
                                 </div>
 
-                                <!-- TX Hash Input -->
-                                <div class="mb-6">
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Transaction Hash (after sending)</label>
-                                    <input type="text" id="tx-hash" placeholder="0x... (ETH) or signature (SOL)" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none font-mono">
-                                    <p class="mt-1 text-xs text-gray-500">Paste the TX hash or transaction signature from your wallet</p>
+                                <!-- Auto-processing notice -->
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                                    <div class="flex items-start gap-3">
+                                        <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        <div class="text-sm text-blue-700">
+                                            <div class="font-bold mb-1">Automatic Processing</div>
+                                            <div class="text-blue-600">OSN handles the on-chain transfer and fiat settlement automatically. Track progress in Off-Ramp History after confirmation.</div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <button onclick="submitTxHash()" class="w-full py-3 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                                <button onclick="confirmWithdraw()" class="w-full py-3 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    <span>Submit TX Hash & Track</span>
+                                    <span>Confirm & Start Withdrawal</span>
                                 </button>
-                            </div>
-
-                            <!-- Step 3: Track Status -->
-                            <div id="track-panel" class="hidden p-6">
-                                <div class="mb-6">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <div class="w-6 h-6 bg-everypay-100 rounded-full flex items-center justify-center">
-                                            <svg class="w-3 h-3 text-everypay-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        </div>
-                                        <span class="text-sm font-bold text-everypay-600" id="tracking-status-label">Processing</span>
-                                    </div>
-                                    <h3 class="text-lg font-bold text-slate-800 mb-1">Transfer Progress</h3>
-                                    <p class="text-sm text-gray-500">Your transfer is being processed. You'll receive fiat in your bank account once complete.</p>
-                                </div>
-
-                                <!-- Progress Steps -->
-                                <div class="space-y-4 mb-6">
-                                    <div class="flex items-start gap-4" id="prog-step-1">
-                                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm font-bold text-slate-800">Transfer Created</div>
-                                            <div class="text-xs text-gray-500 mt-0.5" id="prog-time-1">2025-05-06 10:32:15 HKT</div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-4" id="prog-step-2">
-                                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm font-bold text-slate-800">TX Hash Submitted</div>
-                                            <div class="text-xs text-gray-500 mt-0.5 font-mono" id="prog-tx-hash">0x7a3b...9c2e</div>
-                                            <div class="text-xs text-gray-400 mt-0.5" id="prog-time-2">2025-05-06 10:35:42 HKT</div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-4" id="prog-step-3">
-                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <div class="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm font-bold text-blue-700">Blockchain Confirmation</div>
-                                            <div class="text-xs text-blue-500 mt-0.5">Waiting for on-chain confirmation...</div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-4" id="prog-step-4">
-                                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm font-bold text-gray-400">OSN Processing</div>
-                                            <div class="text-xs text-gray-400 mt-0.5">Convert stablecoin to fiat</div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-4" id="prog-step-5">
-                                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm font-bold text-gray-400">Fiat Sent to Bank</div>
-                                            <div class="text-xs text-gray-400 mt-0.5">Transfer to recipient account</div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-4" id="prog-step-6">
-                                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm font-bold text-gray-400">Settlement Complete</div>
-                                            <div class="text-xs text-gray-400 mt-0.5">Funds received</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Simulate Progress Button -->
-                                <div class="flex gap-3">
-                                    <button onclick="simulateProgress()" id="simulate-btn" class="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition-all shadow-lg text-sm">
-                                        Simulate Progress (Mock)
-                                    </button>
-                                    <button onclick="closeOffRampFlow()" class="px-6 py-3 border border-gray-300 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-colors">
-                                        Close
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -1266,7 +1177,7 @@
             }, 1000);
         }
 
-        // --- Submit Transfer ---
+        // --- Submit Transfer (go to Step 2: Confirm Withdrawal) ---
         function submitTransfer() {
             if (!currentBank) {
                 alert('Please select a recipient bank account.');
@@ -1279,10 +1190,7 @@
                 return;
             }
 
-            // Start quote timer
-            startQuoteTimer();
-
-            // Move to step 2
+            // Move to step 2 (withdrawal confirmation)
             document.getElementById('quote-panel').classList.add('hidden');
             document.getElementById('transfer-panel').classList.remove('hidden');
             updateFlowSteps(2);
@@ -1297,127 +1205,52 @@
             document.getElementById('transfer-id').textContent = transferId;
 
             const asset = assetConfig[currentAsset];
+            const fiatAmountStr = document.getElementById('fiat-amount').value;
+            const feeStr = document.getElementById('quote-fee').textContent;
+
             document.getElementById('transfer-amount').textContent = cryptoAmount.toLocaleString() + ' ' + asset.symbol;
             document.getElementById('transfer-asset').textContent = asset.symbol + ' — ' + asset.network;
+            document.getElementById('transfer-receive').textContent = fiatAmountStr;
             document.getElementById('transfer-recipient').textContent = bankLabels[currentBank] + ' (' + currentFiat + ')';
-
-            // Generate mock deposit address
-            const mockAddr = currentAsset.includes('sol')
-                ? Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8)
-                : '0x' + Math.random().toString(36).substring(2, 10).toUpperCase() + Math.random().toString(36).substring(2, 10).toUpperCase();
-            document.getElementById('deposit-address').textContent = mockAddr;
-            document.getElementById('deposit-network-note').textContent = 'Send exactly the amount shown. Network: ' + asset.network;
+            document.getElementById('transfer-fee').textContent = feeStr;
         }
 
-        // --- TX Hash ---
-        function submitTxHash() {
-            const txHash = document.getElementById('tx-hash').value.trim();
-            if (!txHash || txHash.length < 10) {
-                alert('Please enter a valid transaction hash.');
-                return;
-            }
+        // --- Confirm Withdrawal (auto-process, close modal, add to history) ---
+        function confirmWithdraw() {
+            const transferId = document.getElementById('transfer-id').textContent;
+            const amount = document.getElementById('transfer-amount').textContent;
+            const asset = document.getElementById('transfer-asset').textContent;
+            const receive = document.getElementById('transfer-receive').textContent;
+            const recipient = document.getElementById('transfer-recipient').textContent;
 
-            // Move to step 3
-            document.getElementById('transfer-panel').classList.add('hidden');
-            document.getElementById('track-panel').classList.remove('hidden');
-            updateFlowSteps(3);
+            // Add pending entry to Off-Ramp History
+            addOffRampToHistory(transferId, amount, asset, receive, recipient);
 
-            // Set tracking data
+            // Close modal
+            closeOffRampFlow();
+        }
+
+        // --- Add Off-Ramp record to history table ---
+        function addOffRampToHistory(transferId, amount, asset, receive, recipient) {
+            const tbody = document.getElementById('offramp-history-body');
+            if (!tbody) return;
+
             const now = new Date();
-            document.getElementById('prog-time-2').textContent = now.toLocaleString('en-GB', { timeZone: 'Asia/Hong_Kong' }) + ' HKT';
-            document.getElementById('prog-tx-hash').textContent = txHash.substring(0, 6) + '...' + txHash.substring(txHash.length - 4);
+            const timeStr = now.toLocaleString('en-GB', { timeZone: 'Asia/Hong_Kong', hour12: false });
 
-            // Reset progress steps
-            resetProgressSteps();
-        }
-
-        function copyAddress() {
-            const addr = document.getElementById('deposit-address').textContent;
-            navigator.clipboard.writeText(addr).then(() => {
-                const btn = event.target;
-                const orig = btn.textContent;
-                btn.textContent = 'Copied!';
-                setTimeout(() => btn.textContent = orig, 1500);
-            });
-        }
-
-        // --- Progress Simulation ---
-        function resetProgressSteps() {
-            for (let i = 3; i <= 6; i++) {
-                const step = document.getElementById('prog-step-' + i);
-                if (i === 3) {
-                    step.querySelector('.rounded-full').className = 'w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5';
-                    step.querySelector('.rounded-full').innerHTML = '<div class="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>';
-                    step.querySelectorAll('div')[1].className = 'text-sm font-bold text-blue-700';
-                    step.querySelectorAll('div')[2].className = 'text-xs text-blue-500 mt-0.5';
-                } else {
-                    step.querySelector('.rounded-full').className = 'w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5';
-                    step.querySelector('.rounded-full').innerHTML = '<div class="w-3 h-3 bg-gray-300 rounded-full"></div>';
-                    step.querySelectorAll('div')[1].className = 'text-sm font-bold text-gray-400';
-                    step.querySelectorAll('div')[2].className = 'text-xs text-gray-400 mt-0.5';
-                }
-            }
-        }
-
-        function simulateProgress() {
-            const btn = document.getElementById('simulate-btn');
-            btn.disabled = true;
-            btn.textContent = 'Simulating...';
-
-            const steps = [
-                { step: 3, label: 'Blockchain Confirmed', time: '2 min', color: 'green' },
-                { step: 4, label: 'OSN Processing', time: '5 min', color: 'blue' },
-                { step: 5, label: 'Fiat Sent to Bank', time: '15 min', color: 'blue' },
-                { step: 6, label: 'Settlement Complete', time: 'Now', color: 'green' }
-            ];
-
-            let i = 0;
-            function advanceStep() {
-                if (i >= steps.length) {
-                    btn.textContent = 'Settlement Complete!';
-                    btn.className = 'flex-1 py-3 bg-green-500 text-white font-bold rounded-xl text-sm';
-                    updateStatusBadge('Settled');
-
-                    // Add to history table
-                    addToHistory();
-                    return;
-                }
-
-                const s = steps[i];
-                const stepEl = document.getElementById('prog-step-' + s.step);
-                const now = new Date();
-                const timeStr = now.toLocaleString('en-GB', { timeZone: 'Asia/Hong_Kong' }) + ' HKT';
-
-                stepEl.querySelector('.rounded-full').className = 'w-8 h-8 rounded-full bg-' + s.color + '-100 flex items-center justify-center flex-shrink-0 mt-0.5';
-                stepEl.querySelector('.rounded-full').innerHTML = '<svg class="w-4 h-4 text-' + s.color + '-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
-
-                const textDivs = stepEl.querySelectorAll('div');
-                textDivs[1].className = 'text-sm font-bold text-' + s.color + '-700';
-                textDivs[2].className = 'text-xs text-' + s.color + '-500 mt-0.5';
-
-                // Add time element if not present
-                if (!stepEl.querySelector('[id^="prog-time-"]') && s.step !== 3) {
-                    const timeEl = document.createElement('div');
-                    timeEl.id = 'prog-time-' + s.step;
-                    timeEl.className = 'text-xs text-gray-500 mt-0.5';
-                    timeEl.textContent = timeStr;
-                    textDivs[2].after(timeEl);
-                }
-
-                // Activate next step
-                if (i < steps.length - 1) {
-                    const nextStep = document.getElementById('prog-step-' + steps[i + 1].step);
-                    nextStep.querySelector('.rounded-full').className = 'w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5';
-                    nextStep.querySelector('.rounded-full').innerHTML = '<div class="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>';
-                    nextStep.querySelectorAll('div')[1].className = 'text-sm font-bold text-blue-700';
-                    nextStep.querySelectorAll('div')[2].className = 'text-xs text-blue-500 mt-0.5';
-                }
-
-                i++;
-                setTimeout(advanceStep, 1500);
-            }
-
-            advanceStep();
+            const row = document.createElement('tr');
+            row.className = 'border-b border-gray-100 hover:bg-gray-50 transition-colors';
+            row.innerHTML = `
+                <td class="px-6 py-4 font-mono text-xs text-slate-700">${transferId}</td>
+                <td class="px-6 py-4 text-gray-500">${timeStr}</td>
+                <td class="px-6 py-4 text-xs"><span class="px-1.5 py-0.5 bg-green-50 text-green-700 rounded font-medium">${asset}</span></td>
+                <td class="px-6 py-4 text-right font-mono">${amount}</td>
+                <td class="px-6 py-4 text-right font-mono font-medium text-green-700">${receive}</td>
+                <td class="px-6 py-4 text-gray-500">${recipient}</td>
+                <td class="px-6 py-4 font-mono text-xs text-gray-500">—</td>
+                <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">Processing</span></td>
+            `;
+            tbody.insertBefore(row, tbody.firstChild);
         }
 
         function updateStatusBadge(status) {
