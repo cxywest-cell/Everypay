@@ -568,19 +568,52 @@
                     </div>
 
                     <!-- Stats Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Fiat Balance -->
-                        <!-- Off-Ramp Settlement Card (Clickable) -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <!-- Off-Ramp: HKD -->
                         <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm cursor-pointer hover:shadow-md transition-shadow group" onclick="window.location.href='console-offramp.html'">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <div class="text-sm text-gray-500 font-medium mb-1">Off-Ramp Settlement</div>
-                                    <div class="text-2xl font-bold text-slate-800">HK$1,200,000.00</div>
-                                    <div class="text-xs text-gray-400 mt-2">Total settled to bank accounts</div>
+                                    <div class="text-sm text-gray-500 font-medium mb-1">Settled (HKD)</div>
+                                    <div class="text-2xl font-bold text-slate-800">HK$1,200,000</div>
+                                    <div class="text-xs text-gray-400 mt-2">2 transfers</div>
                                 </div>
                                 <div class="text-everypay-500 group-hover:text-everypay-700 transition-colors mt-1">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                                 </div>
+                            </div>
+                        </div>
+                        <!-- Off-Ramp: USD -->
+                        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm cursor-pointer hover:shadow-md transition-shadow group" onclick="window.location.href='console-offramp.html'">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-sm text-gray-500 font-medium mb-1">Settled (USD)</div>
+                                    <div class="text-2xl font-bold text-slate-800">$85,400</div>
+                                    <div class="text-xs text-gray-400 mt-2">1 transfer</div>
+                                </div>
+                                <div class="text-everypay-500 group-hover:text-everypay-700 transition-colors mt-1">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Pending Transfers -->
+                        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm cursor-pointer hover:shadow-md transition-shadow group" onclick="window.location.href='console-offramp.html'">
+                            <div>
+                                <div class="text-sm text-gray-500 font-medium mb-1">Pending</div>
+                                <div class="text-2xl font-bold text-amber-500">1</div>
+                                <div class="text-xs text-gray-400 mt-2">Awaiting confirmation</div>
+                            </div>
+                        </div>
+                        <!-- Supported Assets -->
+                        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm cursor-pointer hover:shadow-md transition-shadow group" onclick="window.location.href='console-offramp.html'">
+                            <div>
+                                <div class="text-sm text-gray-500 font-medium mb-1">Supported Assets</div>
+                                <div class="flex gap-1 mt-2 flex-wrap">
+                                    <span class="px-1.5 py-0.5 bg-green-50 text-green-700 rounded text-xs font-medium">USDT-ETH</span>
+                                    <span class="px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">USDC-ETH</span>
+                                    <span class="px-1.5 py-0.5 bg-purple-50 text-purple-700 rounded text-xs font-medium">USDT-SOL</span>
+                                    <span class="px-1.5 py-0.5 bg-orange-50 text-orange-700 rounded text-xs font-medium">USDC-SOL</span>
+                                </div>
+                                <div class="text-xs text-gray-400 mt-2">4 stablecoin networks</div>
                             </div>
                         </div>
                         

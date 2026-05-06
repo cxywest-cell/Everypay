@@ -38,7 +38,7 @@
             <div class="flex justify-between items-center mb-8">
                 <div>
                     <h1 class="text-2xl font-bold text-slate-800">Off-Ramp Settlement</h1>
-                    <p class="text-sm text-gray-500 mt-1">Convert USDT to fiat and transfer to bank accounts via OSN</p>
+                    <p class="text-sm text-gray-500 mt-1">Convert stablecoins to fiat and transfer to your bank accounts via OSN</p>
                 </div>
                 <button onclick="openNewOffRamp()" class="px-4 py-2.5 bg-everypay-600 hover:bg-everypay-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -47,11 +47,16 @@
             </div>
 
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                    <div class="text-sm text-gray-500 font-medium mb-1">Total Settled (All Time)</div>
-                    <div class="text-2xl font-bold text-slate-800">HK$1,200,000.00</div>
-                    <div class="text-xs text-gray-400 mt-2">Cumulative fiat transferred to bank</div>
+                    <div class="text-sm text-gray-500 font-medium mb-1">Total Settled (HKD)</div>
+                    <div class="text-2xl font-bold text-slate-800">HK$1,200,000</div>
+                    <div class="text-xs text-gray-400 mt-2">2 transfers completed</div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                    <div class="text-sm text-gray-500 font-medium mb-1">Total Settled (USD)</div>
+                    <div class="text-2xl font-bold text-slate-800">$85,400</div>
+                    <div class="text-xs text-gray-400 mt-2">1 transfer completed</div>
                 </div>
                 <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                     <div class="text-sm text-gray-500 font-medium mb-1">Pending Transfers</div>
@@ -63,7 +68,7 @@
                     <div class="text-lg font-bold text-slate-800 font-mono">0x483A...A74FE</div>
                     <div class="text-xs text-green-500 mt-2 font-medium flex items-center gap-1">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        Whitelisted
+                        4 assets whitelisted
                     </div>
                 </div>
             </div>
@@ -110,7 +115,7 @@
                     <div id="quote-panel" class="p-6">
                         <div class="mb-6">
                             <h3 class="text-lg font-bold text-slate-800 mb-1">Get Exchange Quote</h3>
-                            <p class="text-sm text-gray-500">Enter the USDT amount you want to convert. Quote is valid for 30 seconds.</p>
+                            <p class="text-sm text-gray-500">Select your stablecoin and target fiat. Quote is valid for 30 seconds.</p>
                         </div>
 
                         <!-- Recipient Bank Selection -->
@@ -120,6 +125,8 @@
                                 <option value="">Select a bank account...</option>
                                 <option value="bank-1" selected>HSBC Hong Kong — ****6789 (HKD)</option>
                                 <option value="bank-2">Standard Chartered — ****4321 (USD)</option>
+                                <option value="bank-3">DBS Singapore — ****9876 (SGD)</option>
+                                <option value="bank-4">Barclays UK — ****5544 (GBP)</option>
                             </select>
                             <button onclick="openAddBankModal()" class="mt-2 text-xs text-everypay-600 hover:text-everypay-700 font-medium flex items-center gap-1">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -127,20 +134,33 @@
                             </button>
                         </div>
 
-                        <!-- Amount Input -->
+                        <!-- Asset Selection (Multi-stablecoin) -->
                         <div class="grid grid-cols-2 gap-4 mb-6">
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2">You Send (USDT)</label>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">You Send (Stablecoin)</label>
+                                <select id="crypto-asset" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none mb-2" onchange="updateQuote()">
+                                    <option value="usdt-eth" selected>USDT — Ethereum (ERC-20)</option>
+                                    <option value="usdc-eth">USDC — Ethereum (ERC-20)</option>
+                                    <option value="usdt-sol">USDT — Solana (SPL)</option>
+                                    <option value="usdc-sol">USDC — Solana (SPL)</option>
+                                </select>
                                 <div class="relative">
-                                    <input type="number" id="usdt-amount" value="50000" step="100" min="100" class="w-full px-3 py-2.5 pr-16 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none font-mono" oninput="updateQuote()">
-                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold">USDT</span>
+                                    <input type="number" id="crypto-amount" value="50000" step="100" min="100" class="w-full px-3 py-2.5 pr-16 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none font-mono" oninput="updateQuote()">
+                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold" id="crypto-symbol">USDT</span>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2">You Receive (HKD)</label>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">You Receive (Fiat)</label>
+                                <select id="fiat-currency" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none mb-2" onchange="updateQuote()">
+                                    <option value="HKD" selected>HKD — Hong Kong Dollar</option>
+                                    <option value="USD">USD — US Dollar</option>
+                                    <option value="EUR">EUR — Euro</option>
+                                    <option value="SGD">SGD — Singapore Dollar</option>
+                                    <option value="GBP">GBP — British Pound</option>
+                                </select>
                                 <div class="relative">
-                                    <input type="text" id="hkd-amount" value="391,250.00" readonly class="w-full px-3 py-2.5 pr-16 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700 font-mono">
-                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold">HKD</span>
+                                    <input type="text" id="fiat-amount" value="391,250.00" readonly class="w-full px-3 py-2.5 pr-16 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700 font-mono">
+                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold" id="fiat-symbol">HKD</span>
                                 </div>
                             </div>
                         </div>
@@ -152,12 +172,16 @@
                                 <span class="font-medium text-slate-700 font-mono" id="quote-rate">1 USDT = 7.825 HKD</span>
                             </div>
                             <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Network</span>
+                                <span class="font-medium text-slate-700" id="quote-network">Ethereum (ERC-20)</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
                                 <span class="text-gray-500">OSN Fee (0.5%)</span>
                                 <span class="font-medium text-slate-700 font-mono" id="quote-fee">HK$195.63</span>
                             </div>
                             <div class="flex justify-between text-sm pt-2 border-t border-gray-200">
                                 <span class="text-gray-500">Network Fee</span>
-                                <span class="font-medium text-slate-700">Included</span>
+                                <span class="font-medium text-slate-700" id="quote-gas">~$2.50 (ETH gas)</span>
                             </div>
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-500">Quote Expires</span>
@@ -181,7 +205,7 @@
                                 <span class="text-sm font-bold text-green-700">Transfer Created</span>
                             </div>
                             <h3 class="text-lg font-bold text-slate-800 mb-1">Fund Your Transfer</h3>
-                            <p class="text-sm text-gray-500">Send the exact USDT amount to the deposit address below. OSN will process your transfer once the blockchain confirms receipt.</p>
+                            <p class="text-sm text-gray-500">Send the exact stablecoin amount to the deposit address below. OSN will process your transfer once the blockchain confirms receipt.</p>
                         </div>
 
                         <!-- Transfer Summary -->
@@ -195,29 +219,33 @@
                                 <span class="font-medium text-slate-700 font-mono" id="transfer-amount">50,000 USDT</span>
                             </div>
                             <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Asset</span>
+                                <span class="font-medium text-slate-700" id="transfer-asset">USDT — Ethereum (ERC-20)</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
                                 <span class="text-gray-500">Recipient</span>
-                                <span class="font-medium text-slate-700">HSBC Hong Kong ****6789</span>
+                                <span class="font-medium text-slate-700" id="transfer-recipient">HSBC Hong Kong ****6789 (HKD)</span>
                             </div>
                         </div>
 
                         <!-- Deposit Address -->
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-6">
-                            <div class="text-sm font-bold text-blue-800 mb-3">Deposit Address (Send USDT Here)</div>
+                            <div class="text-sm font-bold text-blue-800 mb-3">Deposit Address (Send Here)</div>
                             <div class="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-blue-100">
                                 <span class="font-mono text-sm text-slate-800 flex-1 truncate" id="deposit-address">0xIDA-7B3C9E2A1F8D4560E3C7A92B1F84D6E5</span>
                                 <button onclick="copyAddress()" class="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 flex-shrink-0">Copy</button>
                             </div>
                             <div class="mt-3 flex items-center gap-2 text-xs text-blue-600">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                <span>Send exactly the amount shown. Network: Ethereum (ERC-20 USDT)</span>
+                                <span id="deposit-network-note">Send exactly the amount shown. Network: Ethereum (ERC-20 USDT)</span>
                             </div>
                         </div>
 
                         <!-- TX Hash Input -->
                         <div class="mb-6">
                             <label class="block text-sm font-bold text-gray-700 mb-2">Transaction Hash (after sending)</label>
-                            <input type="text" id="tx-hash" placeholder="0x..." class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none font-mono">
-                            <p class="mt-1 text-xs text-gray-500">Paste the TX hash from your wallet after sending the USDT</p>
+                            <input type="text" id="tx-hash" placeholder="0x... (ETH) or signature (SOL)" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none font-mono">
+                            <p class="mt-1 text-xs text-gray-500">Paste the TX hash or transaction signature from your wallet</p>
                         </div>
 
                         <button onclick="submitTxHash()" class="w-full py-3 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
@@ -236,7 +264,7 @@
                                 <span class="text-sm font-bold text-everypay-600" id="tracking-status-label">Processing</span>
                             </div>
                             <h3 class="text-lg font-bold text-slate-800 mb-1">Transfer Progress</h3>
-                            <p class="text-sm text-gray-500">Your transfer is being processed. You'll receive HKD in your bank account once complete.</p>
+                            <p class="text-sm text-gray-500">Your transfer is being processed. You'll receive fiat in your bank account once complete.</p>
                         </div>
 
                         <!-- Progress Steps -->
@@ -275,7 +303,7 @@
                                 </div>
                                 <div>
                                     <div class="text-sm font-bold text-gray-400">OSN Processing</div>
-                                    <div class="text-xs text-gray-400 mt-0.5">Convert USDT to fiat</div>
+                                    <div class="text-xs text-gray-400 mt-0.5">Convert stablecoin to fiat</div>
                                 </div>
                             </div>
                             <div class="flex items-start gap-4" id="prog-step-5">
@@ -323,8 +351,9 @@
                             <tr>
                                 <th class="px-6 py-3 font-semibold">Transfer ID</th>
                                 <th class="px-6 py-3 font-semibold">Date</th>
-                                <th class="px-6 py-3 font-semibold text-right">Amount (USDT)</th>
-                                <th class="px-6 py-3 font-semibold text-right">Received (HKD)</th>
+                                <th class="px-6 py-3 font-semibold">Asset</th>
+                                <th class="px-6 py-3 font-semibold text-right">Amount</th>
+                                <th class="px-6 py-3 font-semibold text-right">Received</th>
                                 <th class="px-6 py-3 font-semibold">Recipient Bank</th>
                                 <th class="px-6 py-3 font-semibold">Rate</th>
                                 <th class="px-6 py-3 font-semibold">Status</th>
@@ -334,8 +363,9 @@
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-6 py-4 font-mono text-xs text-slate-700">TXF-20250428-003</td>
                                 <td class="px-6 py-4 text-gray-500">2025-04-28 14:22</td>
+                                <td class="px-6 py-4 text-xs"><span class="px-1.5 py-0.5 bg-green-50 text-green-700 rounded font-medium">USDT-ETH</span></td>
                                 <td class="px-6 py-4 text-right font-mono">100,000</td>
-                                <td class="px-6 py-4 text-right font-mono font-medium text-green-700">782,500.00</td>
+                                <td class="px-6 py-4 text-right font-mono font-medium text-green-700">HK$782,500</td>
                                 <td class="px-6 py-4 text-gray-500">HSBC ****6789</td>
                                 <td class="px-6 py-4 font-mono text-xs text-gray-500">7.825</td>
                                 <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-bold status-settled">Settled</span></td>
@@ -343,17 +373,19 @@
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-6 py-4 font-mono text-xs text-slate-700">TXF-20250415-002</td>
                                 <td class="px-6 py-4 text-gray-500">2025-04-15 09:45</td>
+                                <td class="px-6 py-4 text-xs"><span class="px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded font-medium">USDC-SOL</span></td>
                                 <td class="px-6 py-4 text-right font-mono">75,000</td>
-                                <td class="px-6 py-4 text-right font-mono font-medium text-green-700">586,875.00</td>
-                                <td class="px-6 py-4 text-gray-500">HSBC ****6789</td>
-                                <td class="px-6 py-4 font-mono text-xs text-gray-500">7.825</td>
+                                <td class="px-6 py-4 text-right font-mono font-medium text-green-700">$58,688</td>
+                                <td class="px-6 py-4 text-gray-500">SCB ****4321</td>
+                                <td class="px-6 py-4 font-mono text-xs text-gray-500">0.7825</td>
                                 <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-bold status-settled">Settled</span></td>
                             </tr>
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-6 py-4 font-mono text-xs text-slate-700">TXF-20250402-001</td>
                                 <td class="px-6 py-4 text-gray-500">2025-04-02 16:10</td>
+                                <td class="px-6 py-4 text-xs"><span class="px-1.5 py-0.5 bg-green-50 text-green-700 rounded font-medium">USDT-ETH</span></td>
                                 <td class="px-6 py-4 text-right font-mono">50,000</td>
-                                <td class="px-6 py-4 text-right font-mono font-medium text-green-700">391,250.00</td>
+                                <td class="px-6 py-4 text-right font-mono font-medium text-green-700">HK$391,250</td>
                                 <td class="px-6 py-4 text-gray-500">HSBC ****6789</td>
                                 <td class="px-6 py-4 font-mono text-xs text-gray-500">7.825</td>
                                 <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-bold status-settled">Settled</span></td>
@@ -398,9 +430,11 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Currency</label>
                         <select id="new-bank-currency" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
-                            <option selected>HKD</option>
-                            <option>USD</option>
-                            <option>CNY</option>
+                            <option value="HKD">HKD</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="SGD">SGD</option>
+                            <option value="GBP">GBP</option>
                         </select>
                     </div>
                     <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
@@ -419,10 +453,36 @@
     <script src="assets/layout.js"></script>
 
     <script>
+        // --- Multi-Asset Configuration ---
+        const assetConfig = {
+            'usdt-eth': { symbol: 'USDT', network: 'Ethereum (ERC-20)', gas: '~$2.50 (ETH gas)', rateBase: 1.0 },
+            'usdc-eth': { symbol: 'USDC', network: 'Ethereum (ERC-20)', gas: '~$2.50 (ETH gas)', rateBase: 1.0 },
+            'usdt-sol': { symbol: 'USDT', network: 'Solana (SPL)', gas: '~$0.01 (SOL fee)', rateBase: 1.0 },
+            'usdc-sol': { symbol: 'USDC', network: 'Solana (SPL)', gas: '~$0.01 (SOL fee)', rateBase: 1.0 }
+        };
+
+        const fiatConfig = {
+            'HKD': { symbol: 'HK$', prefix: 'HK$', rate: 7.825, decimals: 0 },
+            'USD': { symbol: '$', prefix: '$', rate: 1.0, decimals: 0 },
+            'EUR': { symbol: '€', prefix: '€', rate: 0.92, decimals: 2 },
+            'SGD': { symbol: 'S$', prefix: 'S$', rate: 1.35, decimals: 2 },
+            'GBP': { symbol: '£', prefix: '£', rate: 0.79, decimals: 2 }
+        };
+
+        const bankLabels = {
+            'bank-1': 'HSBC Hong Kong ****6789',
+            'bank-2': 'SCB ****4321',
+            'bank-3': 'DBS ****9876',
+            'bank-4': 'Barclays ****5544'
+        };
+
         // --- Off-Ramp Flow State ---
         let currentFlowStep = 1;
         let quoteExpiryTimer = null;
-        let transferCounter = 4; // Next transfer will be 004
+        let transferCounter = 4;
+        let currentAsset = 'usdt-eth';
+        let currentFiat = 'HKD';
+        let currentBank = 'bank-1';
 
         function openNewOffRamp() {
             document.getElementById('offramp-flow').classList.remove('hidden');
@@ -463,14 +523,31 @@
 
         // --- Quote ---
         function updateQuote() {
-            const usdt = parseFloat(document.getElementById('usdt-amount').value) || 0;
-            const rate = 7.825;
-            const hkd = usdt * rate;
-            const fee = hkd * 0.005;
+            const cryptoSelect = document.getElementById('crypto-asset');
+            const fiatSelect = document.getElementById('fiat-currency');
+            const cryptoAmount = parseFloat(document.getElementById('crypto-amount').value) || 0;
 
-            document.getElementById('hkd-amount').value = (hkd - fee).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            document.getElementById('quote-rate').textContent = '1 USDT = ' + rate.toFixed(3) + ' HKD';
-            document.getElementById('quote-fee').textContent = 'HK$' + fee.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            currentAsset = cryptoSelect.value;
+            currentFiat = fiatSelect.value;
+            currentBank = document.getElementById('recipient-bank').value;
+
+            const asset = assetConfig[currentAsset];
+            const fiat = fiatConfig[currentFiat];
+
+            // Update labels
+            document.getElementById('crypto-symbol').textContent = asset.symbol;
+            document.getElementById('fiat-symbol').textContent = fiat.symbol;
+
+            // Calculate
+            const fiatAmount = cryptoAmount * fiat.rate;
+            const fee = fiatAmount * 0.005;
+            const netAmount = fiatAmount - fee;
+
+            document.getElementById('fiat-amount').value = netAmount.toLocaleString('en-US', { minimumFractionDigits: fiat.decimals, maximumFractionDigits: fiat.decimals });
+            document.getElementById('quote-rate').textContent = '1 ' + asset.symbol + ' = ' + fiat.rate.toFixed(fiat.decimals) + ' ' + currentFiat;
+            document.getElementById('quote-network').textContent = asset.network;
+            document.getElementById('quote-fee').textContent = fiat.prefix + fee.toLocaleString('en-US', { minimumFractionDigits: fiat.decimals, maximumFractionDigits: fiat.decimals });
+            document.getElementById('quote-gas').textContent = asset.gas;
         }
 
         function resetQuote() {
@@ -495,14 +572,14 @@
 
         // --- Submit Transfer ---
         function submitTransfer() {
-            if (!document.getElementById('recipient-bank').value) {
+            if (!currentBank) {
                 alert('Please select a recipient bank account.');
                 return;
             }
 
-            const usdt = parseFloat(document.getElementById('usdt-amount').value);
-            if (!usdt || usdt < 100) {
-                alert('Minimum transfer amount is 100 USDT.');
+            const cryptoAmount = parseFloat(document.getElementById('crypto-amount').value);
+            if (!cryptoAmount || cryptoAmount < 100) {
+                alert('Minimum transfer amount is 100.');
                 return;
             }
 
@@ -519,12 +596,18 @@
                 now.getDate().toString().padStart(2, '0');
             const transferId = 'TXF-' + dateStr + '-' + transferCounter.toString().padStart(3, '0');
             document.getElementById('transfer-id').textContent = transferId;
-            document.getElementById('transfer-amount').textContent = usdt.toLocaleString() + ' USDT';
+
+            const asset = assetConfig[currentAsset];
+            document.getElementById('transfer-amount').textContent = cryptoAmount.toLocaleString() + ' ' + asset.symbol;
+            document.getElementById('transfer-asset').textContent = asset.symbol + ' — ' + asset.network;
+            document.getElementById('transfer-recipient').textContent = bankLabels[currentBank] + ' (' + currentFiat + ')';
 
             // Generate mock deposit address
-            const mockAddr = '0xIDA-' + Math.random().toString(36).substring(2, 10).toUpperCase() +
-                Math.random().toString(36).substring(2, 10).toUpperCase();
+            const mockAddr = currentAsset.includes('sol')
+                ? Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8)
+                : '0x' + Math.random().toString(36).substring(2, 10).toUpperCase() + Math.random().toString(36).substring(2, 10).toUpperCase();
             document.getElementById('deposit-address').textContent = mockAddr;
+            document.getElementById('deposit-network-note').textContent = 'Send exactly the amount shown. Network: ' + asset.network;
         }
 
         // --- TX Hash ---
@@ -561,21 +644,18 @@
 
         // --- Progress Simulation ---
         function resetProgressSteps() {
-            // Reset to step 3 (Blockchain Confirmation)
             for (let i = 3; i <= 6; i++) {
                 const step = document.getElementById('prog-step-' + i);
-                const circle = step.querySelector('.rounded-full > div, .rounded-full > svg');
-                const textDiv = step.querySelectorAll('div');
                 if (i === 3) {
                     step.querySelector('.rounded-full').className = 'w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5';
                     step.querySelector('.rounded-full').innerHTML = '<div class="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>';
-                    textDiv[1].className = 'text-sm font-bold text-blue-700';
-                    textDiv[2].className = 'text-xs text-blue-500 mt-0.5';
+                    step.querySelectorAll('div')[1].className = 'text-sm font-bold text-blue-700';
+                    step.querySelectorAll('div')[2].className = 'text-xs text-blue-500 mt-0.5';
                 } else {
                     step.querySelector('.rounded-full').className = 'w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5';
                     step.querySelector('.rounded-full').innerHTML = '<div class="w-3 h-3 bg-gray-300 rounded-full"></div>';
-                    textDiv[1].className = 'text-sm font-bold text-gray-400';
-                    textDiv[2].className = 'text-xs text-gray-400 mt-0.5';
+                    step.querySelectorAll('div')[1].className = 'text-sm font-bold text-gray-400';
+                    step.querySelectorAll('div')[2].className = 'text-xs text-gray-400 mt-0.5';
                 }
             }
         }
@@ -651,20 +731,26 @@
 
         function addToHistory() {
             const transferId = document.getElementById('transfer-id').textContent;
-            const usdt = document.getElementById('transfer-amount').textContent.replace(' USDT', '').replace(/,/g, '');
-            const hkd = document.getElementById('hkd-amount').value;
+            const asset = assetConfig[currentAsset];
+            const fiat = fiatConfig[currentFiat];
+            const cryptoAmount = parseFloat(document.getElementById('crypto-amount').value);
+            const fiatAmount = parseFloat(document.getElementById('fiat-amount').value.replace(/,/g, ''));
             const now = new Date();
             const dateStr = now.toISOString().slice(0, 16).replace('T', ' ');
+
+            const assetLabel = asset.symbol + '-' + (currentAsset.includes('sol') ? 'SOL' : 'ETH');
+            const assetBadgeColor = asset.symbol === 'USDT' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700';
 
             const tbody = document.getElementById('history-table');
             const newRow = document.createElement('tr');
             newRow.className = 'hover:bg-gray-50 transition-colors animate-fadeIn';
             newRow.innerHTML = '<td class="px-6 py-4 font-mono text-xs text-slate-700">' + transferId + '</td>' +
                 '<td class="px-6 py-4 text-gray-500">' + dateStr + '</td>' +
-                '<td class="px-6 py-4 text-right font-mono">' + parseFloat(usdt).toLocaleString() + '</td>' +
-                '<td class="px-6 py-4 text-right font-mono font-medium text-green-700">' + parseFloat(hkd.replace(/,/g, '')).toLocaleString('en-US', { minimumFractionDigits: 2 }) + '</td>' +
-                '<td class="px-6 py-4 text-gray-500">HSBC ****6789</td>' +
-                '<td class="px-6 py-4 font-mono text-xs text-gray-500">7.825</td>' +
+                '<td class="px-6 py-4 text-xs"><span class="px-1.5 py-0.5 ' + assetBadgeColor + ' rounded font-medium">' + assetLabel + '</span></td>' +
+                '<td class="px-6 py-4 text-right font-mono">' + cryptoAmount.toLocaleString() + '</td>' +
+                '<td class="px-6 py-4 text-right font-mono font-medium text-green-700">' + fiat.prefix + fiatAmount.toLocaleString('en-US', { minimumFractionDigits: fiat.decimals }) + '</td>' +
+                '<td class="px-6 py-4 text-gray-500">' + bankLabels[currentBank] + '</td>' +
+                '<td class="px-6 py-4 font-mono text-xs text-gray-500">' + fiat.rate + '</td>' +
                 '<td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-bold status-settled">Settled</span></td>';
 
             tbody.insertBefore(newRow, tbody.firstChild);
