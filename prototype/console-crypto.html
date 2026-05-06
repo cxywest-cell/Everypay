@@ -620,12 +620,8 @@
                                         <span class="font-medium text-slate-700" id="quote-network">Ethereum (ERC-20)</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-500">OSN Fee (0.5%)</span>
+                                        <span class="text-gray-500">Fee (incl. network + processing)</span>
                                         <span class="font-medium text-slate-700 font-mono" id="quote-fee">HK$195.63</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm pt-2 border-t border-gray-200">
-                                        <span class="text-gray-500">Network Fee</span>
-                                        <span class="font-medium text-slate-700" id="quote-gas">~$2.50 (ETH gas)</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-500">Quote Expires</span>
@@ -663,19 +659,23 @@
                                         <span class="font-medium text-slate-700 font-mono" id="transfer-amount">50,000 USDT</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-500">Network</span>
-                                        <span class="font-medium text-slate-700" id="transfer-asset">USDT — Ethereum (ERC-20)</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
                                         <span class="text-gray-500">You Receive</span>
                                         <span class="font-medium text-green-700 font-mono" id="transfer-receive">HK$391,250.00</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm pt-2 border-t border-gray-200">
+                                        <span class="text-gray-500">Exchange Rate</span>
+                                        <span class="font-medium text-slate-700 font-mono" id="transfer-rate">1 USDT = 7.825 HKD</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Network</span>
+                                        <span class="font-medium text-slate-700" id="transfer-asset">USDT — Ethereum (ERC-20)</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-500">Recipient</span>
                                         <span class="font-medium text-slate-700" id="transfer-recipient">HSBC Hong Kong ****6789 (HKD)</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-500">OSN Fee</span>
+                                        <span class="text-gray-500">Fee (incl. network + processing)</span>
                                         <span class="font-medium text-slate-700 font-mono" id="transfer-fee">HK$195.63</span>
                                     </div>
                                 </div>
@@ -1213,6 +1213,7 @@
             document.getElementById('transfer-receive').textContent = fiatAmountStr;
             document.getElementById('transfer-recipient').textContent = bankLabels[currentBank] + ' (' + currentFiat + ')';
             document.getElementById('transfer-fee').textContent = feeStr;
+            document.getElementById('transfer-rate').textContent = document.getElementById('quote-rate').textContent;
         }
 
         // --- Confirm Withdrawal (auto-process, close modal, add to history) ---
