@@ -44,6 +44,11 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
+
+        /* Status badges for off-ramp history */
+        .status-settled { background: #dcfce7; color: #166534; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-processing { background: #dbeafe; color: #1e40af; }
     </style><script>
         function highlightDocSection(targetId) {
             const el = document.getElementById(targetId);
@@ -63,9 +68,7 @@
 </head>
 <body class="bg-gray-50 flex flex-col h-screen overflow-hidden">
 
-    <!-- Modal: Signing Plug-in (Banking Document Style) -->
-
-    <!-- Payment Modal -->
+    <!-- Payment Modal (Treasury) -->
     <div id="payment-modal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closePaymentModal()"></div>
@@ -173,6 +176,58 @@
         </div>
     </div>
 
+    <!-- Add Bank Modal (Off-Ramp) -->
+    <div id="add-bank-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75" onclick="closeAddBankModal()"></div>
+            <div class="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 animate-fadeIn">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold text-slate-800">Add Recipient Bank Account</h3>
+                    <button onclick="closeAddBankModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Bank Name</label>
+                        <input type="text" id="new-bank-name" placeholder="e.g., HSBC Hong Kong" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Account Number</label>
+                            <input type="text" id="new-bank-account" placeholder="e.g., 801-123456-001" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">SWIFT / BIC</label>
+                            <input type="text" id="new-bank-swift" placeholder="e.g., HSBCHKHHHKH" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Account Holder</label>
+                        <input type="text" id="new-bank-holder" value="Acme Trading Corp Ltd." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Currency</label>
+                        <select id="new-bank-currency" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                            <option value="HKD">HKD</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="SGD">SGD</option>
+                            <option value="GBP">GBP</option>
+                        </select>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
+                        <strong>Note:</strong> New bank accounts require OSN compliance review (1-2 business days) before they can receive off-ramp transfers.
+                    </div>
+                </div>
+                <div class="mt-6 flex gap-3">
+                    <button onclick="submitNewBank()" class="flex-1 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors">Submit for Review</button>
+                    <button onclick="closeAddBankModal()" class="px-4 py-2.5 border border-gray-300 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <main class="flex-1 flex h-screen overflow-hidden">
         <!-- Sidebar -->
         <aside id="ep-sidebar" class="w-64 bg-white border-r border-gray-200 flex flex-col z-10">
@@ -189,7 +244,7 @@
             </header>
 
             <div class="flex-1 overflow-y-auto p-8">
-                <div class="space-y-8 animate-fadeIn">
+                <div class="space-y-6 animate-fadeIn">
                     <!-- Crypto Header -->
                     <div class="flex justify-between items-end">
                         <div>
@@ -197,6 +252,10 @@
                             <p class="text-sm text-gray-500 mt-1">Powered by Cregis Custody - Secure Enclave</p>
                         </div>
                         <div class="flex gap-3">
+                            <button onclick="openNewOffRamp()" class="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 shadow-sm flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                New Off-Ramp
+                            </button>
                             <button onclick="openPaymentModal()" class="px-4 py-2 bg-everypay-600 text-white rounded-lg text-sm font-medium hover:bg-everypay-700 shadow-sm flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                 New Transfer
@@ -204,292 +263,641 @@
                         </div>
                     </div>
 
-                    <!-- Rich Widget (Balance Distribution) -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <!-- Total Balance Section -->
-                        <div class="lg:col-span-1 border-r border-gray-100 pr-8 flex flex-col h-full">
-                            <div>
-                                <div class="flex justify-between items-center mb-1">
-                                    <p class="text-sm text-gray-500 font-medium">Total Available Balance</p>
-                                    <select onchange="switchCurrency(this.value)" class="text-xs border-none bg-transparent text-gray-400 font-medium focus:ring-0 cursor-pointer hover:text-everypay-600 transition-colors p-0">
-                                        <option value="USDT">In USDT</option>
-                                        <option value="USD">In USD</option>
-                                        <option value="EUR">In EUR</option>
-                                        <option value="BTC">In BTC</option>
+                    <!-- Tab Navigation -->
+                    <div class="flex gap-1 bg-gray-100 rounded-xl p-1 max-w-sm">
+                        <button id="tab-treasury" onclick="switchTab('treasury')" class="flex-1 py-2.5 px-4 text-sm font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            Treasury
+                        </button>
+                        <button id="tab-offramp" onclick="switchTab('offramp')" class="flex-1 py-2.5 px-4 text-sm font-medium rounded-lg transition-all text-gray-500 hover:text-slate-700">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                            Off-Ramp Settlement
+                        </button>
+                    </div>
+
+                    <!-- TAB 1: Treasury Dashboard -->
+                    <div id="view-treasury">
+                        <!-- Balance Distribution Widget -->
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <!-- Total Balance Section -->
+                            <div class="lg:col-span-1 border-r border-gray-100 pr-8 flex flex-col h-full">
+                                <div>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <p class="text-sm text-gray-500 font-medium">Total Available Balance</p>
+                                        <select onchange="switchCurrency(this.value)" class="text-xs border-none bg-transparent text-gray-400 font-medium focus:ring-0 cursor-pointer hover:text-everypay-600 transition-colors p-0">
+                                            <option value="USDT">In USDT</option>
+                                            <option value="USD">In USD</option>
+                                            <option value="EUR">In EUR</option>
+                                            <option value="BTC">In BTC</option>
+                                        </select>
+                                    </div>
+                                    <div class="text-4xl font-bold text-slate-900 tracking-tight"><span id="total-balance-amount">2,540,100.50</span> <span id="total-balance-unit" class="text-lg text-gray-400 font-normal">USDT</span></div>
+                                    <div class="mt-4 flex items-center gap-2 text-sm text-green-600 bg-green-50 w-fit px-2 py-1 rounded">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                                        <span>+12.5% vs last month</span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-8 pt-6 border-t border-gray-100 flex-1">
+                                    <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Asset Allocation</h4>
+                                    <div class="space-y-5">
+                                        <!-- USDT -->
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1.5">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-2 h-2 rounded-full bg-everypay-600"></div>
+                                                    <span class="font-medium text-slate-700">USDT (Tether)</span>
+                                                </div>
+                                                <span class="text-slate-900 font-mono">1,500,000.00</span>
+                                            </div>
+                                            <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                                <div class="bg-everypay-600 h-1.5 rounded-full" style="width: 59%"></div>
+                                            </div>
+                                        </div>
+                                        <!-- BTC -->
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1.5">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-2 h-2 rounded-full bg-orange-500"></div>
+                                                    <span class="font-medium text-slate-700">BTC (Bitcoin)</span>
+                                                </div>
+                                                <span class="text-slate-900 font-mono">800,000.00</span>
+                                            </div>
+                                            <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                                <div class="bg-orange-500 h-1.5 rounded-full" style="width: 31%"></div>
+                                            </div>
+                                        </div>
+                                        <!-- ETH -->
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1.5">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                                                    <span class="font-medium text-slate-700">ETH (Ethereum)</span>
+                                                </div>
+                                                <span class="text-slate-900 font-mono">240,100.50</span>
+                                            </div>
+                                            <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                                <div class="bg-blue-500 h-1.5 rounded-full" style="width: 10%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Account Distribution Section -->
+                            <div class="lg:col-span-2">
+                                <h3 class="text-sm font-semibold text-slate-700 mb-4">Balance Distribution & Fund Management</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Receivables (Payin) -->
+                                    <div class="bg-slate-50 rounded-lg p-4 border border-slate-100 relative group flex flex-col justify-between min-h-[180px]">
+                                        <div>
+                                            <div class="flex justify-between items-start mb-2">
+                                                <div class="flex items-center gap-1.5 relative">
+                                                    <svg id="arrow-out-recv" class="w-4 h-4 text-orange-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                                                    <svg id="arrow-in-recv" class="w-4 h-4 text-green-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Receivables</span>
+                                                </div>
+                                                <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                            </div>
+                                            <div class="text-xl font-bold text-slate-800">450k</div>
+                                            <div class="text-xs text-gray-400 mt-1">Incoming Collection</div>
+                                        </div>
+                                        <div class="mt-4 grid grid-cols-2 gap-2 z-10 relative">
+                                            <button onmouseenter="showFlow('Pool')" onmouseleave="hideFlow()" onclick="executeFundAction(this, 'Pool')" class="px-2 py-1.5 text-[10px] font-bold uppercase bg-white border border-blue-200 text-blue-600 rounded hover:bg-blue-50 transition-colors">
+                                                Pool
+                                            </button>
+                                            <button onmouseenter="showFlow('Lock')" onmouseleave="hideFlow()" onclick="executeFundAction(this, 'Lock')" class="px-2 py-1.5 text-[10px] font-bold uppercase bg-white border border-red-200 text-red-600 rounded hover:bg-red-50 transition-colors">
+                                                Lock
+                                            </button>
+                                        </div>
+                                        <div class="absolute bottom-0 left-0 w-full h-1 bg-green-200 rounded-b-lg overflow-hidden">
+                                            <div class="h-full bg-green-500" style="width: 45%"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Primary Account -->
+                                    <div class="bg-slate-50 rounded-lg p-4 border border-slate-100 relative group flex flex-col justify-between min-h-[180px]">
+                                        <div>
+                                            <div class="flex justify-between items-start mb-2">
+                                                <div class="flex items-center gap-1.5 relative">
+                                                    <svg id="arrow-out-prim" class="w-4 h-4 text-orange-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                                                    <svg id="arrow-in-prim" class="w-4 h-4 text-green-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Primary Pool</span>
+                                                </div>
+                                                <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                            </div>
+                                            <div class="text-xl font-bold text-slate-800">2.0M</div>
+                                            <div class="text-xs text-gray-400 mt-1">Main Treasury</div>
+                                        </div>
+                                        <div class="mt-4 grid grid-cols-2 gap-2 z-10 relative">
+                                            <button onmouseenter="showFlow('Allocate')" onmouseleave="hideFlow()" onclick="executeFundAction(this, 'Allocate')" class="px-2 py-1.5 text-[10px] font-bold uppercase bg-white border border-orange-200 text-orange-600 rounded hover:bg-orange-50 transition-colors">
+                                                Alloc
+                                            </button>
+                                            <button onmouseenter="showFlow('Pull')" onmouseleave="hideFlow()" onclick="executeFundAction(this, 'Pull')" class="px-2 py-1.5 text-[10px] font-bold uppercase bg-white border border-gray-200 text-gray-600 rounded hover:bg-gray-50 transition-colors">
+                                                Pull
+                                            </button>
+                                        </div>
+                                        <div class="absolute bottom-0 left-0 w-full h-1 bg-everypay-200 rounded-b-lg overflow-hidden">
+                                            <div class="h-full bg-everypay-600" style="width: 80%"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quarantine (Risk) -->
+                                    <div class="bg-slate-50 rounded-lg p-4 border border-slate-100 relative group flex flex-col justify-between min-h-[180px]">
+                                        <div>
+                                            <div class="flex justify-between items-start mb-2">
+                                                <div class="flex items-center gap-1.5 relative">
+                                                    <svg id="arrow-out-quar" class="w-4 h-4 text-orange-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                                                    <svg id="arrow-in-quar" class="w-4 h-4 text-green-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Quarantine</span>
+                                                </div>
+                                                <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                            </div>
+                                            <div class="text-xl font-bold text-slate-800">15k</div>
+                                            <div class="text-xs text-gray-400 mt-1">Risk / Locked</div>
+                                        </div>
+                                        <div class="mt-4 grid grid-cols-2 gap-2 z-10 relative">
+                                            <button onmouseenter="showFlow('ReleasePrimary')" onmouseleave="hideFlow()" onclick="executeFundAction(this, 'ReleasePrimary')" class="px-2 py-1.5 text-[10px] font-bold uppercase bg-white border border-blue-200 text-blue-600 rounded hover:bg-blue-50 transition-colors">
+                                                Rel
+                                            </button>
+                                            <button onmouseenter="showFlow('ReleaseExternal')" onmouseleave="hideFlow()" onclick="executeFundAction(this, 'ReleaseExternal')" class="px-2 py-1.5 text-[10px] font-bold uppercase bg-white border border-gray-200 text-gray-600 rounded hover:bg-gray-50 transition-colors">
+                                                Rel
+                                            </button>
+                                        </div>
+                                        <div class="absolute bottom-0 left-0 w-full h-1 bg-red-200 rounded-b-lg overflow-hidden">
+                                            <div class="h-full bg-red-500" style="width: 15%"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Disbursement (Payout) -->
+                                    <div class="bg-slate-50 rounded-lg p-4 border border-slate-100 relative group flex flex-col justify-between min-h-[180px]">
+                                        <div>
+                                            <div class="flex justify-between items-start mb-2">
+                                                <div class="flex items-center gap-1.5 relative">
+                                                    <svg id="arrow-out-disb" class="w-4 h-4 text-orange-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                                                    <svg id="arrow-in-disb" class="w-4 h-4 text-green-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Disbursement</span>
+                                                </div>
+                                                <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l-7 7m-7-7v18"></path></svg>
+                                            </div>
+                                            <div class="text-xl font-bold text-slate-800">90k</div>
+                                            <div class="text-xs text-gray-400 mt-1">Ready for Payment</div>
+                                        </div>
+                                        <div class="mt-4 z-10 relative">
+                                            <div class="w-full py-1.5 text-[10px] font-bold uppercase text-center text-gray-400 border border-transparent">
+                                                Auto-Processing
+                                            </div>
+                                        </div>
+                                        <div class="absolute bottom-0 left-0 w-full h-1 bg-orange-200 rounded-b-lg overflow-hidden">
+                                            <div class="h-full bg-orange-400" style="width: 20%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- API Data Source Note (Simulation) -->
+                                <div class="mt-4 text-[10px] text-gray-400 text-right flex items-center justify-end gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                                    Data fetched via Cregis Real-time Balance API
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Treasury Transaction History -->
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mt-6">
+                            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                                <h3 class="font-bold text-slate-800">Transaction History</h3>
+                                <button class="text-sm text-everypay-600 hover:text-everypay-700 font-medium">View All</button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
+                                        <tr>
+                                            <th class="px-6 py-3 whitespace-nowrap">TXID</th>
+                                            <th class="px-6 py-3 whitespace-nowrap">Type</th>
+                                            <th class="px-6 py-3 whitespace-nowrap">Asset (Network)</th>
+                                            <th class="px-6 py-3 whitespace-nowrap">Amount</th>
+                                            <th class="px-6 py-3 whitespace-nowrap">From / To</th>
+                                            <th class="px-6 py-3 whitespace-nowrap">Activity / Phase</th>
+                                            <th class="px-6 py-3 whitespace-nowrap">Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100">
+                                        <!-- 1. Collect (Deposit) -->
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="px-6 py-4 font-mono text-xs text-blue-600 hover:underline cursor-pointer">0x3f...8a21</td>
+                                            <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">Collect</span></td>
+                                            <td class="px-6 py-4 font-medium text-slate-700"><div>USDT</div><div class="text-xs text-gray-400">ERC-20</div></td>
+                                            <td class="px-6 py-4 text-green-600 font-mono">+50,000.00</td>
+                                            <td class="px-6 py-4 text-gray-500">Global Mall Ltd. &rarr; Receivables</td>
+                                            <td class="px-6 py-4 text-slate-600"><div class="font-medium">Global Mall Q3</div><div class="text-xs text-gray-400">Phase 2: Settlement</div></td>
+                                            <td class="px-6 py-4 text-gray-500 whitespace-nowrap">Today, 10:42 AM</td>
+                                        </tr>
+                                        <!-- 2. Pool -->
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="px-6 py-4 font-mono text-xs text-blue-600 hover:underline cursor-pointer">0x8b...3c29</td>
+                                            <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">Pool</span></td>
+                                            <td class="px-6 py-4 font-medium text-slate-700"><div>USDT</div><div class="text-xs text-gray-400">ERC-20</div></td>
+                                            <td class="px-6 py-4 text-slate-600 font-mono">120,000.00</td>
+                                            <td class="px-6 py-4 text-gray-500">Receivables &rarr; Primary</td>
+                                            <td class="px-6 py-4 text-gray-400 text-sm font-mono">-</td>
+                                            <td class="px-6 py-4 text-gray-500 whitespace-nowrap">Today, 09:15 AM</td>
+                                        </tr>
+                                        <!-- 3. Lock -->
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="px-6 py-4 font-mono text-xs text-blue-600 hover:underline cursor-pointer">0xa1...f94e</td>
+                                            <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Lock</span></td>
+                                            <td class="px-6 py-4 font-medium text-slate-700"><div>USDT</div><div class="text-xs text-gray-400">ERC-20</div></td>
+                                            <td class="px-6 py-4 text-slate-600 font-mono">5,000.00</td>
+                                            <td class="px-6 py-4 text-gray-500">Receivables &rarr; Quarantine</td>
+                                            <td class="px-6 py-4 text-gray-400 text-sm font-mono">-</td>
+                                            <td class="px-6 py-4 text-gray-500 whitespace-nowrap">Feb 04, 2:10 PM</td>
+                                        </tr>
+                                        <!-- 4. Release -->
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="px-6 py-4 font-mono text-xs text-blue-600 hover:underline cursor-pointer">0xc4...7d11</td>
+                                            <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">Release</span></td>
+                                            <td class="px-6 py-4 font-medium text-slate-700"><div>USDT</div><div class="text-xs text-gray-400">ERC-20</div></td>
+                                            <td class="px-6 py-4 text-slate-600 font-mono">5,000.00</td>
+                                            <td class="px-6 py-4 text-gray-500">Quarantine &rarr; Primary</td>
+                                            <td class="px-6 py-4 text-gray-400 text-sm font-mono">-</td>
+                                            <td class="px-6 py-4 text-gray-500 whitespace-nowrap">Feb 04, 4:00 PM</td>
+                                        </tr>
+                                        <!-- 5. Allocate -->
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="px-6 py-4 font-mono text-xs text-blue-600 hover:underline cursor-pointer">0x9e...2a5b</td>
+                                            <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">Allocate</span></td>
+                                            <td class="px-6 py-4 font-medium text-slate-700"><div>BTC</div><div class="text-xs text-gray-400">Bitcoin</div></td>
+                                            <td class="px-6 py-4 text-slate-600 font-mono">2.5000</td>
+                                            <td class="px-6 py-4 text-gray-500">Primary &rarr; Disbursement</td>
+                                            <td class="px-6 py-4 text-gray-400 text-sm font-mono">-</td>
+                                            <td class="px-6 py-4 text-gray-500 whitespace-nowrap">Yesterday, 4:30 PM</td>
+                                        </tr>
+                                        <!-- 6. Pay (Payment) -->
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="px-6 py-4 font-mono text-xs text-blue-600 hover:underline cursor-pointer">0x7a...9b12</td>
+                                            <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">Pay</span></td>
+                                            <td class="px-6 py-4 font-medium text-slate-700"><div>BTC</div><div class="text-xs text-gray-400">Bitcoin</div></td>
+                                            <td class="px-6 py-4 text-red-600 font-mono">-2.5000</td>
+                                            <td class="px-6 py-4 text-gray-500">Payment &rarr; Acme Supplies</td>
+                                            <td class="px-6 py-4 text-slate-600"><div class="font-medium">IT Infra Upgrade</div><div class="text-xs text-gray-400">Phase 1: Hardware</div></td>
+                                            <td class="px-6 py-4 text-gray-500 whitespace-nowrap">Yesterday, 4:45 PM</td>
+                                        </tr>
+                                        <!-- 7. Pull -->
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="px-6 py-4 font-mono text-xs text-blue-600 hover:underline cursor-pointer">0x1c...4d55</td>
+                                            <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">Pull</span></td>
+                                            <td class="px-6 py-4 font-medium text-slate-700"><div>USDT</div><div class="text-xs text-gray-400">ERC-20</div></td>
+                                            <td class="px-6 py-4 text-red-600 font-mono">-10,000.00</td>
+                                            <td class="px-6 py-4 text-gray-500">Primary &rarr; Liquid Exchange</td>
+                                            <td class="px-6 py-4 text-gray-400 text-sm font-mono">-</td>
+                                            <td class="px-6 py-4 text-gray-500 whitespace-nowrap">Jan 30, 11:00 AM</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: Off-Ramp Settlement -->
+                    <div id="view-offramp" class="hidden">
+                        <!-- Off-Ramp Flow Card -->
+                        <div id="offramp-flow" class="hidden bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                            <!-- Flow Step Indicators -->
+                            <div class="bg-gray-50 px-6 py-4 border-b border-gray-100">
+                                <div class="flex items-center justify-center">
+                                    <div class="flex items-center w-full max-w-md">
+                                        <div id="flow-step-1" class="flex items-center gap-2">
+                                            <div class="w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold">1</div>
+                                            <span class="text-xs font-medium text-slate-700 hidden sm:inline">Quote</span>
+                                        </div>
+                                        <div class="w-8 sm:w-12 h-0.5 bg-gray-200 mx-1"></div>
+                                        <div id="flow-step-2" class="flex items-center gap-2">
+                                            <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</div>
+                                            <span class="text-xs font-medium text-gray-400 hidden sm:inline">Fund</span>
+                                        </div>
+                                        <div class="w-8 sm:w-12 h-0.5 bg-gray-200 mx-1"></div>
+                                        <div id="flow-step-3" class="flex items-center gap-2">
+                                            <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">3</div>
+                                            <span class="text-xs font-medium text-gray-400 hidden sm:inline">Track</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 1: Quote -->
+                            <div id="quote-panel" class="p-6">
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-bold text-slate-800 mb-1">Get Exchange Quote</h3>
+                                    <p class="text-sm text-gray-500">Select your stablecoin and target fiat. Quote is valid for 30 seconds.</p>
+                                </div>
+
+                                <!-- Recipient Bank Selection -->
+                                <div class="mb-6">
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Recipient Bank Account</label>
+                                    <select id="recipient-bank" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                        <option value="">Select a bank account...</option>
+                                        <option value="bank-1" selected>HSBC Hong Kong — ****6789 (HKD)</option>
+                                        <option value="bank-2">Standard Chartered — ****4321 (USD)</option>
+                                        <option value="bank-3">DBS Singapore — ****9876 (SGD)</option>
+                                        <option value="bank-4">Barclays UK — ****5544 (GBP)</option>
                                     </select>
+                                    <button onclick="openAddBankModal()" class="mt-2 text-xs text-everypay-600 hover:text-everypay-700 font-medium flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                        Add new recipient bank
+                                    </button>
                                 </div>
-                                <div class="text-4xl font-bold text-slate-900 tracking-tight"><span id="total-balance-amount">2,540,100.50</span> <span id="total-balance-unit" class="text-lg text-gray-400 font-normal">USDT</span></div>
-                                <div class="mt-4 flex items-center gap-2 text-sm text-green-600 bg-green-50 w-fit px-2 py-1 rounded">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                                    <span>+12.5% vs last month</span>
+
+                                <!-- Asset Selection (Multi-stablecoin) -->
+                                <div class="grid grid-cols-2 gap-4 mb-6">
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-700 mb-2">You Send (Stablecoin)</label>
+                                        <select id="crypto-asset" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none mb-2" onchange="updateQuote()">
+                                            <option value="usdt-eth" selected>USDT — Ethereum (ERC-20)</option>
+                                            <option value="usdc-eth">USDC — Ethereum (ERC-20)</option>
+                                            <option value="usdt-sol">USDT — Solana (SPL)</option>
+                                            <option value="usdc-sol">USDC — Solana (SPL)</option>
+                                        </select>
+                                        <div class="relative">
+                                            <input type="number" id="crypto-amount" value="50000" step="100" min="100" class="w-full px-3 py-2.5 pr-16 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none font-mono" oninput="updateQuote()">
+                                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold" id="crypto-symbol">USDT</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-700 mb-2">You Receive (Fiat)</label>
+                                        <select id="fiat-currency" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none mb-2" onchange="updateQuote()">
+                                            <option value="HKD" selected>HKD — Hong Kong Dollar</option>
+                                            <option value="USD">USD — US Dollar</option>
+                                            <option value="EUR">EUR — Euro</option>
+                                            <option value="SGD">SGD — Singapore Dollar</option>
+                                            <option value="GBP">GBP — British Pound</option>
+                                        </select>
+                                        <div class="relative">
+                                            <input type="text" id="fiat-amount" value="391,250.00" readonly class="w-full px-3 py-2.5 pr-16 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700 font-mono">
+                                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold" id="fiat-symbol">HKD</span>
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <!-- Quote Details -->
+                                <div class="bg-gray-50 rounded-lg p-4 mb-6 space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Exchange Rate</span>
+                                        <span class="font-medium text-slate-700 font-mono" id="quote-rate">1 USDT = 7.825 HKD</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Network</span>
+                                        <span class="font-medium text-slate-700" id="quote-network">Ethereum (ERC-20)</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">OSN Fee (0.5%)</span>
+                                        <span class="font-medium text-slate-700 font-mono" id="quote-fee">HK$195.63</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm pt-2 border-t border-gray-200">
+                                        <span class="text-gray-500">Network Fee</span>
+                                        <span class="font-medium text-slate-700" id="quote-gas">~$2.50 (ETH gas)</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Quote Expires</span>
+                                        <span class="font-medium text-amber-600 font-mono" id="quote-timer">--:--</span>
+                                    </div>
+                                </div>
+
+                                <button onclick="submitTransfer()" id="quote-submit-btn" class="w-full py-3 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg flex items-center justify-center gap-2">
+                                    <span>Create Transfer</span>
+                                    <svg class="w-5 h-5 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                </button>
                             </div>
 
-                            <div class="mt-8 pt-6 border-t border-gray-100 flex-1">
-                                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Asset Allocation</h4>
-                                <div class="space-y-5">
-                                    <!-- USDT -->
-                                    <div>
-                                        <div class="flex justify-between text-sm mb-1.5">
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-2 h-2 rounded-full bg-everypay-600"></div>
-                                                <span class="font-medium text-slate-700">USDT (Tether)</span>
-                                            </div>
-                                            <span class="text-slate-900 font-mono">1,500,000.00</span>
+                            <!-- Step 2: Transfer Created -->
+                            <div id="transfer-panel" class="hidden p-6">
+                                <div class="mb-6">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                                            <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                         </div>
-                                        <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                                            <div class="bg-everypay-600 h-1.5 rounded-full" style="width: 59%"></div>
+                                        <span class="text-sm font-bold text-green-700">Transfer Created</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-slate-800 mb-1">Fund Your Transfer</h3>
+                                    <p class="text-sm text-gray-500">Send the exact stablecoin amount to the deposit address below. OSN will process your transfer once the blockchain confirms receipt.</p>
+                                </div>
+
+                                <!-- Transfer Summary -->
+                                <div class="bg-gray-50 rounded-lg p-4 mb-6 space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Transfer ID</span>
+                                        <span class="font-medium text-slate-700 font-mono" id="transfer-id">TXF-20250506-001</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Amount</span>
+                                        <span class="font-medium text-slate-700 font-mono" id="transfer-amount">50,000 USDT</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Asset</span>
+                                        <span class="font-medium text-slate-700" id="transfer-asset">USDT — Ethereum (ERC-20)</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Recipient</span>
+                                        <span class="font-medium text-slate-700" id="transfer-recipient">HSBC Hong Kong ****6789 (HKD)</span>
+                                    </div>
+                                </div>
+
+                                <!-- Deposit Address -->
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-6">
+                                    <div class="text-sm font-bold text-blue-800 mb-3">Deposit Address (Send Here)</div>
+                                    <div class="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-blue-100">
+                                        <span class="font-mono text-sm text-slate-800 flex-1 truncate" id="deposit-address">0xIDA-7B3C9E2A1F8D4560E3C7A92B1F84D6E5</span>
+                                        <button onclick="copyAddress()" class="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 flex-shrink-0">Copy</button>
+                                    </div>
+                                    <div class="mt-3 flex items-center gap-2 text-xs text-blue-600">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        <span id="deposit-network-note">Send exactly the amount shown. Network: Ethereum (ERC-20 USDT)</span>
+                                    </div>
+                                </div>
+
+                                <!-- TX Hash Input -->
+                                <div class="mb-6">
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Transaction Hash (after sending)</label>
+                                    <input type="text" id="tx-hash" placeholder="0x... (ETH) or signature (SOL)" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none font-mono">
+                                    <p class="mt-1 text-xs text-gray-500">Paste the TX hash or transaction signature from your wallet</p>
+                                </div>
+
+                                <button onclick="submitTxHash()" class="w-full py-3 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <span>Submit TX Hash & Track</span>
+                                </button>
+                            </div>
+
+                            <!-- Step 3: Track Status -->
+                            <div id="track-panel" class="hidden p-6">
+                                <div class="mb-6">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-6 h-6 bg-everypay-100 rounded-full flex items-center justify-center">
+                                            <svg class="w-3 h-3 text-everypay-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        </div>
+                                        <span class="text-sm font-bold text-everypay-600" id="tracking-status-label">Processing</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-slate-800 mb-1">Transfer Progress</h3>
+                                    <p class="text-sm text-gray-500">Your transfer is being processed. You'll receive fiat in your bank account once complete.</p>
+                                </div>
+
+                                <!-- Progress Steps -->
+                                <div class="space-y-4 mb-6">
+                                    <div class="flex items-start gap-4" id="prog-step-1">
+                                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-slate-800">Transfer Created</div>
+                                            <div class="text-xs text-gray-500 mt-0.5" id="prog-time-1">2025-05-06 10:32:15 HKT</div>
                                         </div>
                                     </div>
-                                    <!-- BTC -->
-                                    <div>
-                                        <div class="flex justify-between text-sm mb-1.5">
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-2 h-2 rounded-full bg-orange-500"></div>
-                                                <span class="font-medium text-slate-700">BTC (Bitcoin)</span>
-                                            </div>
-                                            <span class="text-slate-900 font-mono">800,000.00</span>
+                                    <div class="flex items-start gap-4" id="prog-step-2">
+                                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                         </div>
-                                        <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                                            <div class="bg-orange-500 h-1.5 rounded-full" style="width: 31%"></div>
+                                        <div>
+                                            <div class="text-sm font-bold text-slate-800">TX Hash Submitted</div>
+                                            <div class="text-xs text-gray-500 mt-0.5 font-mono" id="prog-tx-hash">0x7a3b...9c2e</div>
+                                            <div class="text-xs text-gray-400 mt-0.5" id="prog-time-2">2025-05-06 10:35:42 HKT</div>
                                         </div>
                                     </div>
-                                    <!-- ETH -->
-                                    <div>
-                                        <div class="flex justify-between text-sm mb-1.5">
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                                                <span class="font-medium text-slate-700">ETH (Ethereum)</span>
-                                            </div>
-                                            <span class="text-slate-900 font-mono">240,100.50</span>
+                                    <div class="flex items-start gap-4" id="prog-step-3">
+                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <div class="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>
                                         </div>
-                                        <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                                            <div class="bg-blue-500 h-1.5 rounded-full" style="width: 10%"></div>
+                                        <div>
+                                            <div class="text-sm font-bold text-blue-700">Blockchain Confirmation</div>
+                                            <div class="text-xs text-blue-500 mt-0.5">Waiting for on-chain confirmation...</div>
                                         </div>
                                     </div>
+                                    <div class="flex items-start gap-4" id="prog-step-4">
+                                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-gray-400">OSN Processing</div>
+                                            <div class="text-xs text-gray-400 mt-0.5">Convert stablecoin to fiat</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-4" id="prog-step-5">
+                                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-gray-400">Fiat Sent to Bank</div>
+                                            <div class="text-xs text-gray-400 mt-0.5">Transfer to recipient account</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-4" id="prog-step-6">
+                                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-gray-400">Settlement Complete</div>
+                                            <div class="text-xs text-gray-400 mt-0.5">Funds received</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Simulate Progress Button -->
+                                <div class="flex gap-3">
+                                    <button onclick="simulateProgress()" id="simulate-btn" class="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition-all shadow-lg text-sm">
+                                        Simulate Progress (Mock)
+                                    </button>
+                                    <button onclick="cancelFlow()" class="px-6 py-3 border border-gray-300 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-colors">
+                                        Close
+                                    </button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Account Distribution Section -->
-                        <div class="lg:col-span-2">
-                            <h3 class="text-sm font-semibold text-slate-700 mb-4">Balance Distribution & Fund Management</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- Receivables (Payin) -->
-                                <div class="bg-slate-50 rounded-lg p-4 border border-slate-100 relative group flex flex-col justify-between min-h-[180px]">
-                                    <div>
-                                        <div class="flex justify-between items-start mb-2">
-                                            <div class="flex items-center gap-1.5 relative">
-                                                <svg id="arrow-out-recv" class="w-4 h-4 text-orange-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                                                <svg id="arrow-in-recv" class="w-4 h-4 text-green-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                                                <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Receivables</span>
-                                            </div>
-                                            <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-                                        </div>
-                                        <div class="text-xl font-bold text-slate-800">450k</div>
-                                        <div class="text-xs text-gray-400 mt-1">Incoming Collection</div>
-                                    </div>
-                                    <div class="mt-4 grid grid-cols-2 gap-2 z-10 relative">
-                                        <button onmouseenter="showFlow('Pool')" onmouseleave="hideFlow()" onclick="executeFundAction(this, 'Pool')" class="px-2 py-1.5 text-[10px] font-bold uppercase bg-white border border-blue-200 text-blue-600 rounded hover:bg-blue-50 transition-colors">
-                                            Pool
-                                        </button>
-                                        <button onmouseenter="showFlow('Lock')" onmouseleave="hideFlow()" onclick="executeFundAction(this, 'Lock')" class="px-2 py-1.5 text-[10px] font-bold uppercase bg-white border border-red-200 text-red-600 rounded hover:bg-red-50 transition-colors">
-                                            Lock
-                                        </button>
-                                    </div>
-                                    <div class="absolute bottom-0 left-0 w-full h-1 bg-green-200 rounded-b-lg overflow-hidden">
-                                        <div class="h-full bg-green-500" style="width: 45%"></div>
-                                    </div>
-                                </div>
-
-                                <!-- Primary Account -->
-                                <div class="bg-slate-50 rounded-lg p-4 border border-slate-100 relative group flex flex-col justify-between min-h-[180px]">
-                                    <div>
-                                        <div class="flex justify-between items-start mb-2">
-                                            <div class="flex items-center gap-1.5 relative">
-                                                <svg id="arrow-out-prim" class="w-4 h-4 text-orange-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                                                <svg id="arrow-in-prim" class="w-4 h-4 text-green-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                                                <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Primary Pool</span>
-                                            </div>
-                                            <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                                        </div>
-                                        <div class="text-xl font-bold text-slate-800">2.0M</div>
-                                        <div class="text-xs text-gray-400 mt-1">Main Treasury</div>
-                                    </div>
-                                    <div class="mt-4 grid grid-cols-2 gap-2 z-10 relative">
-                                        <button onmouseenter="showFlow('Allocate')" onmouseleave="hideFlow()" onclick="executeFundAction(this, 'Allocate')" class="px-2 py-1.5 text-[10px] font-bold uppercase bg-white border border-orange-200 text-orange-600 rounded hover:bg-orange-50 transition-colors">
-                                            Alloc
-                                        </button>
-                                        <button onmouseenter="showFlow('Pull')" onmouseleave="hideFlow()" onclick="executeFundAction(this, 'Pull')" class="px-2 py-1.5 text-[10px] font-bold uppercase bg-white border border-gray-200 text-gray-600 rounded hover:bg-gray-50 transition-colors">
-                                            Pull
-                                        </button>
-                                    </div>
-                                    <div class="absolute bottom-0 left-0 w-full h-1 bg-everypay-200 rounded-b-lg overflow-hidden">
-                                        <div class="h-full bg-everypay-600" style="width: 80%"></div>
-                                    </div>
-                                </div>
-
-                                <!-- Quarantine (Risk) -->
-                                <div class="bg-slate-50 rounded-lg p-4 border border-slate-100 relative group flex flex-col justify-between min-h-[180px]">
-                                    <div>
-                                        <div class="flex justify-between items-start mb-2">
-                                            <div class="flex items-center gap-1.5 relative">
-                                                <svg id="arrow-out-quar" class="w-4 h-4 text-orange-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                                                <svg id="arrow-in-quar" class="w-4 h-4 text-green-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                                                <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Quarantine</span>
-                                            </div>
-                                            <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                                        </div>
-                                        <div class="text-xl font-bold text-slate-800">15k</div>
-                                        <div class="text-xs text-gray-400 mt-1">Risk / Locked</div>
-                                    </div>
-                                    <div class="mt-4 grid grid-cols-2 gap-2 z-10 relative">
-                                        <button onmouseenter="showFlow('ReleasePrimary')" onmouseleave="hideFlow()" onclick="executeFundAction(this, 'ReleasePrimary')" class="px-2 py-1.5 text-[10px] font-bold uppercase bg-white border border-blue-200 text-blue-600 rounded hover:bg-blue-50 transition-colors">
-                                            Rel
-                                        </button>
-                                        <button onmouseenter="showFlow('ReleaseExternal')" onmouseleave="hideFlow()" onclick="executeFundAction(this, 'ReleaseExternal')" class="px-2 py-1.5 text-[10px] font-bold uppercase bg-white border border-gray-200 text-gray-600 rounded hover:bg-gray-50 transition-colors">
-                                            Rel
-                                        </button>
-                                    </div>
-                                    <div class="absolute bottom-0 left-0 w-full h-1 bg-red-200 rounded-b-lg overflow-hidden">
-                                        <div class="h-full bg-red-500" style="width: 15%"></div>
-                                    </div>
-                                </div>
-
-                                <!-- Disbursement (Payout) -->
-                                <div class="bg-slate-50 rounded-lg p-4 border border-slate-100 relative group flex flex-col justify-between min-h-[180px]">
-                                    <div>
-                                        <div class="flex justify-between items-start mb-2">
-                                            <div class="flex items-center gap-1.5 relative">
-                                                <svg id="arrow-out-disb" class="w-4 h-4 text-orange-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                                                <svg id="arrow-in-disb" class="w-4 h-4 text-green-600 absolute -left-4 opacity-0 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                                                <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Disbursement</span>
-                                            </div>
-                                            <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l-7 7m-7-7v18"></path></svg>
-                                        </div>
-                                        <div class="text-xl font-bold text-slate-800">90k</div>
-                                        <div class="text-xs text-gray-400 mt-1">Ready for Payment</div>
-                                    </div>
-                                    <div class="mt-4 z-10 relative">
-                                        <div class="w-full py-1.5 text-[10px] font-bold uppercase text-center text-gray-400 border border-transparent">
-                                            Auto-Processing
-                                        </div>
-                                    </div>
-                                    <div class="absolute bottom-0 left-0 w-full h-1 bg-orange-200 rounded-b-lg overflow-hidden">
-                                        <div class="h-full bg-orange-400" style="width: 20%"></div>
-                                    </div>
-                                </div>
+                        <!-- Off-Ramp Transfer History -->
+                        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mt-6">
+                            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                                <h2 class="text-base font-bold text-slate-800">Transfer History</h2>
+                                <span class="text-xs text-gray-400">All completed and pending transfers</span>
                             </div>
-
-                            <!-- API Data Source Note (Simulation) -->
-                            <div class="mt-4 text-[10px] text-gray-400 text-right flex items-center justify-end gap-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                                Data fetched via Cregis Real-time Balance API
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
+                                        <tr>
+                                            <th class="px-6 py-3 font-semibold">Transfer ID</th>
+                                            <th class="px-6 py-3 font-semibold">Date</th>
+                                            <th class="px-6 py-3 font-semibold">Asset</th>
+                                            <th class="px-6 py-3 font-semibold text-right">Amount</th>
+                                            <th class="px-6 py-3 font-semibold text-right">Received</th>
+                                            <th class="px-6 py-3 font-semibold">Recipient Bank</th>
+                                            <th class="px-6 py-3 font-semibold">Rate</th>
+                                            <th class="px-6 py-3 font-semibold">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="history-table" class="divide-y divide-gray-50">
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 font-mono text-xs text-slate-700">TXF-20250428-003</td>
+                                            <td class="px-6 py-4 text-gray-500">2025-04-28 14:22</td>
+                                            <td class="px-6 py-4 text-xs"><span class="px-1.5 py-0.5 bg-green-50 text-green-700 rounded font-medium">USDT-ETH</span></td>
+                                            <td class="px-6 py-4 text-right font-mono">100,000</td>
+                                            <td class="px-6 py-4 text-right font-mono font-medium text-green-700">HK$782,500</td>
+                                            <td class="px-6 py-4 text-gray-500">HSBC ****6789</td>
+                                            <td class="px-6 py-4 font-mono text-xs text-gray-500">7.825</td>
+                                            <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-bold status-settled">Settled</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 font-mono text-xs text-slate-700">TXF-20250415-002</td>
+                                            <td class="px-6 py-4 text-gray-500">2025-04-15 09:45</td>
+                                            <td class="px-6 py-4 text-xs"><span class="px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded font-medium">USDC-SOL</span></td>
+                                            <td class="px-6 py-4 text-right font-mono">75,000</td>
+                                            <td class="px-6 py-4 text-right font-mono font-medium text-green-700">$58,688</td>
+                                            <td class="px-6 py-4 text-gray-500">SCB ****4321</td>
+                                            <td class="px-6 py-4 font-mono text-xs text-gray-500">0.7825</td>
+                                            <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-bold status-settled">Settled</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 font-mono text-xs text-slate-700">TXF-20250402-001</td>
+                                            <td class="px-6 py-4 text-gray-500">2025-04-02 16:10</td>
+                                            <td class="px-6 py-4 text-xs"><span class="px-1.5 py-0.5 bg-green-50 text-green-700 rounded font-medium">USDT-ETH</span></td>
+                                            <td class="px-6 py-4 text-right font-mono">50,000</td>
+                                            <td class="px-6 py-4 text-right font-mono font-medium text-green-700">HK$391,250</td>
+                                            <td class="px-6 py-4 text-gray-500">HSBC ****6789</td>
+                                            <td class="px-6 py-4 font-mono text-xs text-gray-500">7.825</td>
+                                            <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-bold status-settled">Settled</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Transaction History Section -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mt-6">
-                        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                            <h3 class="font-bold text-slate-800">Transaction History</h3>
-                            <button class="text-sm text-everypay-600 hover:text-everypay-700 font-medium">View All</button>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm text-left">
-                                <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
-                                    <tr>
-                                        <th class="px-6 py-3 whitespace-nowrap">TXID</th>
-                                        <th class="px-6 py-3 whitespace-nowrap">Type</th>
-                                        <th class="px-6 py-3 whitespace-nowrap">Asset (Network)</th>
-                                        <th class="px-6 py-3 whitespace-nowrap">Amount</th>
-                                        <th class="px-6 py-3 whitespace-nowrap">From / To</th>
-                                        <th class="px-6 py-3 whitespace-nowrap">Activity / Phase</th>
-                                        <th class="px-6 py-3 whitespace-nowrap">Time</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100">
-                                    <!-- 1. Collect (Deposit) -->
-                                    <tr class="hover:bg-slate-50 transition-colors">
-                                        <td class="px-6 py-4 font-mono text-xs text-blue-600 hover:underline cursor-pointer">0x3f...8a21</td>
-                                        <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">Collect</span></td>
-                                        <td class="px-6 py-4 font-medium text-slate-700"><div>USDT</div><div class="text-xs text-gray-400">ERC-20</div></td>
-                                        <td class="px-6 py-4 text-green-600 font-mono">+50,000.00</td>
-                                        <td class="px-6 py-4 text-gray-500">Global Mall Ltd. &rarr; Receivables</td>
-                                        <td class="px-6 py-4 text-slate-600"><div class="font-medium">Global Mall Q3</div><div class="text-xs text-gray-400">Phase 2: Settlement</div></td>
-                                        <td class="px-6 py-4 text-gray-500 whitespace-nowrap">Today, 10:42 AM</td>
-                                    </tr>
-                                    <!-- 2. Pool -->
-                                    <tr class="hover:bg-slate-50 transition-colors">
-                                        <td class="px-6 py-4 font-mono text-xs text-blue-600 hover:underline cursor-pointer">0x8b...3c29</td>
-                                        <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">Pool</span></td>
-                                        <td class="px-6 py-4 font-medium text-slate-700"><div>USDT</div><div class="text-xs text-gray-400">ERC-20</div></td>
-                                        <td class="px-6 py-4 text-slate-600 font-mono">120,000.00</td>
-                                        <td class="px-6 py-4 text-gray-500">Receivables &rarr; Primary</td>
-                                        <td class="px-6 py-4 text-gray-400 text-sm font-mono">-</td>
-                                        <td class="px-6 py-4 text-gray-500 whitespace-nowrap">Today, 09:15 AM</td>
-                                    </tr>
-                                    <!-- 3. Lock -->
-                                    <tr class="hover:bg-slate-50 transition-colors">
-                                        <td class="px-6 py-4 font-mono text-xs text-blue-600 hover:underline cursor-pointer">0xa1...f94e</td>
-                                        <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Lock</span></td>
-                                        <td class="px-6 py-4 font-medium text-slate-700"><div>USDT</div><div class="text-xs text-gray-400">ERC-20</div></td>
-                                        <td class="px-6 py-4 text-slate-600 font-mono">5,000.00</td>
-                                        <td class="px-6 py-4 text-gray-500">Receivables &rarr; Quarantine</td>
-                                        <td class="px-6 py-4 text-gray-400 text-sm font-mono">-</td>
-                                        <td class="px-6 py-4 text-gray-500 whitespace-nowrap">Feb 04, 2:10 PM</td>
-                                    </tr>
-                                    <!-- 4. Release -->
-                                    <tr class="hover:bg-slate-50 transition-colors">
-                                        <td class="px-6 py-4 font-mono text-xs text-blue-600 hover:underline cursor-pointer">0xc4...7d11</td>
-                                        <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">Release</span></td>
-                                        <td class="px-6 py-4 font-medium text-slate-700"><div>USDT</div><div class="text-xs text-gray-400">ERC-20</div></td>
-                                        <td class="px-6 py-4 text-slate-600 font-mono">5,000.00</td>
-                                        <td class="px-6 py-4 text-gray-500">Quarantine &rarr; Primary</td>
-                                        <td class="px-6 py-4 text-gray-400 text-sm font-mono">-</td>
-                                        <td class="px-6 py-4 text-gray-500 whitespace-nowrap">Feb 04, 4:00 PM</td>
-                                    </tr>
-                                    <!-- 5. Allocate -->
-                                    <tr class="hover:bg-slate-50 transition-colors">
-                                        <td class="px-6 py-4 font-mono text-xs text-blue-600 hover:underline cursor-pointer">0x9e...2a5b</td>
-                                        <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">Allocate</span></td>
-                                        <td class="px-6 py-4 font-medium text-slate-700"><div>BTC</div><div class="text-xs text-gray-400">Bitcoin</div></td>
-                                        <td class="px-6 py-4 text-slate-600 font-mono">2.5000</td>
-                                        <td class="px-6 py-4 text-gray-500">Primary &rarr; Disbursement</td>
-                                        <td class="px-6 py-4 text-gray-400 text-sm font-mono">-</td>
-                                        <td class="px-6 py-4 text-gray-500 whitespace-nowrap">Yesterday, 4:30 PM</td>
-                                    </tr>
-                                    <!-- 6. Pay (Payment) -->
-                                    <tr class="hover:bg-slate-50 transition-colors">
-                                        <td class="px-6 py-4 font-mono text-xs text-blue-600 hover:underline cursor-pointer">0x7a...9b12</td>
-                                        <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">Pay</span></td>
-                                        <td class="px-6 py-4 font-medium text-slate-700"><div>BTC</div><div class="text-xs text-gray-400">Bitcoin</div></td>
-                                        <td class="px-6 py-4 text-red-600 font-mono">-2.5000</td>
-                                        <td class="px-6 py-4 text-gray-500">Payment &rarr; Acme Supplies</td>
-                                        <td class="px-6 py-4 text-slate-600"><div class="font-medium">IT Infra Upgrade</div><div class="text-xs text-gray-400">Phase 1: Hardware</div></td>
-                                        <td class="px-6 py-4 text-gray-500 whitespace-nowrap">Yesterday, 4:45 PM</td>
-                                    </tr>
-                                    <!-- 7. Pull -->
-                                    <tr class="hover:bg-slate-50 transition-colors">
-                                        <td class="px-6 py-4 font-mono text-xs text-blue-600 hover:underline cursor-pointer">0x1c...4d55</td>
-                                        <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">Pull</span></td>
-                                        <td class="px-6 py-4 font-medium text-slate-700"><div>USDT</div><div class="text-xs text-gray-400">ERC-20</div></td>
-                                        <td class="px-6 py-4 text-red-600 font-mono">-10,000.00</td>
-                                        <td class="px-6 py-4 text-gray-500">Primary &rarr; Liquid Exchange</td>
-                                        <td class="px-6 py-4 text-gray-400 text-sm font-mono">-</td>
-                                        <td class="px-6 py-4 text-gray-500 whitespace-nowrap">Jan 30, 11:00 AM</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Shared Scripts -->
+    <script src="assets/layout.js"></script>
+
     <script>
-        // --- Mock Data for Plans ---
+        // ============ TAB SWITCHING ============
+        function switchTab(tab) {
+            const treasuryTab = document.getElementById('tab-treasury');
+            const offrampTab = document.getElementById('tab-offramp');
+            const treasuryView = document.getElementById('view-treasury');
+            const offrampView = document.getElementById('view-offramp');
+
+            if (tab === 'treasury') {
+                treasuryTab.className = 'flex-1 py-2.5 px-4 text-sm font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm';
+                offrampTab.className = 'flex-1 py-2.5 px-4 text-sm font-medium rounded-lg transition-all text-gray-500 hover:text-slate-700';
+                treasuryView.classList.remove('hidden');
+                offrampView.classList.add('hidden');
+            } else {
+                offrampTab.className = 'flex-1 py-2.5 px-4 text-sm font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm';
+                treasuryTab.className = 'flex-1 py-2.5 px-4 text-sm font-medium rounded-all transition-all text-gray-500 hover:text-slate-700';
+                offrampView.classList.remove('hidden');
+                treasuryView.classList.add('hidden');
+            }
+        }
+
+        // ============ TREASURY: Mock Data for Plans ============
         const activitiesDB = {
             'BA-2025-001': { type: 'procurement', counterparty: 'Acme Supplies Ltd.', asset: 'USDT', network: 'TRC20', description: 'Supplier Agreement Q1' },
             'BA-2025-002': { type: 'sales', counterparty: 'Global Trade Partners', asset: 'USDT', network: 'TRC20', description: 'Export Sale Batch #42' },
@@ -795,7 +1203,347 @@
                  btn.innerHTML = originalText;
              }, 1500);
         }
+
+        // ============ OFF-RAMP SETTLEMENT ============
+
+        // --- Multi-Asset Configuration ---
+        const assetConfig = {
+            'usdt-eth': { symbol: 'USDT', network: 'Ethereum (ERC-20)', gas: '~$2.50 (ETH gas)', rateBase: 1.0 },
+            'usdc-eth': { symbol: 'USDC', network: 'Ethereum (ERC-20)', gas: '~$2.50 (ETH gas)', rateBase: 1.0 },
+            'usdt-sol': { symbol: 'USDT', network: 'Solana (SPL)', gas: '~$0.01 (SOL fee)', rateBase: 1.0 },
+            'usdc-sol': { symbol: 'USDC', network: 'Solana (SPL)', gas: '~$0.01 (SOL fee)', rateBase: 1.0 }
+        };
+
+        const fiatConfig = {
+            'HKD': { symbol: 'HK$', prefix: 'HK$', rate: 7.825, decimals: 0 },
+            'USD': { symbol: '$', prefix: '$', rate: 1.0, decimals: 0 },
+            'EUR': { symbol: '€', prefix: '€', rate: 0.92, decimals: 2 },
+            'SGD': { symbol: 'S$', prefix: 'S$', rate: 1.35, decimals: 2 },
+            'GBP': { symbol: '£', prefix: '£', rate: 0.79, decimals: 2 }
+        };
+
+        const bankLabels = {
+            'bank-1': 'HSBC Hong Kong ****6789',
+            'bank-2': 'SCB ****4321',
+            'bank-3': 'DBS ****9876',
+            'bank-4': 'Barclays ****5544'
+        };
+
+        // --- Off-Ramp Flow State ---
+        let currentFlowStep = 1;
+        let quoteExpiryTimer = null;
+        let transferCounter = 4;
+        let currentAsset = 'usdt-eth';
+        let currentFiat = 'HKD';
+        let currentBank = 'bank-1';
+
+        function openNewOffRamp() {
+            // Ensure off-ramp tab is active
+            switchTab('offramp');
+
+            document.getElementById('offramp-flow').classList.remove('hidden');
+            currentFlowStep = 1;
+            updateFlowSteps(1);
+            document.getElementById('quote-panel').classList.remove('hidden');
+            document.getElementById('transfer-panel').classList.add('hidden');
+            document.getElementById('track-panel').classList.add('hidden');
+            resetQuote();
+            updateQuote();
+        }
+
+        function cancelFlow() {
+            document.getElementById('offramp-flow').classList.add('hidden');
+            if (quoteExpiryTimer) clearTimeout(quoteExpiryTimer);
+        }
+
+        function updateFlowSteps(step) {
+            for (let i = 1; i <= 3; i++) {
+                const stepEl = document.getElementById('flow-step-' + i);
+                const circle = stepEl.querySelector('div');
+                const label = stepEl.querySelector('span');
+                if (i < step) {
+                    circle.className = 'w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold';
+                    circle.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                    label.className = 'text-xs font-medium text-green-600 hidden sm:inline';
+                } else if (i === step) {
+                    circle.className = 'w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold';
+                    circle.textContent = i;
+                    label.className = 'text-xs font-medium text-slate-700 hidden sm:inline';
+                } else {
+                    circle.className = 'w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold';
+                    circle.textContent = i;
+                    label.className = 'text-xs font-medium text-gray-400 hidden sm:inline';
+                }
+            }
+        }
+
+        // --- Quote ---
+        function updateQuote() {
+            const cryptoSelect = document.getElementById('crypto-asset');
+            const fiatSelect = document.getElementById('fiat-currency');
+            const cryptoAmount = parseFloat(document.getElementById('crypto-amount').value) || 0;
+
+            currentAsset = cryptoSelect.value;
+            currentFiat = fiatSelect.value;
+            currentBank = document.getElementById('recipient-bank').value;
+
+            const asset = assetConfig[currentAsset];
+            const fiat = fiatConfig[currentFiat];
+
+            // Update labels
+            document.getElementById('crypto-symbol').textContent = asset.symbol;
+            document.getElementById('fiat-symbol').textContent = fiat.symbol;
+
+            // Calculate
+            const fiatAmount = cryptoAmount * fiat.rate;
+            const fee = fiatAmount * 0.005;
+            const netAmount = fiatAmount - fee;
+
+            document.getElementById('fiat-amount').value = netAmount.toLocaleString('en-US', { minimumFractionDigits: fiat.decimals, maximumFractionDigits: fiat.decimals });
+            document.getElementById('quote-rate').textContent = '1 ' + asset.symbol + ' = ' + fiat.rate.toFixed(fiat.decimals) + ' ' + currentFiat;
+            document.getElementById('quote-network').textContent = asset.network;
+            document.getElementById('quote-fee').textContent = fiat.prefix + fee.toLocaleString('en-US', { minimumFractionDigits: fiat.decimals, maximumFractionDigits: fiat.decimals });
+            document.getElementById('quote-gas').textContent = asset.gas;
+        }
+
+        function resetQuote() {
+            if (quoteExpiryTimer) clearTimeout(quoteExpiryTimer);
+            document.getElementById('quote-timer').textContent = '--:--';
+        }
+
+        function startQuoteTimer() {
+            let seconds = 30;
+            document.getElementById('quote-timer').textContent = '00:' + seconds.toString().padStart(2, '0');
+            quoteExpiryTimer = setInterval(() => {
+                seconds--;
+                if (seconds <= 0) {
+                    clearInterval(quoteExpiryTimer);
+                    document.getElementById('quote-timer').textContent = 'EXPIRED';
+                    document.getElementById('quote-timer').className = 'font-medium text-red-600 font-mono';
+                    return;
+                }
+                document.getElementById('quote-timer').textContent = '00:' + seconds.toString().padStart(2, '0');
+            }, 1000);
+        }
+
+        // --- Submit Transfer ---
+        function submitTransfer() {
+            if (!currentBank) {
+                alert('Please select a recipient bank account.');
+                return;
+            }
+
+            const cryptoAmount = parseFloat(document.getElementById('crypto-amount').value);
+            if (!cryptoAmount || cryptoAmount < 100) {
+                alert('Minimum transfer amount is 100.');
+                return;
+            }
+
+            // Start quote timer
+            startQuoteTimer();
+
+            // Move to step 2
+            document.getElementById('quote-panel').classList.add('hidden');
+            document.getElementById('transfer-panel').classList.remove('hidden');
+            updateFlowSteps(2);
+
+            // Generate transfer ID
+            transferCounter++;
+            const now = new Date();
+            const dateStr = now.getFullYear().toString() +
+                (now.getMonth() + 1).toString().padStart(2, '0') +
+                now.getDate().toString().padStart(2, '0');
+            const transferId = 'TXF-' + dateStr + '-' + transferCounter.toString().padStart(3, '0');
+            document.getElementById('transfer-id').textContent = transferId;
+
+            const asset = assetConfig[currentAsset];
+            document.getElementById('transfer-amount').textContent = cryptoAmount.toLocaleString() + ' ' + asset.symbol;
+            document.getElementById('transfer-asset').textContent = asset.symbol + ' — ' + asset.network;
+            document.getElementById('transfer-recipient').textContent = bankLabels[currentBank] + ' (' + currentFiat + ')';
+
+            // Generate mock deposit address
+            const mockAddr = currentAsset.includes('sol')
+                ? Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8)
+                : '0x' + Math.random().toString(36).substring(2, 10).toUpperCase() + Math.random().toString(36).substring(2, 10).toUpperCase();
+            document.getElementById('deposit-address').textContent = mockAddr;
+            document.getElementById('deposit-network-note').textContent = 'Send exactly the amount shown. Network: ' + asset.network;
+        }
+
+        // --- TX Hash ---
+        function submitTxHash() {
+            const txHash = document.getElementById('tx-hash').value.trim();
+            if (!txHash || txHash.length < 10) {
+                alert('Please enter a valid transaction hash.');
+                return;
+            }
+
+            // Move to step 3
+            document.getElementById('transfer-panel').classList.add('hidden');
+            document.getElementById('track-panel').classList.remove('hidden');
+            updateFlowSteps(3);
+
+            // Set tracking data
+            const now = new Date();
+            document.getElementById('prog-time-2').textContent = now.toLocaleString('en-GB', { timeZone: 'Asia/Hong_Kong' }) + ' HKT';
+            document.getElementById('prog-tx-hash').textContent = txHash.substring(0, 6) + '...' + txHash.substring(txHash.length - 4);
+
+            // Reset progress steps
+            resetProgressSteps();
+        }
+
+        function copyAddress() {
+            const addr = document.getElementById('deposit-address').textContent;
+            navigator.clipboard.writeText(addr).then(() => {
+                const btn = event.target;
+                const orig = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = orig, 1500);
+            });
+        }
+
+        // --- Progress Simulation ---
+        function resetProgressSteps() {
+            for (let i = 3; i <= 6; i++) {
+                const step = document.getElementById('prog-step-' + i);
+                if (i === 3) {
+                    step.querySelector('.rounded-full').className = 'w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5';
+                    step.querySelector('.rounded-full').innerHTML = '<div class="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>';
+                    step.querySelectorAll('div')[1].className = 'text-sm font-bold text-blue-700';
+                    step.querySelectorAll('div')[2].className = 'text-xs text-blue-500 mt-0.5';
+                } else {
+                    step.querySelector('.rounded-full').className = 'w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5';
+                    step.querySelector('.rounded-full').innerHTML = '<div class="w-3 h-3 bg-gray-300 rounded-full"></div>';
+                    step.querySelectorAll('div')[1].className = 'text-sm font-bold text-gray-400';
+                    step.querySelectorAll('div')[2].className = 'text-xs text-gray-400 mt-0.5';
+                }
+            }
+        }
+
+        function simulateProgress() {
+            const btn = document.getElementById('simulate-btn');
+            btn.disabled = true;
+            btn.textContent = 'Simulating...';
+
+            const steps = [
+                { step: 3, label: 'Blockchain Confirmed', time: '2 min', color: 'green' },
+                { step: 4, label: 'OSN Processing', time: '5 min', color: 'blue' },
+                { step: 5, label: 'Fiat Sent to Bank', time: '15 min', color: 'blue' },
+                { step: 6, label: 'Settlement Complete', time: 'Now', color: 'green' }
+            ];
+
+            let i = 0;
+            function advanceStep() {
+                if (i >= steps.length) {
+                    btn.textContent = 'Settlement Complete!';
+                    btn.className = 'flex-1 py-3 bg-green-500 text-white font-bold rounded-xl text-sm';
+                    updateStatusBadge('Settled');
+
+                    // Add to history table
+                    addToHistory();
+                    return;
+                }
+
+                const s = steps[i];
+                const stepEl = document.getElementById('prog-step-' + s.step);
+                const now = new Date();
+                const timeStr = now.toLocaleString('en-GB', { timeZone: 'Asia/Hong_Kong' }) + ' HKT';
+
+                stepEl.querySelector('.rounded-full').className = 'w-8 h-8 rounded-full bg-' + s.color + '-100 flex items-center justify-center flex-shrink-0 mt-0.5';
+                stepEl.querySelector('.rounded-full').innerHTML = '<svg class="w-4 h-4 text-' + s.color + '-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+
+                const textDivs = stepEl.querySelectorAll('div');
+                textDivs[1].className = 'text-sm font-bold text-' + s.color + '-700';
+                textDivs[2].className = 'text-xs text-' + s.color + '-500 mt-0.5';
+
+                // Add time element if not present
+                if (!stepEl.querySelector('[id^="prog-time-"]') && s.step !== 3) {
+                    const timeEl = document.createElement('div');
+                    timeEl.id = 'prog-time-' + s.step;
+                    timeEl.className = 'text-xs text-gray-500 mt-0.5';
+                    timeEl.textContent = timeStr;
+                    textDivs[2].after(timeEl);
+                }
+
+                // Activate next step
+                if (i < steps.length - 1) {
+                    const nextStep = document.getElementById('prog-step-' + steps[i + 1].step);
+                    nextStep.querySelector('.rounded-full').className = 'w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5';
+                    nextStep.querySelector('.rounded-full').innerHTML = '<div class="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>';
+                    nextStep.querySelectorAll('div')[1].className = 'text-sm font-bold text-blue-700';
+                    nextStep.querySelectorAll('div')[2].className = 'text-xs text-blue-500 mt-0.5';
+                }
+
+                i++;
+                setTimeout(advanceStep, 1500);
+            }
+
+            advanceStep();
+        }
+
+        function updateStatusBadge(status) {
+            const label = document.getElementById('tracking-status-label');
+            label.textContent = status;
+            label.className = 'text-sm font-bold text-green-600';
+            label.parentElement.querySelector('div').className = 'w-6 h-6 bg-green-100 rounded-full flex items-center justify-center';
+            label.parentElement.querySelector('div').innerHTML = '<svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+        }
+
+        function addToHistory() {
+            const transferId = document.getElementById('transfer-id').textContent;
+            const asset = assetConfig[currentAsset];
+            const fiat = fiatConfig[currentFiat];
+            const cryptoAmount = parseFloat(document.getElementById('crypto-amount').value);
+            const fiatAmount = parseFloat(document.getElementById('fiat-amount').value.replace(/,/g, ''));
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 16).replace('T', ' ');
+
+            const assetLabel = asset.symbol + '-' + (currentAsset.includes('sol') ? 'SOL' : 'ETH');
+            const assetBadgeColor = asset.symbol === 'USDT' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700';
+
+            const tbody = document.getElementById('history-table');
+            const newRow = document.createElement('tr');
+            newRow.className = 'hover:bg-gray-50 transition-colors animate-fadeIn';
+            newRow.innerHTML = '<td class="px-6 py-4 font-mono text-xs text-slate-700">' + transferId + '</td>' +
+                '<td class="px-6 py-4 text-gray-500">' + dateStr + '</td>' +
+                '<td class="px-6 py-4 text-xs"><span class="px-1.5 py-0.5 ' + assetBadgeColor + ' rounded font-medium">' + assetLabel + '</span></td>' +
+                '<td class="px-6 py-4 text-right font-mono">' + cryptoAmount.toLocaleString() + '</td>' +
+                '<td class="px-6 py-4 text-right font-mono font-medium text-green-700">' + fiat.prefix + fiatAmount.toLocaleString('en-US', { minimumFractionDigits: fiat.decimals }) + '</td>' +
+                '<td class="px-6 py-4 text-gray-500">' + bankLabels[currentBank] + '</td>' +
+                '<td class="px-6 py-4 font-mono text-xs text-gray-500">' + fiat.rate + '</td>' +
+                '<td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-bold status-settled">Settled</span></td>';
+
+            tbody.insertBefore(newRow, tbody.firstChild);
+        }
+
+        // --- Add Bank Modal ---
+        function openAddBankModal() {
+            document.getElementById('add-bank-modal').classList.remove('hidden');
+        }
+
+        function closeAddBankModal() {
+            document.getElementById('add-bank-modal').classList.add('hidden');
+        }
+
+        function submitNewBank() {
+            const bankName = document.getElementById('new-bank-name').value.trim();
+            const account = document.getElementById('new-bank-account').value.trim();
+            if (!bankName || !account) {
+                alert('Please fill in bank name and account number.');
+                return;
+            }
+
+            closeAddBankModal();
+
+            // Add to dropdown
+            const select = document.getElementById('recipient-bank');
+            const option = document.createElement('option');
+            option.value = 'bank-new-' + Date.now();
+            option.textContent = bankName + ' — ****' + account.slice(-4) + ' (' + document.getElementById('new-bank-currency').value + ') [Under Review]';
+            select.appendChild(option);
+            select.value = option.value;
+
+            alert('Bank account submitted for OSN compliance review. It will be available for transfers once approved (1-2 business days).');
+        }
     </script>
-    <script src="assets/layout.js"></script>
 </body>
 </html>

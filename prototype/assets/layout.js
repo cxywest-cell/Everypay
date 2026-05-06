@@ -55,13 +55,7 @@
   html += '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a4 4 0 018 0v1h-8v-1z"></path></svg>';
   html += '<span>Onboarding</span>';
   html += '</a>';
-  // Off-Ramp Settlement entry
-  var offrampActive = page === 'console-offramp.html';
-  html += '<a href="console-offramp.html" class="' + (offrampActive ? 'flex items-center gap-3 px-3 py-2 text-sm font-medium text-everypay-700 bg-everypay-50 rounded-lg' : 'flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg') + '">';
-  html += '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>';
-  html += '<span>Off-Ramp Settlement</span>';
-  html += '</a>';
-  // Crypto Treasury (sub-item)
+  // Crypto Treasury (merged with Off-Ramp)
   var cryptoActive = page === 'console-crypto.html';
   html += '<a href="console-crypto.html" class="' + (cryptoActive ? 'flex items-center gap-3 px-3 py-2 text-sm font-medium text-everypay-700 bg-everypay-50 rounded-lg' : 'flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-800 hover:bg-gray-50 rounded-lg') + '">';
   html += '<div class="w-5 h-5 rounded-full bg-[#D4AF37] flex items-center justify-center text-white text-[10px] font-bold">C</div>';
