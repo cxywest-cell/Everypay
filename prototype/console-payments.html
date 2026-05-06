@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Everypay - Payments</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="assets/tailwind-config.js"></script>
+    <script src="assets/modals.js"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.4s ease-out; }
+        @keyframes highlightPulse {
+            0% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.4); background-color: rgba(254, 252, 232, 0.5); }
+            50% { box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.2); background-color: rgba(254, 240, 137, 0.3); }
+            100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); background-color: rgba(254, 252, 232, 0.5); }
+        }
+        .doc-highlight { animation: highlightPulse 2s infinite; border-color: #facc15 !important; background-color: #fefce8 !important; transition: all 0.3s ease; position: relative; z-index: 20; border-radius: 6px; }
+        .device-item-hover { cursor: pointer; transition: all 0.2s ease; }
+        .device-item-hover:hover { transform: scale(1.02); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border: 1px solid rgba(255, 255, 255, 0.3); }
+    </style></head>
+<body class="bg-gray-50 flex flex-col h-screen overflow-hidden">
+
+    <!-- Modal: Signing Plug-in (Banking Document Style) -->
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closePaymentModal()"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+
+                <!-- Modal Content -->
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Initiate Transfer</h3>
+
+                            <!-- Step 1: Transfer Details -->
+                            <div id="transfer-step-1" class="mt-4 space-y-4">
+                                <!-- Linked Activity Context -->
+                                <div id="payment-context" class="hidden bg-blue-50 p-3 rounded-lg border border-blue-100 mb-4">
+                                    <div class="flex items-start gap-3">
+                                        <div class="flex-shrink-0 mt-0.5">
+                                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xs font-bold text-blue-800 uppercase">Linked Business Activity</h4>
+                                            <p id="payment-context-desc" class="text-sm font-medium text-blue-900">Supplier Agreement Q1</p>
+                                            <p id="payment-context-id" class="text-xs text-blue-600 font-mono mt-0.5">BA-2025-001</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Activity Selection -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Business Activity</label>
+                                    <select id="payment-activity-select" onchange="onPaymentActivityChange()" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm">
+                                        <option value="">Select an activity...</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Activity Phase</label>
+                                    <select id="payment-phase" onchange="onPaymentPhaseChange()" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm rounded-md" disabled>
+                                        <option value="">Select a phase first...</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Recipient Address</label>
+                                    <div class="mt-1 relative rounded-md shadow-sm">
+                                        <input id="payment-recipient" type="text" readonly class="block w-full border border-gray-300 rounded-md bg-gray-50 text-gray-500 sm:text-sm py-2 px-3 focus:outline-none cursor-not-allowed" value="0x71C...9A23">
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        </div>
+                                    </div>
+                                    <p class="mt-1 text-xs text-gray-500">Address confirmed by Business Activity contract</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Amount (USDT)</label>
+                                    <input id="payment-amount" type="number" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm" placeholder="0.00">
+                                </div>
+                                <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                    <button type="button" onclick="showSigningStep()" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-everypay-600 text-base font-medium text-white hover:bg-everypay-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                                        Review & Sign
+                                    </button>
+                                    <button type="button" onclick="closePaymentModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Signing (Cregis Plugin) -->
+                            <div id="transfer-step-2" class="hidden mt-4">
+                                <div class="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
+                                    <!-- Plugin Header -->
+                                    <div class="bg-gray-50 px-3 py-2 border-b border-gray-100 flex justify-between items-center">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-2 h-2 rounded-full bg-green-400"></div>
+                                            <span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Secure Sign &bull; Cregis Custody</span>
+                                        </div>
+                                        <img src="https://via.placeholder.com/16x16/D4AF37/FFFFFF?text=C" class="w-4 h-4 rounded-full opacity-80" alt="Cregis Logo">
+                                    </div>
+
+                                    <!-- Signing UI -->
+                                    <div class="p-5">
+                                        <div class="text-center mb-4">
+                                            <div class="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-2">
+                                                <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                            </div>
+                                            <h4 class="text-sm font-bold text-slate-900">Sign Transaction</h4>
+                                            <p class="text-xs text-gray-500 mt-1">Confirm withdrawal of <strong>1,000.00 USDT</strong></p>
+                                        </div>
+
+                                        <div class="space-y-3">
+                                            <div class="bg-gray-50 p-3 rounded text-xs text-gray-600 break-all font-mono">
+                                                To: 0x71C...9A23
+                                            </div>
+                                            <button type="button" onclick="completeSigning()" class="w-full py-2 bg-slate-900 hover:bg-black text-white text-xs font-medium rounded transition-colors flex items-center justify-center gap-2">
+                                                <span>Approve & Sign</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-1 flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="ep-sidebar" class="w-64 bg-white border-r border-gray-200 flex flex-col z-10">
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
+                <h1 class="text-xl font-bold text-slate-800">Payments</h1>
+                <button class="p-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                </button>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-8">
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Payments</h2>
+                        <p class="text-sm text-gray-500 mt-1">Manage and track all treasury transactions.</p>
+                    </div>
+                    <button onclick="openPaymentModal()" class="px-4 py-2 bg-everypay-600 text-white rounded-lg text-sm font-medium hover:bg-everypay-700 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        New Payment
+                    </button>
+                </div>
+
+                <!-- Pending Approval -->
+                <div class="bg-white rounded-xl border border-orange-200 shadow-sm p-6 mb-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">Pending My Approval</h3>
+                        <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">1 Action Required</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
+                                <tr>
+                                    <th class="px-4 py-3">Transaction ID</th>
+                                    <th class="px-4 py-3">Activity Phase</th>
+                                    <th class="px-4 py-3">From</th>
+                                    <th class="px-4 py-3">To</th>
+                                    <th class="px-4 py-3">Asset (Network)</th>
+                                    <th class="px-4 py-3">Amount</th>
+                                    <th class="px-4 py-3">Approval Flow</th>
+                                    <th class="px-4 py-3 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr class="hover:bg-orange-50/50">
+                                    <td class="px-4 py-3 font-mono text-gray-600">TX-9922</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-col relative group cursor-pointer">
+                                            <span class="text-xs font-bold text-slate-700 border-b border-dashed border-slate-300 w-fit">BA-2025-001</span>
+                                            <span class="text-[10px] text-gray-500">Phase 2: Final (70%)</span>
+
+                                            <!-- Activity Hover Card -->
+                                            <div class="absolute left-0 top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover:block z-50">
+                                                <div class="flex items-start justify-between mb-2">
+                                                    <span class="text-xs font-bold text-slate-800">Activity Details</span>
+                                                    <span class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-medium">Active</span>
+                                                </div>
+                                                <div class="space-y-2">
+                                                    <div>
+                                                        <span class="block text-[10px] text-gray-400 uppercase">Project</span>
+                                                        <span class="text-xs font-medium text-slate-700">Supplier Agreement Q1</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <div>
+                                                            <span class="block text-[10px] text-gray-400 uppercase">Total Budget</span>
+                                                            <span class="text-xs font-medium text-slate-700">12,500.00 USDT</span>
+                                                        </div>
+                                                        <div class="text-right">
+                                                            <span class="block text-[10px] text-gray-400 uppercase">Paid</span>
+                                                            <span class="text-xs font-medium text-green-600">30% (3,750.00)</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="pt-2 border-t border-gray-100 mt-1">
+                                                        <span class="block text-[10px] text-gray-400 uppercase">Description</span>
+                                                        <p class="text-[10px] text-gray-500 leading-snug">Final payment for Q1 bulk supplies (Stationery & Office).</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-col">
+                                            <span class="text-xs font-bold text-slate-700">Acme Trading Corp</span>
+                                            <span class="font-mono text-[10px] text-gray-500">0x483...A74</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-col">
+                                            <span class="text-xs font-bold text-slate-700">Acme Supplies Ltd.</span>
+                                            <span class="font-mono text-[10px] text-gray-500">0x92B...F11</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-col">
+                                            <span class="font-medium text-slate-700">USDT <span class="text-xs text-gray-400 font-normal">(TRC20)</span></span>
+                                            <span class="text-[10px] text-gray-400 font-mono" title="TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t">TR7...j6t</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-slate-800 font-bold">8,750.00</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-1">
+                                            <!-- Step 1: Approved -->
+                                            <div class="relative group">
+                                                <div class="w-6 h-6 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-[8px] font-bold text-green-700 ring-2 ring-green-50">JD</div>
+                                                <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-white flex items-center justify-center">
+                                                    <svg class="w-1.5 h-1.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                                </div>
+                                                <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-gray-800 text-white text-[10px] rounded whitespace-nowrap z-10 shadow-lg">Approved by John Doe</div>
+                                            </div>
+
+                                            <!-- Arrow -->
+                                            <svg class="w-3 h-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+
+                                            <!-- Step 2: Pending Me -->
+                                            <div class="relative group">
+                                                <div class="w-6 h-6 rounded-full bg-orange-100 border-2 border-dashed border-orange-300 flex items-center justify-center text-[8px] font-bold text-orange-700 animate-pulse">Me</div>
+                                                <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-gray-800 text-white text-[10px] rounded whitespace-nowrap z-10 shadow-lg">Pending: You</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button class="px-3 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100 text-xs font-medium transition-colors">Reject</button>
+                                            <button onclick="openSigningModal()" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-medium shadow-sm transition-colors flex items-center gap-1">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                Approve
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recent Treasury Activity -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4">Recent Treasury Activity</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
+                            <tr>
+                                <th class="px-4 py-3">Transaction ID</th>
+                                <th class="px-4 py-3">Activity Phase</th>
+                                <th class="px-4 py-3">From</th>
+                                <th class="px-4 py-3">To</th>
+                                <th class="px-4 py-3">Asset (Network)</th>
+                                <th class="px-4 py-3">Amount</th>
+                                <th class="px-4 py-3">Approval Flow</th>
+                                <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3">Time</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <!-- TX-9920: Settled -->
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-mono text-gray-600">TX-9920</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col relative group cursor-pointer">
+                                        <span class="text-xs font-bold text-slate-700 border-b border-dashed border-slate-300 w-fit">BA-2025-003</span>
+                                        <span class="text-[10px] text-gray-500">Phase 1: Full Payment (100%)</span>
+
+                                        <!-- Activity Hover Card -->
+                                        <div class="absolute left-0 top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover:block z-50">
+                                            <div class="flex items-start justify-between mb-2">
+                                                <span class="text-xs font-bold text-slate-800">Activity Details</span>
+                                                <span class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-medium">Active</span>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <div>
+                                                    <span class="block text-[10px] text-gray-400 uppercase">Project</span>
+                                                    <span class="text-xs font-medium text-slate-700">Software License Renewal</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <div>
+                                                        <span class="block text-[10px] text-gray-400 uppercase">Total Budget</span>
+                                                        <span class="text-xs font-medium text-slate-700">8,950.00 USDT</span>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <span class="block text-[10px] text-gray-400 uppercase">Paid</span>
+                                                        <span class="text-xs font-medium text-gray-400">0% (0.00)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="pt-2 border-t border-gray-100 mt-1">
+                                                    <span class="block text-[10px] text-gray-400 uppercase">Description</span>
+                                                    <p class="text-[10px] text-gray-500 leading-snug">Annual enterprise license renewal for cloud infrastructure services.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-700">Acme Trading Corp</span>
+                                        <span class="font-mono text-[10px] text-gray-500">0x483...A74</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-700">TechSource Inc.</span>
+                                        <span class="font-mono text-[10px] text-gray-500">0x92B...C11</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-slate-700">USDT <span class="text-xs text-gray-400 font-normal">(ERC20)</span></span>
+                                        <span class="text-[10px] text-gray-400 font-mono" title="0xdac17f958d2ee523a2206206994597c13d831ec7">0xda...ec7</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-slate-800 font-bold">8,950.00</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-1">
+                                        <!-- Step 1: Approved -->
+                                        <div class="relative group">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-[8px] font-bold text-green-700 ring-2 ring-green-50">JD</div>
+                                            <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-white flex items-center justify-center">
+                                                <svg class="w-1.5 h-1.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                            </div>
+                                            <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-gray-800 text-white text-[10px] rounded whitespace-nowrap z-10 shadow-lg">Approved by John Doe</div>
+                                        </div>
+
+                                        <!-- Arrow -->
+                                        <svg class="w-3 h-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+
+                                        <!-- Step 2: Approved -->
+                                        <div class="relative group">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-[8px] font-bold text-green-700 ring-2 ring-green-50">AS</div>
+                                            <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-white flex items-center justify-center">
+                                                <svg class="w-1.5 h-1.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                            </div>
+                                            <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-gray-800 text-white text-[10px] rounded whitespace-nowrap z-10 shadow-lg">Approved by Alice Smith</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-green-600 font-medium">Settled</td>
+                                <td class="px-4 py-3 text-gray-400">15 mins ago</td>
+                            </tr>
+                            <!-- TX-9919: Reviewing -->
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-mono text-gray-600">TX-9919</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col relative group cursor-pointer">
+                                        <span class="text-xs font-bold text-slate-700 border-b border-dashed border-slate-300 w-fit">BA-2025-001</span>
+                                        <span class="text-[10px] text-gray-500">Phase 1: Down Payment (30%)</span>
+
+                                        <!-- Activity Hover Card -->
+                                        <div class="absolute left-0 top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover:block z-50">
+                                            <div class="flex items-start justify-between mb-2">
+                                                <span class="text-xs font-bold text-slate-800">Activity Details</span>
+                                                <span class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-medium">Active</span>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <div>
+                                                    <span class="block text-[10px] text-gray-400 uppercase">Project</span>
+                                                    <span class="text-xs font-medium text-slate-700">Office Equipment Upgrade</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <div>
+                                                        <span class="block text-[10px] text-gray-400 uppercase">Total Budget</span>
+                                                        <span class="text-xs font-medium text-slate-700">12,500.00 USDT</span>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <span class="block text-[10px] text-gray-400 uppercase">Paid</span>
+                                                        <span class="text-xs font-medium text-gray-400">0% (0.00)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="pt-2 border-t border-gray-100 mt-1">
+                                                    <span class="block text-[10px] text-gray-400 uppercase">Description</span>
+                                                    <p class="text-[10px] text-gray-500 leading-snug">Initial deposit for new ergonomic workstations and chairs.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-700">Acme Trading Corp</span>
+                                        <span class="font-mono text-[10px] text-gray-500">0x483...A74</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-700">Acme Supplies Ltd.</span>
+                                        <span class="font-mono text-[10px] text-gray-500">0x92B...C11</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-slate-700">USDT <span class="text-xs text-gray-400 font-normal">(TRC20)</span></span>
+                                        <span class="text-[10px] text-gray-400 font-mono" title="TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t">TR7...j6t</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-slate-800 font-bold">3,750.00</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-1">
+                                        <!-- Step 1: Approved -->
+                                        <div class="relative group">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-[8px] font-bold text-green-700 ring-2 ring-green-50">JD</div>
+                                            <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-white flex items-center justify-center">
+                                                <svg class="w-1.5 h-1.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                            </div>
+                                            <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-gray-800 text-white text-[10px] rounded whitespace-nowrap z-10 shadow-lg">Approved by John Doe</div>
+                                        </div>
+
+                                        <!-- Arrow -->
+                                        <svg class="w-3 h-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+
+                                        <!-- Step 2: Pending -->
+                                        <div class="relative group">
+                                            <div class="w-6 h-6 rounded-full bg-gray-50 border-2 border-dashed border-gray-300 flex items-center justify-center text-[8px] font-bold text-gray-400">FM</div>
+                                            <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-gray-800 text-white text-[10px] rounded whitespace-nowrap z-10 shadow-lg">Pending: Finance Manager</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-orange-500 font-medium">Reviewing</td>
+                                <td class="px-4 py-3 text-gray-400">1 hour ago</td>
+                            </tr>
+                            <!-- TX-9918: Rejected -->
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-mono text-gray-600">TX-9918</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col relative group cursor-pointer">
+                                        <span class="text-xs font-bold text-slate-700 border-b border-dashed border-slate-300 w-fit">BA-2025-004</span>
+                                        <span class="text-[10px] text-gray-500">Phase 1: Urgent (100%)</span>
+
+                                        <!-- Activity Hover Card -->
+                                        <div class="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover:block z-50">
+                                            <div class="flex items-start justify-between mb-2">
+                                                <span class="text-xs font-bold text-slate-800">Activity Details</span>
+                                                <span class="px-1.5 py-0.5 bg-red-50 text-red-600 rounded text-[10px] font-medium">Urgent</span>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <div>
+                                                    <span class="block text-[10px] text-gray-400 uppercase">Project</span>
+                                                    <span class="text-xs font-medium text-slate-700">Emergency Logistics</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <div>
+                                                        <span class="block text-[10px] text-gray-400 uppercase">Total Budget</span>
+                                                        <span class="text-xs font-medium text-slate-700">12,500.00 USDC</span>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <span class="block text-[10px] text-gray-400 uppercase">Paid</span>
+                                                        <span class="text-xs font-medium text-gray-400">0% (0.00)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="pt-2 border-t border-gray-100 mt-1">
+                                                    <span class="block text-[10px] text-gray-400 uppercase">Description</span>
+                                                    <p class="text-[10px] text-gray-500 leading-snug">Expedited shipping fees for critical supply chain disruption.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-700">Acme Trading Corp</span>
+                                        <span class="font-mono text-[10px] text-gray-500">0x483...A74</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-700">Global Supplies</span>
+                                        <span class="font-mono text-[10px] text-gray-500">0x12C...B99</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-slate-700">USDC <span class="text-xs text-gray-400 font-normal">(ERC20)</span></span>
+                                        <span class="text-[10px] text-gray-400 font-mono" title="0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48">0xa0...b48</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-slate-800 font-bold">12,500.00</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-1">
+                                        <!-- Step 1: Approved -->
+                                        <div class="relative group">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-[8px] font-bold text-green-700 ring-2 ring-green-50">JD</div>
+                                            <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-white flex items-center justify-center">
+                                                <svg class="w-1.5 h-1.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                            </div>
+                                            <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-gray-800 text-white text-[10px] rounded whitespace-nowrap z-10 shadow-lg">Approved by John Doe</div>
+                                        </div>
+
+                                        <!-- Arrow -->
+                                        <svg class="w-3 h-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+
+                                        <!-- Step 2: Rejected -->
+                                        <div class="relative group">
+                                            <div class="w-6 h-6 rounded-full bg-red-100 border border-red-200 flex items-center justify-center text-[8px] font-bold text-red-700 ring-2 ring-red-50">FM</div>
+                                            <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-white flex items-center justify-center">
+                                                <svg class="w-1.5 h-1.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            </div>
+                                            <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-gray-800 text-white text-[10px] rounded whitespace-nowrap z-10 shadow-lg">Rejected by Finance Mgr</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-red-500 font-medium">Rejected</td>
+                                <td class="px-4 py-3 text-gray-400">4 hours ago</td>
+                            </tr>
+                            <!-- TX-9917: Settling -->
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-mono text-gray-600">TX-9917</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-700 border-b border-dashed border-slate-300 w-fit">BA-2025-003</span>
+                                        <span class="text-[10px] text-gray-500">Phase 1: Full Payment (100%)</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-700">Acme Trading Corp</span>
+                                        <span class="font-mono text-[10px] text-gray-500">0x483...A74</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-700">Global Supplies</span>
+                                        <span class="font-mono text-[10px] text-gray-500">0x12C...B99</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-slate-700">USDC <span class="text-xs text-gray-400 font-normal">(ERC20)</span></span>
+                                        <span class="text-[10px] text-gray-400 font-mono">0xa0...b48</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-slate-800 font-bold">5,000.00</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-1">
+                                        <div class="relative group">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-[8px] font-bold text-green-700 ring-2 ring-green-50">JD</div>
+                                            <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-white flex items-center justify-center">
+                                                <svg class="w-1.5 h-1.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                            </div>
+                                        </div>
+                                        <svg class="w-3 h-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                        <div class="relative group">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-[8px] font-bold text-green-700 ring-2 ring-green-50">AS</div>
+                                            <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-white flex items-center justify-center">
+                                                <svg class="w-1.5 h-1.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-blue-500 font-medium">Settling</td>
+                                <td class="px-4 py-3 text-gray-400">2 mins ago</td>
+                            </tr>
+                            <!-- TX-9916: Failed -->
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-mono text-gray-600">TX-9916</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-700 border-b border-dashed border-slate-300 w-fit">BA-2025-001</span>
+                                        <span class="text-[10px] text-gray-500">Phase 1: Down Payment (30%)</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-700">Acme Trading Corp</span>
+                                        <span class="font-mono text-[10px] text-gray-500">0x483...A74</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-700">Acme Supplies Ltd.</span>
+                                        <span class="font-mono text-[10px] text-gray-500">0x92B...C11</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-slate-700">USDT <span class="text-xs text-gray-400 font-normal">(TRC20)</span></span>
+                                        <span class="text-[10px] text-gray-400 font-mono">TR7...j6t</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-slate-800 font-bold">2,000.00</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-1">
+                                        <div class="relative group">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-[8px] font-bold text-green-700 ring-2 ring-green-50">JD</div>
+                                            <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-white flex items-center justify-center">
+                                                <svg class="w-1.5 h-1.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                            </div>
+                                        </div>
+                                        <svg class="w-3 h-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                        <div class="relative group">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-[8px] font-bold text-green-700 ring-2 ring-green-50">AS</div>
+                                            <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-white flex items-center justify-center">
+                                                <svg class="w-1.5 h-1.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-red-600 font-medium">Failed</td>
+                                <td class="px-4 py-3 text-gray-400">1 day ago</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Mock Data for Plans
+        const activitiesDB = {
+            'BA-2025-001': { type: 'procurement', counterparty: 'Acme Supplies Ltd.', asset: 'USDT', network: 'TRC20', description: 'Supplier Agreement Q1' },
+            'BA-2025-002': { type: 'sales', counterparty: 'Global Trade Partners', asset: 'USDT', network: 'TRC20', description: 'Export Sale Batch #42' },
+            'BA-2025-003': { type: 'procurement', counterparty: 'TechSource Inc.', asset: 'USDT', network: 'ERC20', description: 'Hardware Equipment' },
+            'BA-2025-004': { type: 'sales', counterparty: 'FinSecure Bank', asset: 'USDC', network: 'ERC20', description: 'Institutional Purchase' }
+        };
+
+        const activityPlans = {
+            'BA-2025-001': {
+                phases: [
+                    { name: 'Phase 1: Down Payment (30%)', status: 'Paid', amount: '3,750.00' },
+                    { name: 'Phase 2: Final (70%)', status: 'Pending', amount: '8,750.00' }
+                ]
+            },
+            'BA-2025-002': {
+                phases: [
+                    { name: 'Phase 1: Deposit (20%)', status: 'Received', amount: '9,000.00', reference: '0x8f...2a' },
+                    { name: 'Phase 2: Balance (80%)', status: 'Pending', amount: '36,000.00' }
+                ]
+            },
+            'BA-2025-003': {
+                phases: [
+                    { name: 'Phase 1: Full Payment (100%)', status: 'Paid', amount: '8,950.00' }
+                ]
+            },
+            'BA-2025-004': {
+                phases: [
+                    { name: 'Full Payment', status: 'Pending', amount: '12,000.00' }
+                ]
+            }
+        };
+
+        function openSigningModal() {
+            document.getElementById('signing-modal').classList.remove('hidden');
+        }
+
+        function closeSigningModal() {
+            document.getElementById('signing-modal').classList.add('hidden');
+        }
+
+        function highlightDocSection(targetId) {
+            const el = document.getElementById(targetId);
+            if (el) {
+                el.classList.add('doc-highlight');
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function removeHighlight(targetId) {
+            const el = document.getElementById(targetId);
+            if (el) {
+                el.classList.remove('doc-highlight');
+            }
+        }
+
+        // --- Payment & Signing Logic ---
+        function openPaymentModal(context = null) {
+            const contextEl = document.getElementById('payment-context');
+            const activitySelect = document.getElementById('payment-activity-select');
+
+            // Populate activities (Outbound/Procurement)
+            populatePaymentActivities();
+
+            if (context) {
+                // Pre-select activity and lock it
+                activitySelect.value = context.id;
+                activitySelect.disabled = true;
+
+                // Trigger change to populate phases
+                onPaymentActivityChange();
+
+                // Show context box
+                if (contextEl) contextEl.classList.remove('hidden');
+                document.getElementById('payment-context-desc').textContent = context.desc;
+                document.getElementById('payment-context-id').textContent = context.id;
+
+                // Pre-fill amount/recipient
+                if (context.amount) document.getElementById('payment-amount').value = context.amount;
+                if (context.recipient) document.getElementById('payment-recipient').value = context.recipient;
+            } else {
+                // New Payment (No Context)
+                if (contextEl) contextEl.classList.add('hidden');
+                activitySelect.value = "";
+                activitySelect.disabled = false;
+
+                // Reset fields
+                const phaseSelect = document.getElementById('payment-phase');
+                phaseSelect.innerHTML = '<option value="">Select a phase first...</option>';
+                phaseSelect.disabled = true;
+                document.getElementById('payment-amount').value = '';
+                document.getElementById('payment-recipient').value = '';
+            }
+            document.getElementById('payment-modal').classList.remove('hidden');
+        }
+
+        function populatePaymentActivities() {
+            const select = document.getElementById('payment-activity-select');
+            select.innerHTML = '<option value="">Select an activity...</option>';
+
+            // Filter only Procurement (Outbound) activities
+            Object.keys(activitiesDB).forEach(id => {
+                const activity = activitiesDB[id];
+                if (activity.type === 'procurement') {
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = `${id} - ${activity.description} (${activity.counterparty})`;
+                    select.appendChild(option);
+                }
+            });
+        }
+
+        function onPaymentActivityChange() {
+            const activityId = document.getElementById('payment-activity-select').value;
+            const phaseSelect = document.getElementById('payment-phase');
+
+            // Reset fields
+            phaseSelect.innerHTML = '<option value="">Select a phase...</option>';
+            document.getElementById('payment-recipient').value = '';
+            document.getElementById('payment-amount').value = '';
+
+            if (activityId) {
+                phaseSelect.disabled = false;
+                const activity = activitiesDB[activityId];
+
+                // Auto-fill Recipient (Dummy)
+                document.getElementById('payment-recipient').value = "0x71C...9A23";
+
+                if (activityPlans[activityId]) {
+                    const plan = activityPlans[activityId];
+                    plan.phases.forEach((phase, index) => {
+                        const option = document.createElement('option');
+                        option.value = index;
+                        const label = phase.percentage ? `${phase.name} (${phase.percentage}%)` : phase.name;
+                        option.textContent = label;
+                        phaseSelect.appendChild(option);
+                    });
+                }
+            } else {
+                phaseSelect.disabled = true;
+                phaseSelect.innerHTML = '<option value="">Select a phase first...</option>';
+            }
+        }
+
+        function onPaymentPhaseChange() {
+            const activityId = document.getElementById('payment-activity-select').value;
+            const phaseIndex = document.getElementById('payment-phase').value;
+
+            if (activityId && phaseIndex !== "") {
+                const phase = activityPlans[activityId].phases[phaseIndex];
+                let amount = phase.amount;
+                if (typeof amount === 'string') {
+                     amount = amount.split(' ')[0].replace(/,/g, '');
+                }
+                document.getElementById('payment-amount').value = amount;
+            }
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.add('hidden');
+            // Reset state
+            document.getElementById('transfer-step-1').classList.remove('hidden');
+            document.getElementById('transfer-step-2').classList.add('hidden');
+
+            // Clear Context
+            const contextEl = document.getElementById('payment-context');
+            if (contextEl) contextEl.classList.add('hidden');
+            const amountEl = document.getElementById('payment-amount');
+            if (amountEl) amountEl.value = '';
+        }
+
+        function showSigningStep() {
+            document.getElementById('transfer-step-1').classList.add('hidden');
+            document.getElementById('transfer-step-2').classList.remove('hidden');
+        }
+
+        function completeSigning() {
+             const btn = event.target.closest('button');
+             const originalText = btn.innerHTML;
+             btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Signing...';
+             setTimeout(() => {
+                 closePaymentModal();
+                 btn.innerHTML = originalText;
+             }, 1500);
+        }
+    </script>
+    <script src="assets/layout.js"></script>
+</body>
+</html>

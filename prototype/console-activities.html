@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Everypay - Business Activities</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="assets/tailwind-config.js"></script>
+    <script src="assets/modals.js"></script>
+    <script src="assets/utils.js"></script>
+    <!-- Activity Details Drawer -->
+    <div id="activity-details-drawer" class="fixed inset-0 overflow-hidden z-[60] hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+        <div class="absolute inset-0 overflow-hidden">
+            <!-- Background overlay -->
+            <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeActivityDetails()" aria-hidden="true"></div>
+
+            <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+                <div class="pointer-events-auto w-screen max-w-md">
+                    <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
+                        <!-- Header -->
+                        <div class="bg-gray-50 px-4 py-6 sm:px-6 border-b border-gray-200">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">Activity Details</h2>
+                                    <p class="text-sm text-gray-500 mt-1" id="detail-id">BA-2025-001</p>
+                                </div>
+                                <div class="ml-3 flex h-7 items-center">
+                                    <button type="button" onclick="closeActivityDetails()" class="relative rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-everypay-500 focus:ring-offset-2">
+                                        <span class="absolute -inset-2.5"></span>
+                                        <span class="sr-only">Close panel</span>
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="relative flex-1 px-4 py-6 sm:px-6 space-y-6">
+                            <!-- Status Badge -->
+                            <div>
+                                <span id="detail-status" class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>
+                                <span id="detail-type" class="ml-2 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">Procurement</span>
+                            </div>
+
+                            <!-- Core Info -->
+                            <div class="grid grid-cols-2 gap-4 border-b border-gray-100 pb-6">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-500">Counterparty</label>
+                                    <div class="mt-1 text-sm font-medium text-gray-900" id="detail-counterparty">Acme Supplies Ltd.</div>
+                                    <div class="text-xs text-gray-400 font-mono truncate" id="detail-address">0x92B...F11</div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-500">Incoterms</label>
+                                    <div class="mt-1 text-sm font-medium text-gray-900" id="detail-incoterms">CIF</div>
+                                </div>
+                            </div>
+
+                            <!-- Financials -->
+                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Total Amount</label>
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-2xl font-bold text-gray-900" id="detail-amount">12,500.00</span>
+                                    <span class="text-sm font-medium text-gray-500" id="detail-asset">USDT</span>
+                                </div>
+                                <div class="mt-1 text-xs text-gray-400" id="detail-network">Network: TRC20</div>
+                            </div>
+
+                            <!-- Description -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Description</label>
+                                <p class="text-sm text-gray-600 leading-relaxed" id="detail-description">
+                                    Final payment for Q1 bulk supplies.
+                                </p>
+                            </div>
+
+                            <!-- Documents -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-500 mb-2">Attached Documents</label>
+                                <ul class="space-y-2" id="detail-documents">
+                                    <!-- Populated by JS -->
+                                </ul>
+                            </div>
+
+                            <!-- Plan/Timeline -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-500 mb-2">Execution Plan</label>
+                                <div class="flow-root">
+                                    <ul role="list" class="-mb-8" id="detail-plan">
+                                        <!-- Populated by JS -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Actions -->
+                        <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
+                            <button type="button" class="flex w-full justify-center rounded-md bg-everypay-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-everypay-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-everypay-600">
+                                Manage Activity
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</head>
+<body class="bg-gray-50 flex flex-col h-screen overflow-hidden">
+    <main class="flex-1 flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="ep-sidebar" class="w-64 bg-white border-r border-gray-200 flex flex-col z-10">
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
+                <h1 class="text-xl font-bold text-slate-800">Business Activities</h1>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-8">
+                <div class="space-y-8 animate-fadeIn">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800">Business Activities</h2>
+                            <p class="text-sm text-gray-500 mt-1">Manage documents and initiate payments for business operations.</p>
+                        </div>
+                        <button onclick="openNewActivityModal()" class="px-4 py-2 bg-everypay-600 text-white rounded-lg text-sm font-medium hover:bg-everypay-700 shadow-sm flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            New Activity
+                        </button>
+                    </div>
+
+                    <!-- Procurement Activities (Payment) -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <span class="bg-red-100 text-red-800 p-1.5 rounded-lg">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                                </span>
+                                Procurement (Outbound Payments)
+                            </h3>
+                        </div>
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full min-w-[1000px] text-sm text-left">
+                                <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
+                                    <tr>
+                                        <th class="px-6 py-3">Activity ID</th>
+                                        <th class="px-6 py-3">Incoterms</th>
+                                        <th class="px-6 py-3">Counterparty</th>
+                                        <th class="px-6 py-3">Beneficiary</th>
+                                        <th class="px-6 py-3">Asset (Network)</th>
+                                        <th class="px-6 py-3">Amount</th>
+                                        <th class="px-6 py-3">Documents</th>
+                                        <th class="px-6 py-3">Payment Plan</th>
+                                        <th class="px-6 py-3">Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <!-- Activity 1: Outbound Payment (CIF) -->
+                                    <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-001')">
+                                        <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-001</td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800" title="Cost, Insurance and Freight">
+                                                CIF
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Acme Supplies Ltd.</td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-col">
+                                                <span class="text-xs font-bold text-slate-700">Acme Supplies Ltd.</span>
+                                                <span class="font-mono text-[10px] text-gray-500">0x92B...F11</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-1">
+                                                <span class="font-medium text-slate-700">USDT</span>
+                                                <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">TRC20</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-col">
+                                                <span class="font-medium text-slate-800">$12,500.00</span>
+                                                <span class="text-xs text-gray-500">12,500.00 USDT</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="space-y-1">
+                                                <div class="flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                    <a href="#" class="text-everypay-600 hover:underline text-xs" onclick="event.stopPropagation()">contract_signed.pdf</a>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                    <a href="#" class="text-everypay-600 hover:underline text-xs" onclick="event.stopPropagation()">insurance_policy.pdf</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div id="plan-cell-BA-2025-001" onclick="event.stopPropagation(); openPlanModal('BA-2025-001', 'payment')" class="space-y-2 min-w-[180px] cursor-pointer hover:bg-blue-50 p-2 rounded transition-colors" title="Click to manage Payment Plan">
+                                                <div class="flex items-center justify-between text-xs">
+                                                    <span class="text-gray-500">Phase 1: Down Payment (30%)</span>
+                                                    <span class="font-bold text-green-600">Paid</span>
+                                                </div>
+                                                <div class="flex items-center justify-between text-xs">
+                                                    <span class="text-gray-500">Phase 2: Final (70%)</span>
+                                                    <span class="font-bold text-yellow-600">Pending</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm text-gray-600 truncate max-w-xs">Final payment for Q1 bulk supplies.</div>
+                                        </td>
+                                    </tr>
+                                    <!-- Activity 3: Outbound Payment (DDP) -->
+                                    <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-003')">
+                                        <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-003</td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800" title="Delivered Duty Paid">
+                                                DDP
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">TechSource Inc.</td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-col">
+                                                <span class="text-xs font-bold text-slate-700">TechSource Inc.</span>
+                                                <span class="font-mono text-[10px] text-gray-500">0x92B...C11</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-1">
+                                                <span class="font-medium text-slate-700">USDC</span>
+                                                <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">ERC20</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-col">
+                                                <span class="font-medium text-slate-800">$8,950.00</span>
+                                                <span class="text-xs text-gray-500">8,950.00 USDC</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="space-y-1">
+                                                <div class="flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                    <a href="#" class="text-everypay-600 hover:underline text-xs" onclick="event.stopPropagation()">po_hardware.pdf</a>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                    <a href="#" class="text-everypay-600 hover:underline text-xs" onclick="event.stopPropagation()">customs_dec.pdf</a>
+                                                </div>
+                                                 <div class="flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                    <a href="#" class="text-everypay-600 hover:underline text-xs" onclick="event.stopPropagation()">packing_list.pdf</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div id="plan-cell-BA-2025-003" onclick="event.stopPropagation(); openPlanModal('BA-2025-003', 'payment')" class="space-y-2 min-w-[220px] cursor-pointer hover:bg-blue-50 p-2 pr-4 rounded transition-colors" title="Click to manage Payment Plan">
+                                                <div class="flex items-center justify-between text-xs">
+                                                    <span class="text-gray-500">Phase 1: Full Payment (100%)</span>
+                                                    <span class="font-bold text-green-600 whitespace-nowrap">Paid</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm text-gray-600 truncate max-w-xs">Hardware procurement for new office wing.</div>
+                                        </td>
+                                    </tr>
+                                    <!-- Activity 4: Outbound Payment (EXW) -->
+                                    <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-004')">
+                                        <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-004</td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800" title="Ex Works">
+                                                EXW
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">FastLogistics Co.</td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-col">
+                                                <span class="text-xs font-bold text-slate-700">FastLogistics Co.</span>
+                                                <span class="font-mono text-[10px] text-gray-500">0x3f1...E89</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-1">
+                                                <span class="font-medium text-slate-700">USDT</span>
+                                                <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">TRC20</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-col">
+                                                <span class="font-medium text-slate-800">$2,500.00</span>
+                                                <span class="text-xs text-gray-500">2,500.00 USDT</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="space-y-1">
+                                                <div class="flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                    <a href="#" class="text-everypay-600 hover:underline text-xs" onclick="event.stopPropagation()">invoice_logistics.pdf</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div id="plan-cell-BA-2025-004" onclick="event.stopPropagation(); openPlanModal('BA-2025-004', 'payment')" class="space-y-2 min-w-[180px] cursor-pointer hover:bg-blue-50 p-2 rounded transition-colors" title="Click to manage Payment Plan">
+                                                <div class="flex items-center justify-between text-xs">
+                                                    <span class="text-gray-500">Phase 1: Full Payment (100%)</span>
+                                                    <span class="font-bold text-green-600">Paid</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm text-gray-600 truncate max-w-xs">Logistics fee for Q1 shipments.</div>
+                                        </td>
+                                    </tr>
+                                    <!-- Activity 5: Outbound Payment (DAP) -->
+                                    <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-005')">
+                                        <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-005</td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800" title="Delivered at Place">
+                                                DAP
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Office Depot Inc.</td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-col">
+                                                <span class="text-xs font-bold text-slate-700">Office Depot Inc.</span>
+                                                <span class="font-mono text-[10px] text-gray-500">0x8a2...B14</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-1">
+                                                <span class="font-medium text-slate-700">USDC</span>
+                                                <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">ERC20</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-col">
+                                                <span class="font-medium text-slate-800">$5,000.00</span>
+                                                <span class="text-xs text-gray-500">5,000.00 USDC</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="space-y-1">
+                                                <div class="flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                    <a href="#" class="text-everypay-600 hover:underline text-xs" onclick="event.stopPropagation()">po_office_supplies.pdf</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div id="plan-cell-BA-2025-005" onclick="event.stopPropagation(); openPlanModal('BA-2025-005', 'payment')" class="space-y-2 min-w-[180px] cursor-pointer hover:bg-blue-50 p-2 rounded transition-colors" title="Click to manage Payment Plan">
+                                                <div class="flex items-center justify-between text-xs">
+                                                    <span class="text-gray-500">Phase 1: Deposit (50%)</span>
+                                                    <span class="font-bold text-green-600">Paid</span>
+                                                </div>
+                                                <div class="flex items-center justify-between text-xs">
+                                                    <span class="text-gray-500">Phase 2: Balance (50%)</span>
+                                                    <span class="font-bold text-yellow-600">Pending</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm text-gray-600 truncate max-w-xs">Office supplies replenishment.</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sales Activities (Collection) -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <span class="bg-green-100 text-green-800 p-1.5 rounded-lg">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                </span>
+                                Sales (Inbound Collections)
+                            </h3>
+                        </div>
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full min-w-[1000px] text-sm text-left">
+                                <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
+                                    <tr>
+                                        <th class="px-6 py-3">Activity ID</th>
+                                        <th class="px-6 py-3">Incoterms</th>
+                                        <th class="px-6 py-3">Counterparty</th>
+                                        <th class="px-6 py-3">Deposit To</th>
+                                        <th class="px-6 py-3">Asset (Network)</th>
+                                        <th class="px-6 py-3">Amount</th>
+                                        <th class="px-6 py-3">Documents</th>
+                                        <th class="px-6 py-3">Collection Plan</th>
+                                        <th class="px-6 py-3">Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <!-- Activity 2: Inbound Collection (FOB) -->
+                                    <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-002')">
+                                        <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-002</td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800" title="Free On Board">
+                                                FOB
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Global Trade Partners</td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-col">
+                                                <span class="text-xs font-bold text-slate-700">Everypay Treasury</span>
+                                                <span class="font-mono text-[10px] text-gray-500">0x742...391</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-1">
+                                                <span class="font-medium text-slate-700">BTC</span>
+                                                <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">Bitcoin</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-col">
+                                                <span class="font-medium text-slate-800">$45,000.00</span>
+                                                <span class="text-xs text-gray-500">0.50 BTC</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="space-y-1">
+                                                <div class="flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                    <a href="#" class="text-everypay-600 hover:underline text-xs" onclick="event.stopPropagation()">commercial_invoice.pdf</a>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                    <a href="#" class="text-everypay-600 hover:underline text-xs" onclick="event.stopPropagation()">bill_of_lading.pdf</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div id="plan-cell-BA-2025-002" onclick="event.stopPropagation(); openPlanModal('BA-2025-002', 'collection')" class="space-y-2 min-w-[220px] cursor-pointer hover:bg-green-50 p-2 pr-4 rounded transition-colors" title="Click to manage Collection Plan">
+                                                <div class="mb-1 last:mb-0">
+                                                    <div class="flex items-center justify-between text-xs">
+                                                        <span class="text-gray-500">Phase 1: Deposit (20%)</span>
+                                                        <span class="font-bold text-green-600 whitespace-nowrap">Received</span>
+                                                    </div>
+                                                    <div class="text-[10px] text-gray-400 text-right font-mono mt-0.5" title="Ref: 0x8f...2a">0x8f...2a</div>
+                                                </div>
+                                                <div class="mb-1 last:mb-0">
+                                                    <div class="flex items-center justify-between text-xs">
+                                                        <span class="text-gray-500">Phase 2: Balance (80%)</span>
+                                                        <span class="font-bold text-yellow-600 whitespace-nowrap">Pending</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="font-medium text-slate-800">Export Sale Batch #42</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- Partner & Plan Management Logic ---
+        let currentPlanActivityId = null;
+
+        // Mock Data for Plans
+        const activitiesDB = {
+            'BA-2025-001': { type: 'procurement', counterparty: 'Acme Supplies Ltd.', asset: 'USDT', network: 'TRC20', description: 'Supplier Agreement Q1' },
+            'BA-2025-002': { type: 'sales', counterparty: 'Global Trade Partners', asset: 'USDT', network: 'TRC20', description: 'Export Sale Batch #42' },
+            'BA-2025-003': { type: 'procurement', counterparty: 'TechSource Inc.', asset: 'USDT', network: 'ERC20', description: 'Hardware Equipment' },
+            'BA-2025-004': { type: 'sales', counterparty: 'FinSecure Bank', asset: 'USDC', network: 'ERC20', description: 'Institutional Purchase' }
+        };
+
+        const activityPlans = {
+            'BA-2025-001': {
+                phases: [
+                    { name: 'Phase 1: Down Payment (30%)', status: 'Paid', amount: '3,750.00' },
+                    { name: 'Phase 2: Final (70%)', status: 'Pending', amount: '8,750.00' }
+                ]
+            },
+            'BA-2025-002': {
+                phases: [
+                    { name: 'Phase 1: Deposit (20%)', status: 'Received', amount: '9,000.00', reference: '0x8f...2a' },
+                    { name: 'Phase 2: Balance (80%)', status: 'Pending', amount: '36,000.00' }
+                ]
+            },
+            'BA-2025-003': {
+                phases: [
+                    { name: 'Phase 1: Full Payment (100%)', status: 'Paid', amount: '8,950.00' }
+                ]
+            },
+            'BA-2025-004': {
+                phases: [
+                    { name: 'Full Payment', status: 'Pending', amount: '12,000.00' }
+                ]
+            }
+        };
+
+        // --- Activity Phase Logic ---
+        function addActivityPhase() {
+            const container = document.getElementById('activity-phases-container');
+            const newRow = document.createElement('div');
+            newRow.className = 'flex gap-3 items-start phase-row animate-fadeIn';
+            newRow.innerHTML = `
+                <div class="flex-grow">
+                    <input type="text" class="phase-title block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm" placeholder="Phase Title">
+                </div>
+                <div class="w-24 relative">
+                    <input type="number" class="phase-percent block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm" placeholder="%" min="0" max="100">
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <span class="text-gray-500 sm:text-sm">%</span>
+                    </div>
+                </div>
+                <button type="button" onclick="removeActivityPhase(this)" class="mt-1.5 text-gray-400 hover:text-red-500">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            `;
+            container.appendChild(newRow);
+            updatePhaseRemoveButtons();
+        }
+
+        function removeActivityPhase(btn) {
+            const row = btn.closest('.phase-row');
+            row.remove();
+            updatePhaseRemoveButtons();
+        }
+
+        function updatePhaseRemoveButtons() {
+            const rows = document.querySelectorAll('.phase-row');
+            const buttons = document.querySelectorAll('.phase-row button');
+            if (rows.length === 1) {
+                buttons[0].disabled = true;
+                buttons[0].classList.add('disabled:opacity-50');
+            } else {
+                buttons.forEach(b => {
+                    b.disabled = false;
+                    b.classList.remove('disabled:opacity-50');
+                });
+            }
+        }
+
+        // --- Plan Modal Logic ---
+        function closePlanModal() {
+            document.getElementById('plan-modal').classList.add('hidden');
+        }
+
+        function openPlanModal(activityId, type) {
+            currentPlanActivityId = activityId;
+            const modal = document.getElementById('plan-modal');
+            const title = document.getElementById('plan-modal-title');
+            const container = document.getElementById('plan-phases-container');
+
+            if (type === 'payment') {
+                title.innerText = `Payment Plan: ${activityId}`;
+            } else {
+                title.innerText = `Collection Plan: ${activityId}`;
+            }
+
+            // Load phases
+            container.innerHTML = '';
+            const plan = activityPlans[activityId] || { phases: [] };
+
+            if (plan.phases.length === 0) {
+                // Default empty phase if new
+                addPhase();
+            } else {
+                plan.phases.forEach(phase => {
+                    container.innerHTML += renderPhaseInput(phase);
+                });
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function renderPhaseInput(phase = { name: '', amount: '', status: 'Pending', reference: '' }) {
+            return `
+                <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 phase-item">
+                    <div class="grid grid-cols-2 gap-3 mb-2">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Phase Name</label>
+                            <input type="text" value="${phase.name}" class="phase-name w-full text-sm border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 px-2 py-1" placeholder="e.g. Deposit">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Amount</label>
+                            <input type="text" value="${phase.amount}" class="phase-amount w-full text-sm border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 px-2 py-1" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Status</label>
+                            <select class="phase-status w-full text-sm border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 px-2 py-1">
+                                <option value="Pending" ${phase.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Paid" ${phase.status === 'Paid' ? 'selected' : ''}>Paid</option>
+                                <option value="Received" ${phase.status === 'Received' ? 'selected' : ''}>Received</option>
+                                <option value="Overdue" ${phase.status === 'Overdue' ? 'selected' : ''}>Overdue</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Reference</label>
+                            <input type="text" value="${phase.reference || ''}" class="phase-ref w-full text-sm border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 px-2 py-1 font-mono" placeholder="Tx Hash / Ref">
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function addPhase() {
+            const container = document.getElementById('plan-phases-container');
+            container.insertAdjacentHTML('beforeend', renderPhaseInput());
+        }
+
+        function savePlan() {
+            if (!currentPlanActivityId) return;
+
+            const container = document.getElementById('plan-phases-container');
+            const phaseDivs = container.querySelectorAll('.phase-item');
+            const newPhases = [];
+
+            phaseDivs.forEach(div => {
+                newPhases.push({
+                    name: div.querySelector('.phase-name').value,
+                    amount: div.querySelector('.phase-amount').value,
+                    status: div.querySelector('.phase-status').value,
+                    reference: div.querySelector('.phase-ref').value
+                });
+            });
+
+            // Update data
+            if (!activityPlans[currentPlanActivityId]) activityPlans[currentPlanActivityId] = {};
+            activityPlans[currentPlanActivityId].phases = newPhases;
+
+            // Update UI
+            const cellId = `plan-cell-${currentPlanActivityId}`;
+            const cell = document.getElementById(cellId);
+            if (cell) {
+                cell.innerHTML = newPhases.map(p => `
+                    <div class="mb-1 last:mb-0">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-gray-500 truncate max-w-[120px]" title="${p.name}">${p.name}</span>
+                            <span class="font-bold ${getStatusColor(p.status)}">${p.status}</span>
+                        </div>
+                        ${p.reference ? `<div class="text-[10px] text-gray-400 text-right font-mono mt-0.5" title="Ref: ${p.reference}">${p.reference}</div>` : ''}
+                    </div>
+                `).join('');
+            }
+
+            closePlanModal();
+        }
+
+
+        // --- New Activity Modal Logic ---
+        function openNewActivityModal(type = 'procurement') {
+            document.getElementById('new-activity-modal').classList.remove('hidden');
+            const typeSelect = document.getElementById('new-activity-type');
+            if (typeSelect) {
+                typeSelect.value = type;
+            }
+        }
+
+        function closeNewActivityModal() {
+            document.getElementById('new-activity-modal').classList.add('hidden');
+        }
+
+        function createNewActivity() {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Creating...';
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                closeNewActivityModal();
+            }, 1000);
+        }
+
+        // --- Activity Data ---
+        const activitiesData = {
+            'BA-2025-001': {
+                id: 'BA-2025-001',
+                type: 'Procurement',
+                status: 'Active',
+                incoterms: 'CIF',
+                counterparty: 'Acme Supplies Ltd.',
+                counterpartyAddress: '0x92B...F11',
+                asset: 'USDT',
+                network: 'TRC20',
+                amount: '12,500.00',
+                description: 'Final payment for Q1 bulk supplies (Stationery & Office).',
+                documents: [
+                    { name: 'contract_signed.pdf', type: 'contract' },
+                    { name: 'insurance_policy.pdf', type: 'policy' }
+                ],
+                plan: [
+                    { name: 'Phase 1: Down Payment (30%)', status: 'Paid', date: '2025-01-15' },
+                    { name: 'Phase 2: Final (70%)', status: 'Pending', date: '2025-02-28' }
+                ]
+            },
+            'BA-2025-002': {
+                id: 'BA-2025-002',
+                type: 'Sales',
+                status: 'Active',
+                incoterms: 'FOB',
+                counterparty: 'Global Trade Partners',
+                counterpartyAddress: '0x742...391',
+                asset: 'BTC',
+                network: 'Bitcoin',
+                amount: '0.50',
+                amountUsd: '$45,000.00',
+                description: 'Export of electronics batch #442.',
+                documents: [
+                    { name: 'commercial_invoice.pdf', type: 'invoice' },
+                    { name: 'bill_of_lading.pdf', type: 'shipping' }
+                ],
+                plan: [
+                    { name: 'Phase 1: Deposit (20%)', status: 'Received', date: '2025-01-20' },
+                    { name: 'Phase 2: Shipment (50%)', status: 'Pending', date: '2025-02-15' },
+                    { name: 'Phase 3: Final (30%)', status: 'Pending', date: '2025-03-01' }
+                ]
+            },
+            'BA-2025-003': {
+                id: 'BA-2025-003',
+                type: 'Procurement',
+                status: 'Completed',
+                incoterms: 'DDP',
+                counterparty: 'TechSource Inc.',
+                counterpartyAddress: '0x92B...C11',
+                asset: 'USDC',
+                network: 'ERC20',
+                amount: '8,950.00',
+                description: 'Hardware procurement for new office wing.',
+                documents: [
+                    { name: 'po_hardware.pdf', type: 'po' },
+                    { name: 'customs_dec.pdf', type: 'customs' },
+                    { name: 'packing_list.pdf', type: 'packing' }
+                ],
+                plan: [
+                    { name: 'Phase 1: Full Payment (100%)', status: 'Paid', date: '2025-01-10' }
+                ]
+            }
+        };
+
+        // --- Activity Details Drawer Logic ---
+        function openActivityDetails(id) {
+            const data = activitiesData[id];
+            if (!data) return;
+
+            document.getElementById('detail-id').textContent = data.id;
+            document.getElementById('detail-status').textContent = data.status;
+            document.getElementById('detail-type').textContent = data.type;
+
+            // Colors based on type
+            const typeBadge = document.getElementById('detail-type');
+            if (data.type === 'Procurement') {
+                typeBadge.className = 'ml-2 inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10';
+            } else {
+                typeBadge.className = 'ml-2 inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20';
+            }
+
+            document.getElementById('detail-counterparty').textContent = data.counterparty;
+            document.getElementById('detail-address').textContent = data.counterpartyAddress;
+            document.getElementById('detail-incoterms').textContent = data.incoterms;
+            document.getElementById('detail-amount').textContent = data.amount;
+            document.getElementById('detail-asset').textContent = data.asset;
+            document.getElementById('detail-network').textContent = 'Network: ' + data.network;
+            document.getElementById('detail-description').textContent = data.description;
+
+            // Documents
+            const docList = document.getElementById('detail-documents');
+            docList.innerHTML = data.documents.map(doc => `
+                <li class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-md border border-gray-200">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span class="text-xs font-medium text-gray-700">${doc.name}</span>
+                    </div>
+                    <a href="#" class="text-xs text-everypay-600 hover:text-everypay-800 font-medium">View</a>
+                </li>
+            `).join('');
+
+            // Plan
+            const planList = document.getElementById('detail-plan');
+            planList.innerHTML = data.plan.map((phase, index) => `
+                <li>
+                    <div class="relative pb-8">
+                        ${index !== data.plan.length - 1 ? '<span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>' : ''}
+                        <div class="relative flex space-x-3">
+                            <div>
+                                <span class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white ${phase.status === 'Paid' || phase.status === 'Received' || phase.status === 'Completed' ? 'bg-green-500' : 'bg-gray-200'}">
+                                    <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+                                <div>
+                                    <p class="text-sm text-gray-500">${phase.name}</p>
+                                </div>
+                                <div class="whitespace-nowrap text-right text-sm text-gray-500">
+                                    <time datetime="${phase.date}">${phase.date}</time>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            `).join('');
+
+            document.getElementById('activity-details-drawer').classList.remove('hidden');
+        }
+
+        function closeActivityDetails() {
+            document.getElementById('activity-details-drawer').classList.add('hidden');
+        }
+    </script>
+    <script src="assets/layout.js"></script>
+</body>
+</html>

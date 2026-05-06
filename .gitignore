@@ -1,3 +1,10 @@
 /.claude
 /_bmad
 /for reference only
+
+# Ignore PDFs everywhere
+*.pdf
+
+# Ignore abandoned Next.js v2 build artifacts
+/everypay-prototype-v2/.next
+/everypay-prototype-v2/node_modules
