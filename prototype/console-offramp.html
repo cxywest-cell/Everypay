@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Everypay - Off-Ramp Settlement</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="assets/tailwind-config.js"></script>
+    <script src="assets/modals.js"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.4s ease-out; }
+        @keyframes stepPulse {
+            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            50% { box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        }
+        .step-active { animation: stepPulse 2s infinite; }
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-processing { background-color: #dbeafe; color: #1e40af; }
+        .status-settled { background-color: #d1fae5; color: #065f46; }
+        .status-failed { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col h-screen overflow-hidden">
+
+    <!-- Main Layout -->
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="ep-sidebar" class="w-64 bg-white border-r border-gray-200 flex flex-col"></aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-8">
+            <!-- Page Header -->
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">Off-Ramp Settlement</h1>
+                    <p class="text-sm text-gray-500 mt-1">Convert USDT to fiat and transfer to bank accounts via OSN</p>
+                </div>
+                <button onclick="openNewOffRamp()" class="px-4 py-2.5 bg-everypay-600 hover:bg-everypay-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    New Off-Ramp
+                </button>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                    <div class="text-sm text-gray-500 font-medium mb-1">Total Settled (All Time)</div>
+                    <div class="text-2xl font-bold text-slate-800">HK$1,200,000.00</div>
+                    <div class="text-xs text-gray-400 mt-2">Cumulative fiat transferred to bank</div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                    <div class="text-sm text-gray-500 font-medium mb-1">Pending Transfers</div>
+                    <div class="text-2xl font-bold text-slate-800">1</div>
+                    <div class="text-xs text-amber-500 mt-2 font-medium">Awaiting blockchain confirmation</div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                    <div class="text-sm text-gray-500 font-medium mb-1">Org Wallet</div>
+                    <div class="text-lg font-bold text-slate-800 font-mono">0x483A...A74FE</div>
+                    <div class="text-xs text-green-500 mt-2 font-medium flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Whitelisted
+                    </div>
+                </div>
+            </div>
+
+            <!-- Off-Ramp Flow Steps (shown when creating new transfer) -->
+            <div id="offramp-flow" class="hidden mb-8 animate-fadeIn">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <!-- Flow Header -->
+                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                        <h2 class="text-base font-bold text-slate-800" id="flow-title">Create Off-Ramp Transfer</h2>
+                        <button onclick="cancelFlow()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Step Indicator -->
+                    <div class="px-6 py-4 border-b border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-0">
+                                <div id="flow-step-1" class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold">1</div>
+                                    <span class="text-xs font-medium text-slate-700 hidden sm:inline">Quote</span>
+                                </div>
+                                <div class="w-8 sm:w-12 h-0.5 bg-gray-200 mx-1"></div>
+                                <div id="flow-step-2" class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</div>
+                                    <span class="text-xs font-medium text-gray-400 hidden sm:inline">Submit</span>
+                                </div>
+                                <div class="w-8 sm:w-12 h-0.5 bg-gray-200 mx-1"></div>
+                                <div id="flow-step-3" class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">3</div>
+                                    <span class="text-xs font-medium text-gray-400 hidden sm:inline">Fund</span>
+                                </div>
+                                <div class="w-8 sm:w-12 h-0.5 bg-gray-200 mx-1"></div>
+                                <div id="flow-step-4" class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">4</div>
+                                    <span class="text-xs font-medium text-gray-400 hidden sm:inline">Track</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Quote -->
+                    <div id="quote-panel" class="p-6">
+                        <div class="mb-6">
+                            <h3 class="text-lg font-bold text-slate-800 mb-1">Get Exchange Quote</h3>
+                            <p class="text-sm text-gray-500">Enter the USDT amount you want to convert. Quote is valid for 30 seconds.</p>
+                        </div>
+
+                        <!-- Recipient Bank Selection -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Recipient Bank Account</label>
+                            <select id="recipient-bank" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                <option value="">Select a bank account...</option>
+                                <option value="bank-1" selected>HSBC Hong Kong — ****6789 (HKD)</option>
+                                <option value="bank-2">Standard Chartered — ****4321 (USD)</option>
+                            </select>
+                            <button onclick="openAddBankModal()" class="mt-2 text-xs text-everypay-600 hover:text-everypay-700 font-medium flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                Add new recipient bank
+                            </button>
+                        </div>
+
+                        <!-- Amount Input -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">You Send (USDT)</label>
+                                <div class="relative">
+                                    <input type="number" id="usdt-amount" value="50000" step="100" min="100" class="w-full px-3 py-2.5 pr-16 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none font-mono" oninput="updateQuote()">
+                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold">USDT</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">You Receive (HKD)</label>
+                                <div class="relative">
+                                    <input type="text" id="hkd-amount" value="391,250.00" readonly class="w-full px-3 py-2.5 pr-16 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700 font-mono">
+                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold">HKD</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quote Details -->
+                        <div class="bg-gray-50 rounded-lg p-4 mb-6 space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Exchange Rate</span>
+                                <span class="font-medium text-slate-700 font-mono" id="quote-rate">1 USDT = 7.825 HKD</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">OSN Fee (0.5%)</span>
+                                <span class="font-medium text-slate-700 font-mono" id="quote-fee">HK$195.63</span>
+                            </div>
+                            <div class="flex justify-between text-sm pt-2 border-t border-gray-200">
+                                <span class="text-gray-500">Network Fee</span>
+                                <span class="font-medium text-slate-700">Included</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Quote Expires</span>
+                                <span class="font-medium text-amber-600 font-mono" id="quote-timer">--:--</span>
+                            </div>
+                        </div>
+
+                        <button onclick="submitTransfer()" id="quote-submit-btn" class="w-full py-3 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg flex items-center justify-center gap-2">
+                            <span>Create Transfer</span>
+                            <svg class="w-5 h-5 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Step 2: Transfer Created -->
+                    <div id="transfer-panel" class="hidden p-6">
+                        <div class="mb-6">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                                <span class="text-sm font-bold text-green-700">Transfer Created</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-1">Fund Your Transfer</h3>
+                            <p class="text-sm text-gray-500">Send the exact USDT amount to the deposit address below. OSN will process your transfer once the blockchain confirms receipt.</p>
+                        </div>
+
+                        <!-- Transfer Summary -->
+                        <div class="bg-gray-50 rounded-lg p-4 mb-6 space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Transfer ID</span>
+                                <span class="font-medium text-slate-700 font-mono" id="transfer-id">TXF-20250506-001</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Amount</span>
+                                <span class="font-medium text-slate-700 font-mono" id="transfer-amount">50,000 USDT</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Recipient</span>
+                                <span class="font-medium text-slate-700">HSBC Hong Kong ****6789</span>
+                            </div>
+                        </div>
+
+                        <!-- Deposit Address -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-6">
+                            <div class="text-sm font-bold text-blue-800 mb-3">Deposit Address (Send USDT Here)</div>
+                            <div class="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-blue-100">
+                                <span class="font-mono text-sm text-slate-800 flex-1 truncate" id="deposit-address">0xIDA-7B3C9E2A1F8D4560E3C7A92B1F84D6E5</span>
+                                <button onclick="copyAddress()" class="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 flex-shrink-0">Copy</button>
+                            </div>
+                            <div class="mt-3 flex items-center gap-2 text-xs text-blue-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span>Send exactly the amount shown. Network: Ethereum (ERC-20 USDT)</span>
+                            </div>
+                        </div>
+
+                        <!-- TX Hash Input -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Transaction Hash (after sending)</label>
+                            <input type="text" id="tx-hash" placeholder="0x..." class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none font-mono">
+                            <p class="mt-1 text-xs text-gray-500">Paste the TX hash from your wallet after sending the USDT</p>
+                        </div>
+
+                        <button onclick="submitTxHash()" class="w-full py-3 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span>Submit TX Hash & Track</span>
+                        </button>
+                    </div>
+
+                    <!-- Step 3: Track Status -->
+                    <div id="track-panel" class="hidden p-6">
+                        <div class="mb-6">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-6 h-6 bg-everypay-100 rounded-full flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-everypay-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                                <span class="text-sm font-bold text-everypay-600" id="tracking-status-label">Processing</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-1">Transfer Progress</h3>
+                            <p class="text-sm text-gray-500">Your transfer is being processed. You'll receive HKD in your bank account once complete.</p>
+                        </div>
+
+                        <!-- Progress Steps -->
+                        <div class="space-y-4 mb-6">
+                            <div class="flex items-start gap-4" id="prog-step-1">
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-slate-800">Transfer Created</div>
+                                    <div class="text-xs text-gray-500 mt-0.5" id="prog-time-1">2025-05-06 10:32:15 HKT</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4" id="prog-step-2">
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-slate-800">TX Hash Submitted</div>
+                                    <div class="text-xs text-gray-500 mt-0.5 font-mono" id="prog-tx-hash">0x7a3b...9c2e</div>
+                                    <div class="text-xs text-gray-400 mt-0.5" id="prog-time-2">2025-05-06 10:35:42 HKT</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4 step-active" id="prog-step-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <div class="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-blue-700">Blockchain Confirmation</div>
+                                    <div class="text-xs text-blue-500 mt-0.5">Waiting for on-chain confirmation...</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4" id="prog-step-4">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-gray-400">OSN Processing</div>
+                                    <div class="text-xs text-gray-400 mt-0.5">Convert USDT to fiat</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4" id="prog-step-5">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-gray-400">Fiat Sent to Bank</div>
+                                    <div class="text-xs text-gray-400 mt-0.5">Transfer to recipient account</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4" id="prog-step-6">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-gray-400">Settlement Complete</div>
+                                    <div class="text-xs text-gray-400 mt-0.5">Funds received</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Simulate Progress Button -->
+                        <div class="flex gap-3">
+                            <button onclick="simulateProgress()" id="simulate-btn" class="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition-all shadow-lg text-sm">
+                                Simulate Progress (Mock)
+                            </button>
+                            <button onclick="cancelFlow()" class="px-6 py-3 border border-gray-300 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-colors">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transfer History -->
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                    <h2 class="text-base font-bold text-slate-800">Transfer History</h2>
+                    <span class="text-xs text-gray-400">All completed and pending transfers</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
+                            <tr>
+                                <th class="px-6 py-3 font-semibold">Transfer ID</th>
+                                <th class="px-6 py-3 font-semibold">Date</th>
+                                <th class="px-6 py-3 font-semibold text-right">Amount (USDT)</th>
+                                <th class="px-6 py-3 font-semibold text-right">Received (HKD)</th>
+                                <th class="px-6 py-3 font-semibold">Recipient Bank</th>
+                                <th class="px-6 py-3 font-semibold">Rate</th>
+                                <th class="px-6 py-3 font-semibold">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table" class="divide-y divide-gray-50">
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 font-mono text-xs text-slate-700">TXF-20250428-003</td>
+                                <td class="px-6 py-4 text-gray-500">2025-04-28 14:22</td>
+                                <td class="px-6 py-4 text-right font-mono">100,000</td>
+                                <td class="px-6 py-4 text-right font-mono font-medium text-green-700">782,500.00</td>
+                                <td class="px-6 py-4 text-gray-500">HSBC ****6789</td>
+                                <td class="px-6 py-4 font-mono text-xs text-gray-500">7.825</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-bold status-settled">Settled</span></td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 font-mono text-xs text-slate-700">TXF-20250415-002</td>
+                                <td class="px-6 py-4 text-gray-500">2025-04-15 09:45</td>
+                                <td class="px-6 py-4 text-right font-mono">75,000</td>
+                                <td class="px-6 py-4 text-right font-mono font-medium text-green-700">586,875.00</td>
+                                <td class="px-6 py-4 text-gray-500">HSBC ****6789</td>
+                                <td class="px-6 py-4 font-mono text-xs text-gray-500">7.825</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-bold status-settled">Settled</span></td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 font-mono text-xs text-slate-700">TXF-20250402-001</td>
+                                <td class="px-6 py-4 text-gray-500">2025-04-02 16:10</td>
+                                <td class="px-6 py-4 text-right font-mono">50,000</td>
+                                <td class="px-6 py-4 text-right font-mono font-medium text-green-700">391,250.00</td>
+                                <td class="px-6 py-4 text-gray-500">HSBC ****6789</td>
+                                <td class="px-6 py-4 font-mono text-xs text-gray-500">7.825</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-bold status-settled">Settled</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Bank Modal -->
+    <div id="add-bank-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75" onclick="closeAddBankModal()"></div>
+            <div class="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 animate-fadeIn">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold text-slate-800">Add Recipient Bank Account</h3>
+                    <button onclick="closeAddBankModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Bank Name</label>
+                        <input type="text" id="new-bank-name" placeholder="e.g., HSBC Hong Kong" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Account Number</label>
+                            <input type="text" id="new-bank-account" placeholder="e.g., 801-123456-001" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">SWIFT / BIC</label>
+                            <input type="text" id="new-bank-swift" placeholder="e.g., HSBCHKHHHKH" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Account Holder</label>
+                        <input type="text" id="new-bank-holder" value="Acme Trading Corp Ltd." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Currency</label>
+                        <select id="new-bank-currency" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                            <option selected>HKD</option>
+                            <option>USD</option>
+                            <option>CNY</option>
+                        </select>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
+                        <strong>Note:</strong> New bank accounts require OSN compliance review (1-2 business days) before they can receive off-ramp transfers.
+                    </div>
+                </div>
+                <div class="mt-6 flex gap-3">
+                    <button onclick="submitNewBank()" class="flex-1 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors">Submit for Review</button>
+                    <button onclick="closeAddBankModal()" class="px-4 py-2.5 border border-gray-300 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shared Scripts -->
+    <script src="assets/layout.js"></script>
+
+    <script>
+        // --- Off-Ramp Flow State ---
+        let currentFlowStep = 1;
+        let quoteExpiryTimer = null;
+        let transferCounter = 4; // Next transfer will be 004
+
+        function openNewOffRamp() {
+            document.getElementById('offramp-flow').classList.remove('hidden');
+            currentFlowStep = 1;
+            updateFlowSteps(1);
+            document.getElementById('quote-panel').classList.remove('hidden');
+            document.getElementById('transfer-panel').classList.add('hidden');
+            document.getElementById('track-panel').classList.add('hidden');
+            resetQuote();
+            updateQuote();
+        }
+
+        function cancelFlow() {
+            document.getElementById('offramp-flow').classList.add('hidden');
+            if (quoteExpiryTimer) clearTimeout(quoteExpiryTimer);
+        }
+
+        function updateFlowSteps(step) {
+            for (let i = 1; i <= 4; i++) {
+                const stepEl = document.getElementById('flow-step-' + i);
+                const circle = stepEl.querySelector('div');
+                const label = stepEl.querySelector('span');
+                if (i < step) {
+                    circle.className = 'w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold';
+                    circle.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                    label.className = 'text-xs font-medium text-green-600 hidden sm:inline';
+                } else if (i === step) {
+                    circle.className = 'w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold';
+                    circle.textContent = i;
+                    label.className = 'text-xs font-medium text-slate-700 hidden sm:inline';
+                } else {
+                    circle.className = 'w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold';
+                    circle.textContent = i;
+                    label.className = 'text-xs font-medium text-gray-400 hidden sm:inline';
+                }
+            }
+        }
+
+        // --- Quote ---
+        function updateQuote() {
+            const usdt = parseFloat(document.getElementById('usdt-amount').value) || 0;
+            const rate = 7.825;
+            const hkd = usdt * rate;
+            const fee = hkd * 0.005;
+
+            document.getElementById('hkd-amount').value = (hkd - fee).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('quote-rate').textContent = '1 USDT = ' + rate.toFixed(3) + ' HKD';
+            document.getElementById('quote-fee').textContent = 'HK$' + fee.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function resetQuote() {
+            if (quoteExpiryTimer) clearTimeout(quoteExpiryTimer);
+            document.getElementById('quote-timer').textContent = '--:--';
+        }
+
+        function startQuoteTimer() {
+            let seconds = 30;
+            document.getElementById('quote-timer').textContent = '00:' + seconds.toString().padStart(2, '0');
+            quoteExpiryTimer = setInterval(() => {
+                seconds--;
+                if (seconds <= 0) {
+                    clearInterval(quoteExpiryTimer);
+                    document.getElementById('quote-timer').textContent = 'EXPIRED';
+                    document.getElementById('quote-timer').className = 'font-medium text-red-600 font-mono';
+                    return;
+                }
+                document.getElementById('quote-timer').textContent = '00:' + seconds.toString().padStart(2, '0');
+            }, 1000);
+        }
+
+        // --- Submit Transfer ---
+        function submitTransfer() {
+            if (!document.getElementById('recipient-bank').value) {
+                alert('Please select a recipient bank account.');
+                return;
+            }
+
+            const usdt = parseFloat(document.getElementById('usdt-amount').value);
+            if (!usdt || usdt < 100) {
+                alert('Minimum transfer amount is 100 USDT.');
+                return;
+            }
+
+            // Move to step 2
+            document.getElementById('quote-panel').classList.add('hidden');
+            document.getElementById('transfer-panel').classList.remove('hidden');
+            updateFlowSteps(2);
+
+            // Generate transfer ID
+            transferCounter++;
+            const now = new Date();
+            const dateStr = now.getFullYear().toString() +
+                (now.getMonth() + 1).toString().padStart(2, '0') +
+                now.getDate().toString().padStart(2, '0');
+            const transferId = 'TXF-' + dateStr + '-' + transferCounter.toString().padStart(3, '0');
+            document.getElementById('transfer-id').textContent = transferId;
+            document.getElementById('transfer-amount').textContent = usdt.toLocaleString() + ' USDT';
+
+            // Generate mock deposit address
+            const mockAddr = '0xIDA-' + Math.random().toString(36).substring(2, 10).toUpperCase() +
+                Math.random().toString(36).substring(2, 10).toUpperCase();
+            document.getElementById('deposit-address').textContent = mockAddr;
+        }
+
+        // --- TX Hash ---
+        function submitTxHash() {
+            const txHash = document.getElementById('tx-hash').value.trim();
+            if (!txHash || txHash.length < 10) {
+                alert('Please enter a valid transaction hash.');
+                return;
+            }
+
+            // Move to step 3
+            document.getElementById('transfer-panel').classList.add('hidden');
+            document.getElementById('track-panel').classList.remove('hidden');
+            updateFlowSteps(3);
+
+            // Set tracking data
+            const now = new Date();
+            document.getElementById('prog-time-2').textContent = now.toLocaleString('en-GB', { timeZone: 'Asia/Hong_Kong' }) + ' HKT';
+            document.getElementById('prog-tx-hash').textContent = txHash.substring(0, 6) + '...' + txHash.substring(txHash.length - 4);
+
+            // Reset progress steps
+            resetProgressSteps();
+        }
+
+        function copyAddress() {
+            const addr = document.getElementById('deposit-address').textContent;
+            navigator.clipboard.writeText(addr).then(() => {
+                const btn = event.target;
+                const orig = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = orig, 1500);
+            });
+        }
+
+        // --- Progress Simulation ---
+        function resetProgressSteps() {
+            // Reset to step 3 (Blockchain Confirmation)
+            for (let i = 3; i <= 6; i++) {
+                const step = document.getElementById('prog-step-' + i);
+                const circle = step.querySelector('.rounded-full > div, .rounded-full > svg');
+                const textDiv = step.querySelectorAll('div');
+                if (i === 3) {
+                    step.querySelector('.rounded-full').className = 'w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5';
+                    step.querySelector('.rounded-full').innerHTML = '<div class="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>';
+                    textDiv[1].className = 'text-sm font-bold text-blue-700';
+                    textDiv[2].className = 'text-xs text-blue-500 mt-0.5';
+                } else {
+                    step.querySelector('.rounded-full').className = 'w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5';
+                    step.querySelector('.rounded-full').innerHTML = '<div class="w-3 h-3 bg-gray-300 rounded-full"></div>';
+                    textDiv[1].className = 'text-sm font-bold text-gray-400';
+                    textDiv[2].className = 'text-xs text-gray-400 mt-0.5';
+                }
+            }
+        }
+
+        function simulateProgress() {
+            const btn = document.getElementById('simulate-btn');
+            btn.disabled = true;
+            btn.textContent = 'Simulating...';
+
+            const steps = [
+                { step: 3, label: 'Blockchain Confirmed', time: '2 min', color: 'green' },
+                { step: 4, label: 'OSN Processing', time: '5 min', color: 'blue' },
+                { step: 5, label: 'Fiat Sent to Bank', time: '15 min', color: 'blue' },
+                { step: 6, label: 'Settlement Complete', time: 'Now', color: 'green' }
+            ];
+
+            let i = 0;
+            function advanceStep() {
+                if (i >= steps.length) {
+                    btn.textContent = 'Settlement Complete!';
+                    btn.className = 'flex-1 py-3 bg-green-500 text-white font-bold rounded-xl text-sm';
+                    updateStatusBadge('Settled');
+
+                    // Add to history table
+                    addToHistory();
+                    return;
+                }
+
+                const s = steps[i];
+                const stepEl = document.getElementById('prog-step-' + s.step);
+                const now = new Date();
+                const timeStr = now.toLocaleString('en-GB', { timeZone: 'Asia/Hong_Kong' }) + ' HKT';
+
+                stepEl.querySelector('.rounded-full').className = 'w-8 h-8 rounded-full bg-' + s.color + '-100 flex items-center justify-center flex-shrink-0 mt-0.5';
+                stepEl.querySelector('.rounded-full').innerHTML = '<svg class="w-4 h-4 text-' + s.color + '-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+
+                const textDivs = stepEl.querySelectorAll('div');
+                textDivs[1].className = 'text-sm font-bold text-' + s.color + '-700';
+                textDivs[2].className = 'text-xs text-' + s.color + '-500 mt-0.5';
+
+                // Add time element if not present
+                if (!stepEl.querySelector('[id^="prog-time-"]') && s.step !== 3) {
+                    const timeEl = document.createElement('div');
+                    timeEl.id = 'prog-time-' + s.step;
+                    timeEl.className = 'text-xs text-gray-500 mt-0.5';
+                    timeEl.textContent = timeStr;
+                    textDivs[2].after(timeEl);
+                }
+
+                // Activate next step
+                if (i < steps.length - 1) {
+                    const nextStep = document.getElementById('prog-step-' + steps[i + 1].step);
+                    nextStep.querySelector('.rounded-full').className = 'w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5';
+                    nextStep.querySelector('.rounded-full').innerHTML = '<div class="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>';
+                    nextStep.querySelectorAll('div')[1].className = 'text-sm font-bold text-blue-700';
+                    nextStep.querySelectorAll('div')[2].className = 'text-xs text-blue-500 mt-0.5';
+                }
+
+                i++;
+                setTimeout(advanceStep, 1500);
+            }
+
+            advanceStep();
+        }
+
+        function updateStatusBadge(status) {
+            const label = document.getElementById('tracking-status-label');
+            label.textContent = status;
+            label.className = 'text-sm font-bold text-green-600';
+            label.parentElement.querySelector('div').className = 'w-6 h-6 bg-green-100 rounded-full flex items-center justify-center';
+            label.parentElement.querySelector('div').innerHTML = '<svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+        }
+
+        function addToHistory() {
+            const transferId = document.getElementById('transfer-id').textContent;
+            const usdt = document.getElementById('transfer-amount').textContent.replace(' USDT', '').replace(/,/g, '');
+            const hkd = document.getElementById('hkd-amount').value;
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 16).replace('T', ' ');
+
+            const tbody = document.getElementById('history-table');
+            const newRow = document.createElement('tr');
+            newRow.className = 'hover:bg-gray-50 transition-colors animate-fadeIn';
+            newRow.innerHTML = '<td class="px-6 py-4 font-mono text-xs text-slate-700">' + transferId + '</td>' +
+                '<td class="px-6 py-4 text-gray-500">' + dateStr + '</td>' +
+                '<td class="px-6 py-4 text-right font-mono">' + parseFloat(usdt).toLocaleString() + '</td>' +
+                '<td class="px-6 py-4 text-right font-mono font-medium text-green-700">' + parseFloat(hkd.replace(/,/g, '')).toLocaleString('en-US', { minimumFractionDigits: 2 }) + '</td>' +
+                '<td class="px-6 py-4 text-gray-500">HSBC ****6789</td>' +
+                '<td class="px-6 py-4 font-mono text-xs text-gray-500">7.825</td>' +
+                '<td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-bold status-settled">Settled</span></td>';
+
+            tbody.insertBefore(newRow, tbody.firstChild);
+        }
+
+        // --- Add Bank Modal ---
+        function openAddBankModal() {
+            document.getElementById('add-bank-modal').classList.remove('hidden');
+        }
+
+        function closeAddBankModal() {
+            document.getElementById('add-bank-modal').classList.add('hidden');
+        }
+
+        function submitNewBank() {
+            const bankName = document.getElementById('new-bank-name').value.trim();
+            const account = document.getElementById('new-bank-account').value.trim();
+            if (!bankName || !account) {
+                alert('Please fill in bank name and account number.');
+                return;
+            }
+
+            closeAddBankModal();
+
+            // Add to dropdown
+            const select = document.getElementById('recipient-bank');
+            const option = document.createElement('option');
+            option.value = 'bank-new-' + Date.now();
+            option.textContent = bankName + ' — ****' + account.slice(-4) + ' (' + document.getElementById('new-bank-currency').value + ') [Under Review]';
+            select.appendChild(option);
+            select.value = option.value;
+
+            alert('Bank account submitted for OSN compliance review. It will be available for transfers once approved (1-2 business days).');
+        }
+    </script>
+</body>
+</html>

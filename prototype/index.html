@@ -502,17 +502,27 @@
                 </a>
                 
                 <div class="pt-4 mt-4 border-t border-gray-100">
-                    <div class="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Integrations</div>
+                    <div class="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">OSN Settlement</div>
+                    <!-- Onboarding -->
+                    <a href="console-onboarding.html" id="nav-onboarding" class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a4 4 0 018 0v1h-8v-1z"></path></svg>
+                        Onboarding
+                    </a>
+                    <!-- Off-Ramp Settlement -->
+                    <a href="console-offramp.html" id="nav-offramp" class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Off-Ramp Settlement
+                    </a>
                     <!-- Active Crypto Treasury Item (Hidden by default) -->
                     <a href="#" onclick="switchView('crypto')" id="nav-crypto-active" class="hidden flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-800 hover:bg-gray-50 rounded-lg transition-colors group">
                         <div class="w-5 h-5 rounded-full bg-[#D4AF37] flex items-center justify-center text-white text-[10px] font-bold">C</div>
                         <span>Crypto Treasury</span>
                         <span class="ml-auto w-2 h-2 rounded-full bg-green-500"></span>
                     </a>
-                    <!-- Inactive Crypto Treasury Item -->
-                    <a href="javascript:void(0)" onclick="openRoleAssignmentWizard()" id="nav-crypto-inactive" class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors border border-dashed border-gray-300">
+                    <!-- Inactive Crypto Treasury / Onboard -->
+                    <a href="javascript:void(0)" onclick="openOnboardingPage()" id="nav-crypto-inactive" class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors border border-dashed border-gray-300">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                        Add Treasury Unit
+                        Onboard
                     </a>
                 </div>
             </div>
@@ -560,12 +570,17 @@
                     <!-- Stats Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <!-- Fiat Balance -->
-                        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                            <div class="text-sm text-gray-500 font-medium mb-1">Total Fiat Liquidity</div>
-                            <div class="text-2xl font-bold text-slate-800">$2,845,000.00</div>
-                            <div class="text-xs text-green-500 font-medium mt-2 flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                                +4.2% vs last month
+                        <!-- Off-Ramp Settlement Card (Clickable) -->
+                        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm cursor-pointer hover:shadow-md transition-shadow group" onclick="window.location.href='console-offramp.html'">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-sm text-gray-500 font-medium mb-1">Off-Ramp Settlement</div>
+                                    <div class="text-2xl font-bold text-slate-800">HK$1,200,000.00</div>
+                                    <div class="text-xs text-gray-400 mt-2">Total settled to bank accounts</div>
+                                </div>
+                                <div class="text-everypay-500 group-hover:text-everypay-700 transition-colors mt-1">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                </div>
                             </div>
                         </div>
                         
@@ -586,8 +601,8 @@
                                 </div>
                                 <h3 class="text-base font-bold text-slate-800 mb-1">Crypto Treasury</h3>
                                 <p class="text-xs text-gray-500 mb-4">Manage digital assets securely.</p>
-                                <button onclick="openRoleAssignmentWizard()" class="px-4 py-2 bg-everypay-600 hover:bg-everypay-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
-                                    Activate Treasury Unit
+                                <button onclick="openOnboardingPage()" class="px-4 py-2 bg-everypay-600 hover:bg-everypay-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
+                                    Onboard
                                 </button>
                             </div>
 
@@ -2322,93 +2337,76 @@
                 </div>
             </div>
             
-            <!-- Scenario Toggle -->
+            <!-- Onboarding Progress -->
             <div class="flex items-center gap-2">
-                <label class="text-xs text-gray-500 font-medium uppercase tracking-wider flex items-center gap-2 cursor-pointer select-none bg-gray-50 px-3 py-1.5 rounded border border-gray-200 hover:bg-gray-100 transition-colors">
-                    <input type="checkbox" id="kyb-scenario-toggle" onchange="toggleKYBScenario()" class="rounded text-everypay-600 focus:ring-0 w-3 h-3 border-gray-300">
-                    Simulate: Missing KYB (Scenario B)
-                </label>
+                <div id="onboarding-step-badge" class="px-3 py-1.5 bg-everypay-50 text-everypay-700 text-xs font-bold rounded border border-everypay-100">
+                    Step 1 of 4
+                </div>
             </div>
         </div>
 
         <!-- Integration Content (Centered Plug-in Frame) -->
         <div class="flex-1 overflow-y-auto p-8 flex items-center justify-center">
             
-            <div class="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
-                <!-- Cregis Brand Header -->
-                <div class="bg-[#1a1a1a] px-8 py-6 text-white flex justify-between items-center">
-                    <div>
-                        <h2 class="text-xl font-bold flex items-center gap-2">
-                            <span class="text-[#D4AF37]">Cregis</span> Custody
-                        </h2>
-                        <p class="text-sm text-gray-400 mt-1">Secure Treasury Unit Authorization</p>
+            <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
+                <!-- Progress Bar -->
+                <div class="bg-gray-50 px-8 py-4 border-b border-gray-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">OSN Onboarding</span>
+                        <span id="onboarding-step-label" class="text-xs font-bold text-everypay-600">Step 1 of 4</span>
                     </div>
-                    <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    <div class="w-full bg-gray-200 rounded-full h-1.5">
+                        <div id="onboarding-progress-bar" class="bg-everypay-500 h-1.5 rounded-full transition-all duration-500" style="width: 25%"></div>
+                    </div>
+                    <div class="flex justify-between mt-2 text-[10px] text-gray-400">
+                        <span id="ob-label-1" class="text-everypay-600 font-bold">Roles</span>
+                        <span id="ob-label-2">KYB</span>
+                        <span id="ob-label-3">Bank</span>
+                        <span id="ob-label-4">Wallet</span>
                     </div>
                 </div>
 
-                <!-- Scenario A: Instant Grant -->
-                <div id="plugin-scenario-a" class="p-8">
+                <!-- Step 1: Roles Assigned Confirmation -->
+                <div id="onboarding-step-1" class="p-8">
                     <div class="mb-6">
-                        <h3 class="text-lg font-bold text-slate-800 mb-2">Request for Access</h3>
-                        <p class="text-sm text-gray-500 leading-relaxed">
-                            <strong class="text-slate-700">Everypay</strong> is requesting permission to create and manage a Digital Asset Treasury on your behalf.
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold uppercase rounded tracking-wide">Completed</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800">Roles Assigned</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed mt-2">
+                            Team roles have been configured. Proceed to KYB verification.
                         </p>
                     </div>
 
-                    <div class="bg-gray-50 rounded-xl p-5 mb-8 space-y-3 border border-gray-100">
-                        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Permissions</div>
-                        <div class="flex items-center gap-3 text-sm text-slate-700">
-                            <div class="w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            </div>
-                            <span>Create and manage wallet addresses</span>
-                        </div>
-                        <div class="flex items-center gap-3 text-sm text-slate-700">
-                            <div class="w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            </div>
-                            <span>View real-time balances and transaction history</span>
-                        </div>
-                        <div class="flex items-center gap-3 text-sm text-slate-700">
-                            <div class="w-5 h-5 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center flex-shrink-0">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                            </div>
-                            <span>Initiate transactions (Requires secondary approval)</span>
+                    <div class="bg-gray-50 rounded-xl p-5 mb-8 border border-gray-100 space-y-3">
+                        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Assigned Roles</div>
+                        <div id="onboarding-roles-summary" class="text-sm text-slate-700">
+                            <!-- Populated by JS -->
                         </div>
                     </div>
 
                     <div class="space-y-3">
-                        <button onclick="openPluginLogin()" class="w-full py-3.5 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg flex items-center justify-center gap-2">
-                            <span>Authorize Connection</span>
+                        <button onclick="onboardingNext(2)" class="w-full py-3.5 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg flex items-center justify-center gap-2">
+                            <span>Continue to KYB Verification</span>
                             <svg class="w-5 h-5 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                         </button>
-                        <button onclick="closeIntegrationPage()" class="w-full py-3.5 text-gray-500 hover:text-gray-700 font-medium transition-colors">
-                            Cancel
-                        </button>
-                    </div>
-                    
-                    <div class="mt-6 flex items-center justify-center gap-2 opacity-60">
-                        <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                        <span class="text-xs text-gray-400">End-to-end encrypted channel</span>
                     </div>
                 </div>
 
-                <!-- Scenario B: KYB Required -->
-                <div id="plugin-scenario-b" class="hidden-step p-8">
+                <!-- Step 2: KYB Verification -->
+                <div id="onboarding-step-2" class="hidden p-8">
                     <div class="mb-6">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-[10px] font-bold uppercase rounded tracking-wide">Action Required</span>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-800">Additional Verification (KYB)</h3>
+                        <h3 class="text-lg font-bold text-slate-800">Business Verification (KYB)</h3>
                         <p class="text-sm text-gray-500 leading-relaxed mt-2">
-                            To comply with regional banking regulations, please provide the following business details to activate your treasury unit.
+                            To comply with regional banking regulations, please provide the following business details.
                         </p>
                     </div>
 
                     <div class="space-y-6 mb-8 h-96 overflow-y-auto pr-2 custom-scrollbar">
-                        <!-- Section 1: Company Information -->
+                        <!-- Company Information -->
                         <div>
                             <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                                 <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs">1</div>
@@ -2417,32 +2415,32 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Legal Name</label>
-                                    <input type="text" value="Acme Trading Corp Ltd." readonly class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-100 text-gray-600 focus:outline-none cursor-not-allowed">
+                                    <input type="text" id="kyb-legal-name" value="Acme Trading Corp Ltd." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Registration Number</label>
-                                    <input type="text" value="HK-29384712" readonly class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-100 text-gray-600 focus:outline-none cursor-not-allowed">
+                                    <input type="text" id="kyb-reg-number" value="HK-29384712" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Jurisdiction</label>
-                                    <select disabled class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-100 text-gray-600 focus:outline-none cursor-not-allowed">
-                                        <option>Hong Kong SAR</option>
+                                    <select id="kyb-jurisdiction" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                        <option selected>Hong Kong SAR</option>
                                         <option>Singapore</option>
                                         <option>United Kingdom</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Date of Incorporation</label>
-                                    <input type="date" value="2018-05-12" readonly class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-100 text-gray-600 focus:outline-none cursor-not-allowed">
+                                    <input type="date" id="kyb-inc-date" value="2018-05-12" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
                                 </div>
                                 <div class="md:col-span-2">
                                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Registered Address</label>
-                                    <input type="text" value="Unit 1205, 12/F, Tower 2, Lippo Centre, 89 Queensway, Admiralty, Hong Kong" readonly class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-100 text-gray-600 focus:outline-none cursor-not-allowed">
+                                    <input type="text" id="kyb-address" value="Unit 1205, 12/F, Tower 2, Lippo Centre, 89 Queensway, Admiralty, Hong Kong" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Section 2: Key Individuals -->
+                        <!-- Key Individuals -->
                         <div>
                             <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                                 <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs">2</div>
@@ -2451,29 +2449,17 @@
                             <div class="border border-gray-200 rounded-lg overflow-hidden">
                                 <table class="w-full text-sm text-left">
                                     <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
-                                        <tr>
-                                            <th class="px-3 py-2">Name</th>
-                                            <th class="px-3 py-2">Role</th>
-                                            <th class="px-3 py-2">Status</th>
-                                        </tr>
+                                        <tr><th class="px-3 py-2">Name</th><th class="px-3 py-2">Role</th><th class="px-3 py-2">Status</th></tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-100">
-                                        <tr>
-                                            <td class="px-3 py-2">John Doe</td>
-                                            <td class="px-3 py-2">Director</td>
-                                            <td class="px-3 py-2"><span class="text-green-600 text-xs font-medium flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Verified</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-3 py-2">Jane Smith</td>
-                                            <td class="px-3 py-2">UBO (45%)</td>
-                                            <td class="px-3 py-2"><span class="text-green-600 text-xs font-medium flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Verified</span></td>
-                                        </tr>
+                                        <tr><td class="px-3 py-2">John Doe</td><td class="px-3 py-2">Director</td><td class="px-3 py-2"><span class="text-green-600 text-xs font-medium flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Verified</span></td></tr>
+                                        <tr><td class="px-3 py-2">Jane Smith</td><td class="px-3 py-2">UBO (45%)</td><td class="px-3 py-2"><span class="text-green-600 text-xs font-medium flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Verified</span></td></tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
 
-                        <!-- Section 3: Documents -->
+                        <!-- Documents -->
                         <div>
                             <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                                 <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs">3</div>
@@ -2482,38 +2468,29 @@
                             <div class="space-y-2">
                                 <div class="flex items-center justify-between p-2 border border-gray-200 rounded-lg bg-gray-50">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-green-600">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        </div>
+                                        <div class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-green-600"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div>
                                         <span class="text-xs font-medium text-slate-700">Certificate of Incorporation</span>
                                     </div>
                                     <span class="text-xs text-gray-400">Uploaded</span>
                                 </div>
                                 <div class="flex items-center justify-between p-2 border border-gray-200 rounded-lg bg-gray-50">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-green-600">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        </div>
+                                        <div class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-green-600"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div>
                                         <span class="text-xs font-medium text-slate-700">Articles of Association</span>
                                     </div>
                                     <span class="text-xs text-gray-400">Uploaded</span>
                                 </div>
                                 <div class="flex items-center justify-between p-2 border border-red-200 rounded-lg bg-white">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-6 h-6 bg-red-100 rounded flex items-center justify-center text-red-600">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        </div>
-                                        <div>
-                                            <span class="text-xs font-medium text-slate-700 block">Proof of Address</span>
-                                            <span class="text-[10px] text-red-500">Expired</span>
-                                        </div>
+                                        <div class="w-6 h-6 bg-red-100 rounded flex items-center justify-center text-red-600"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                                        <div><span class="text-xs font-medium text-slate-700 block">Proof of Address</span><span class="text-[10px] text-red-500">Expired</span></div>
                                     </div>
                                     <button class="px-2 py-1 bg-slate-900 text-white text-xs rounded hover:bg-slate-800">Upload</button>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Section 4: Owner Details -->
+
+                        <!-- Owner Details -->
                         <div>
                             <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                                 <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs">4</div>
@@ -2522,118 +2499,161 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Owner Name</label>
-                                    <input type="text" id="vault-owner-name" placeholder="e.g., John Doe" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                    <input type="text" id="kyb-owner-name" placeholder="e.g., John Doe" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Owner Email</label>
-                                    <input type="email" id="vault-owner-email" placeholder="e.g., john.doe@acme.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                    <input type="email" id="kyb-owner-email" placeholder="e.g., john.doe@acme.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Consent -->
                         <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
                             <label class="flex items-center gap-3 cursor-pointer">
-                                <input type="checkbox" id="kyb-consent" onchange="updateKYBConsentUI()" class="rounded text-everypay-600 focus:ring-0 w-4 h-4 border-gray-300">
-                                <span class="text-sm text-slate-800">I certify that the information provided is accurate and I authorize Cregis to verify these details.</span>
+                                <input type="checkbox" id="kyb-consent" class="rounded text-everypay-600 focus:ring-0 w-4 h-4 border-gray-300">
+                                <span class="text-sm text-slate-800">I certify that the information provided is accurate and authorize Cregis to verify these details.</span>
                             </label>
                         </div>
                     </div>
 
                     <div class="space-y-3">
-                        <button onclick="completeKYB()" class="w-full py-3.5 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg">
+                        <button onclick="onboardingNext(3)" class="w-full py-3.5 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg">
                             Submit Verification
                         </button>
-                        <button onclick="closeIntegrationPage()" class="w-full py-3.5 text-gray-500 hover:text-gray-700 font-medium transition-colors">
-                            Save & Exit
-                        </button>
+                        <button onclick="closeIntegrationPage()" class="w-full py-3.5 text-gray-500 hover:text-gray-700 font-medium transition-colors">Save & Exit</button>
                         <div id="kyb-error" class="hidden text-red-600 text-xs mt-2 text-center">Please complete all required fields and grant consent.</div>
                     </div>
                 </div>
 
-                <!-- Secure Treasury Unit Authorization: Email/Password (Plug-in) -->
-    <div id="plugin-login" class="hidden p-8 border-t border-gray-100">
-                    <div class="mb-4">
-                        <h3 class="text-lg font-bold text-slate-800">Sign in</h3>
-                        <p class="text-sm text-gray-500 mt-1">Authenticate to continue authorization.</p>
-                    </div>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Email</label>
-                            <input type="email" id="plugin-login-email" value="treasurer@acme-corp.com" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-everypay-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Password</label>
-                            <input type="password" id="plugin-login-password" value="password123" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-everypay-500 outline-none">
-                        </div>
-                        <div class="space-y-2">
-                            <button onclick="pluginSubmitLogin()" class="w-full py-3.5 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg flex items-center justify-center gap-2">
-                                <span>Continue</span>
-                                <svg class="w-5 h-5 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Secure Treasury Unit Authorization: Two-Factor Step (Plug-in) -->
-                <div id="plugin-mfa" class="hidden p-8 border-t border-gray-100">
-                    <div class="mb-4">
-                        <h3 class="text-lg font-bold text-slate-800">Two-Factor Authentication</h3>
-                        <p class="text-sm text-gray-500 mt-1">Enter the 6-digit code to authorize this connection.</p>
-                    </div>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Authentication Code</label>
-                            <input type="text" id="plugin-mfa-input" placeholder="000 000" class="w-full text-center text-2xl tracking-widest px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-everypay-500 outline-none font-mono">
-                        </div>
-                        <div class="space-y-2">
-                            <button onclick="pluginVerify2FA()" class="w-full py-3.5 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg flex items-center justify-center gap-2">
-                                <span>Verify & Authorize</span>
-                                <svg class="w-5 h-5 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            </button>
-                            <button onclick="closeIntegrationPage()" class="w-full py-3.5 text-gray-500 hover:text-gray-700 font-medium transition-colors">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="plugin-access-confirm" class="hidden p-8 border-t border-gray-100">
+                <!-- Step 3: Organization Bank Account Setup -->
+                <div id="onboarding-step-3" class="hidden p-8">
                     <div class="mb-6">
-                        <h3 class="text-lg font-bold text-slate-800">Request for Access</h3>
-                        <p class="text-sm text-gray-500 mt-1">Confirm permissions to enable Crypto Treasury.</p>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase rounded tracking-wide">OSN Requirement</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800">Add Organization Bank Account</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed mt-2">
+                            Link your corporate bank account to receive off-ramp settlement funds.
+                        </p>
                     </div>
-                    <div class="bg-gray-50 rounded-xl p-5 mb-8 space-y-3 border border-gray-100">
-                        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Permissions</div>
-                        <div class="flex items-center gap-3 text-sm text-slate-700">
-                            <div class="w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+
+                    <div class="space-y-6 mb-8">
+                        <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Bank Account Details</div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Bank Name</label>
+                                    <input type="text" id="org-bank-name" value="HSBC Hong Kong" placeholder="e.g., HSBC Hong Kong" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Account Number</label>
+                                        <input type="text" id="org-bank-account" value="801-234567-001" placeholder="e.g., 801-234567-001" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">SWIFT / BIC</label>
+                                        <input type="text" id="org-bank-swift" value="HSBCHKHHHKH" placeholder="e.g., HSBCHKHHHKH" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Account Holder Name</label>
+                                    <input type="text" id="org-bank-holder" value="Acme Trading Corp Ltd." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Currency</label>
+                                    <select id="org-bank-currency" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                        <option selected>HKD</option>
+                                        <option>USD</option>
+                                        <option>CNY</option>
+                                    </select>
+                                </div>
                             </div>
-                            <span>Create and manage wallet addresses</span>
                         </div>
-                        <div class="flex items-center gap-3 text-sm text-slate-700">
-                            <div class="w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3">
+                            <div class="w-8 h-8 bg-amber-100 rounded flex items-center justify-center text-amber-600 flex-shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             </div>
-                            <span>View real-time balances and transaction history</span>
-                        </div>
-                        <div class="flex items-center gap-3 text-sm text-slate-700">
-                            <div class="w-5 h-5 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            <div>
+                                <div class="text-sm font-bold text-amber-800">Compliance Review</div>
+                                <div class="text-xs text-amber-700 mt-1">Bank accounts are subject to OSN compliance review. Approval typically takes 1-2 business days.</div>
                             </div>
-                            <span>Initiate transactions (Requires secondary approval)</span>
                         </div>
                     </div>
+
                     <div class="space-y-3">
-                        <button onclick="confirmAccessGrant()" class="w-full py-3.5 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg flex items-center justify-center gap-2">
-                            <span>Confirm Access</span>
-                            <svg class="w-5 h-5 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <button onclick="onboardingNext(4)" class="w-full py-3.5 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg flex items-center justify-center gap-2">
+                            <span>Submit for Review</span>
+                            <svg class="w-5 h-5 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                         </button>
-                        <button onclick="closeIntegrationPage()" class="w-full py-3.5 text-gray-500 hover:text-gray-700 font-medium transition-colors">Cancel</button>
+                        <button onclick="closeIntegrationPage()" class="w-full py-3.5 text-gray-500 hover:text-gray-700 font-medium transition-colors">Save & Exit</button>
                     </div>
                 </div>
 
-<!-- Policy Configuration Removed -->
+                <!-- Step 4: Organization Wallet Setup -->
+                <div id="onboarding-step-4" class="hidden p-8">
+                    <div class="mb-6">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-2 py-0.5 bg-[#D4AF37]/10 text-[#D4AF37] text-[10px] font-bold uppercase rounded tracking-wide">On-Chain Setup</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800">Add Organization Wallet</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed mt-2">
+                            Register your Cregis custody wallet for USDT off-ramp transactions. The wallet will undergo on-chain screening.
+                        </p>
+                    </div>
 
+                    <div class="space-y-6 mb-8">
+                        <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Wallet Configuration</div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Wallet Provider</label>
+                                    <select id="org-wallet-provider" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                        <option selected>Cregis Custody</option>
+                                        <option>Fireblocks</option>
+                                        <option>Custom MPC</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Wallet Address (Public Key)</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="org-wallet-address" value="0x483A...A74FE" placeholder="e.g., 0x..." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-everypay-500 outline-none">
+                                        <button onclick="document.getElementById('org-wallet-address').value='0x483A91D8F2B7E3C65A4D0F9E12B83A74FE'" class="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-xs font-medium transition-colors">Connect</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Network</label>
+                                    <select id="org-wallet-network" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                        <option selected>Ethereum (ERC-20 USDT)</option>
+                                        <option>Tron (TRC-20 USDT)</option>
+                                        <option>Polygon</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 border border-green-200 rounded-xl p-4 flex gap-3">
+                            <div class="w-8 h-8 bg-green-100 rounded flex items-center justify-center text-green-600 flex-shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-green-800">On-Chain Screening</div>
+                                <div class="text-xs text-green-700 mt-1">Wallet address will be screened against sanction lists and risk databases. Whitelisted wallets are approved for off-ramp transactions.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <button onclick="onboardingComplete()" class="w-full py-3.5 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>Complete Onboarding</span>
+                        </button>
+                        <button onclick="closeIntegrationPage()" class="w-full py-3.5 text-gray-500 hover:text-gray-700 font-medium transition-colors">Save & Exit</button>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
 
@@ -3520,87 +3540,84 @@
         }
 
         // --- Integration Page Logic ---
-        function openIntegrationPage() {
-            document.getElementById('integration-view').classList.remove('hidden');
+        // --- Onboarding Flow ---
+        function openOnboardingPage() {
+            const view = document.getElementById('integration-view');
+            view.classList.remove('hidden');
+            // Reset to step 1
+            showOnboardingStep(1);
+            // Populate roles summary from wizard state
+            const rolesEl = document.getElementById('onboarding-roles-summary');
+            if (rolesEl) {
+                const roles = window.currentRoles || {
+                    "Pool Keeper": "Approves transactions",
+                    "Maker": "Creates transactions",
+                    "Checker": "Reviews transactions"
+                };
+                rolesEl.innerHTML = Object.entries(roles)
+                    .map(([role, desc]) => `<div class="flex justify-between py-1.5 border-b border-gray-100 last:border-0"><span class="font-medium">${role}</span><span class="text-gray-400 text-xs">${desc}</span></div>`)
+                    .join('');
+            }
         }
 
         function closeIntegrationPage() {
             document.getElementById('integration-view').classList.add('hidden');
         }
 
-        function toggleKYBScenario() {
-            const isScenarioB = document.getElementById('kyb-scenario-toggle').checked;
-            const scenarioA = document.getElementById('plugin-scenario-a');
-            const scenarioB = document.getElementById('plugin-scenario-b');
+        let currentOnboardingStep = 1;
 
-            if (isScenarioB) {
-                scenarioA.classList.add('hidden-step');
-                scenarioB.classList.remove('hidden-step');
-            } else {
-                scenarioA.classList.remove('hidden-step');
-                scenarioB.classList.add('hidden-step');
+        function showOnboardingStep(step) {
+            currentOnboardingStep = step;
+            // Hide all steps
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById('onboarding-step-' + i).classList.add('hidden');
+            }
+            // Show target step
+            document.getElementById('onboarding-step-' + step).classList.remove('hidden');
+            // Update progress bar
+            const pct = (step / 4) * 100;
+            document.getElementById('onboarding-progress-bar').style.width = pct + '%';
+            document.getElementById('onboarding-step-label').textContent = 'Step ' + step + ' of 4';
+            // Update step labels
+            for (let i = 1; i <= 4; i++) {
+                const label = document.getElementById('ob-label-' + i);
+                label.className = i <= step ? 'text-everypay-600 font-bold' : 'text-gray-400';
             }
         }
 
-        function updateKYBConsentUI() {
-            const consent = document.getElementById('kyb-consent').checked;
-            const info = document.getElementById('kyb-info');
-            if (info) {
-                if (consent) {
-                    info.classList.remove('hidden');
-                } else {
-                    info.classList.add('hidden');
-                }
-            }
-        }
-
-        function completeKYB() {
-            const btn = event.target;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Verifying...';
-            
-            setTimeout(() => {
+        function onboardingNext(step) {
+            if (step === 2) {
+                // Proceed directly
+                showOnboardingStep(2);
+            } else if (step === 3) {
+                // Validate KYB form
                 const consent = document.getElementById('kyb-consent').checked;
-                const ownerName = document.getElementById('vault-owner-name').value.trim();
-                const ownerEmail = document.getElementById('vault-owner-email').value.trim();
+                const ownerName = document.getElementById('kyb-owner-name').value.trim();
+                const ownerEmail = document.getElementById('kyb-owner-email').value.trim();
                 const err = document.getElementById('kyb-error');
-                
                 if (!consent || !ownerName || !ownerEmail) {
                     err.classList.remove('hidden');
-                    btn.innerHTML = originalText;
                     return;
                 }
                 err.classList.add('hidden');
-                pluginFlowMode = 'B';
-                document.getElementById('plugin-scenario-b').classList.add('hidden-step');
-                
-                // Pre-fill login email
-                const loginEmailInput = document.getElementById('plugin-login-email');
-                if (loginEmailInput) {
-                    loginEmailInput.value = ownerEmail;
-                }
+                showOnboardingStep(3);
+            } else if (step === 4) {
+                showOnboardingStep(4);
+            }
+        }
 
-                // Proceed to login
-                document.getElementById('plugin-login').classList.remove('hidden');
+        function onboardingComplete() {
+            const btn = event.target.closest('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Activating...';
+            setTimeout(() => {
                 btn.innerHTML = originalText;
+                closeIntegrationPage();
+                completeSetup();
             }, 1500);
         }
 
-        function confirmAccessGrant() {
-            const btn = event.target.closest('button');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Authorizing...';
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                document.getElementById('plugin-access-confirm').classList.add('hidden');
-                // Skip Policy Setup - Directly Activate
-                closeIntegrationPage();
-                completeSetup();
-            }, 900);
-        }
-
-// completePolicySetup removed
-
+        // --- Setup Activation (preserved) ---
         function completeSetup() {
             // Hide Inactive Overlay in Overview
             document.getElementById('crypto-widget-inactive').style.opacity = '0';
