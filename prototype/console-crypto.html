@@ -246,33 +246,9 @@
             <div class="flex-1 overflow-y-auto p-8">
                 <div class="space-y-6 animate-fadeIn">
                     <!-- Crypto Header -->
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <h2 class="text-2xl font-bold text-slate-800">Crypto Treasury</h2>
-                            <p class="text-sm text-gray-500 mt-1">Powered by Cregis Custody - Secure Enclave</p>
-                        </div>
-                        <div class="flex gap-3">
-                            <button onclick="openNewOffRamp()" class="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 shadow-sm flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                                New Off-Ramp
-                            </button>
-                            <button onclick="openPaymentModal()" class="px-4 py-2 bg-everypay-600 text-white rounded-lg text-sm font-medium hover:bg-everypay-700 shadow-sm flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                                New Transfer
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Tab Navigation -->
-                    <div class="flex gap-1 bg-gray-100 rounded-xl p-1 max-w-sm">
-                        <button id="tab-treasury" onclick="switchTab('treasury')" class="flex-1 py-2.5 px-4 text-sm font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm">
-                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                            Treasury
-                        </button>
-                        <button id="tab-offramp" onclick="switchTab('offramp')" class="flex-1 py-2.5 px-4 text-sm font-medium rounded-lg transition-all text-gray-500 hover:text-slate-700">
-                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                            Off-Ramp Settlement
-                        </button>
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Crypto Treasury</h2>
+                        <p class="text-sm text-gray-500 mt-1">Powered by Cregis Custody - Secure Enclave</p>
                     </div>
 
                     <!-- TAB 1: Treasury Dashboard -->
@@ -284,13 +260,13 @@
                                 <p class="text-xs text-gray-400 mt-0.5">Each asset breakdown — Withdrawable + Payable = Total</p>
                             </div>
                             <div class="divide-y divide-gray-100">
-                                <!-- USDT -->
+                                <!-- USDT — ERC-20 (Ethereum) -->
                                 <div class="px-6 py-5 flex items-center gap-6 hover:bg-slate-50 transition-colors">
-                                    <div class="flex items-center gap-3 w-40 flex-shrink-0">
-                                        <div class="w-8 h-8 rounded-full bg-everypay-600 flex items-center justify-center text-white text-xs font-bold">USDT</div>
+                                    <div class="flex items-center gap-3 w-36 flex-shrink-0">
+                                        <div class="w-8 h-8 rounded-full bg-everypay-600 flex items-center justify-center text-white text-[10px] font-bold">USDT</div>
                                         <div>
                                             <div class="text-sm font-bold text-slate-800">Tether</div>
-                                            <div class="text-[10px] text-gray-400">ERC-20 / TRC-20</div>
+                                            <div class="text-[10px] text-emerald-600 font-medium">ERC-20 (Ethereum)</div>
                                         </div>
                                     </div>
                                     <div class="flex-1 grid grid-cols-3 gap-4 text-center">
@@ -301,62 +277,52 @@
                                         <div>
                                             <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Withdrawable</div>
                                             <div class="text-sm font-medium text-green-600 font-mono">950,000.00</div>
-                                            <div class="w-full bg-gray-100 rounded-full h-1 mt-1 overflow-hidden">
-                                                <div class="bg-green-500 h-1 rounded-full" style="width: 63%"></div>
-                                            </div>
                                         </div>
                                         <div>
                                             <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Payable</div>
                                             <div class="text-sm font-medium text-amber-600 font-mono">550,000.00</div>
-                                            <div class="w-full bg-gray-100 rounded-full h-1 mt-1 overflow-hidden">
-                                                <div class="bg-amber-500 h-1 rounded-full" style="width: 37%"></div>
-                                            </div>
                                         </div>
                                     </div>
-                                    <button onclick="switchTab('offramp');selectAssetForOfframp('usdt')" class="px-4 py-2 text-xs font-bold bg-everypay-600 hover:bg-everypay-700 text-white rounded-lg transition-all flex-shrink-0">
-                                        Off-Ramp
-                                    </button>
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        <button onclick="openOffRampFor('usdt-eth')" class="px-3 py-1.5 text-[11px] font-bold bg-everypay-600 hover:bg-everypay-700 text-white rounded-lg transition-all">Off-Ramp</button>
+                                        <button onclick="executeWithdraw('USDT', 'ERC-20')" class="px-3 py-1.5 text-[11px] font-bold bg-slate-800 hover:bg-black text-white rounded-lg transition-all">Withdraw</button>
+                                    </div>
                                 </div>
-                                <!-- BTC -->
+                                <!-- USDT — TRC-20 (TRON) -->
                                 <div class="px-6 py-5 flex items-center gap-6 hover:bg-slate-50 transition-colors">
-                                    <div class="flex items-center gap-3 w-40 flex-shrink-0">
-                                        <div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs font-bold">BTC</div>
+                                    <div class="flex items-center gap-3 w-36 flex-shrink-0">
+                                        <div class="w-8 h-8 rounded-full bg-everypay-600 flex items-center justify-center text-white text-[10px] font-bold">USDT</div>
                                         <div>
-                                            <div class="text-sm font-bold text-slate-800">Bitcoin</div>
-                                            <div class="text-[10px] text-gray-400">Bitcoin</div>
+                                            <div class="text-sm font-bold text-slate-800">Tether</div>
+                                            <div class="text-[10px] text-emerald-600 font-medium">TRC-20 (TRON)</div>
                                         </div>
                                     </div>
                                     <div class="flex-1 grid grid-cols-3 gap-4 text-center">
                                         <div>
                                             <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Total</div>
-                                            <div class="text-sm font-bold text-slate-800 font-mono">800,000.00</div>
+                                            <div class="text-sm font-bold text-slate-800 font-mono">820,000.00</div>
                                         </div>
                                         <div>
                                             <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Withdrawable</div>
-                                            <div class="text-sm font-medium text-green-600 font-mono">600,000.00</div>
-                                            <div class="w-full bg-gray-100 rounded-full h-1 mt-1 overflow-hidden">
-                                                <div class="bg-green-500 h-1 rounded-full" style="width: 75%"></div>
-                                            </div>
+                                            <div class="text-sm font-medium text-green-600 font-mono">820,000.00</div>
                                         </div>
                                         <div>
                                             <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Payable</div>
-                                            <div class="text-sm font-medium text-amber-600 font-mono">200,000.00</div>
-                                            <div class="w-full bg-gray-100 rounded-full h-1 mt-1 overflow-hidden">
-                                                <div class="bg-amber-500 h-1 rounded-full" style="width: 25%"></div>
-                                            </div>
+                                            <div class="text-sm font-medium text-amber-600 font-mono">0.00</div>
                                         </div>
                                     </div>
-                                    <button onclick="executeWithdraw('btc')" class="px-4 py-2 text-xs font-bold bg-slate-800 hover:bg-black text-white rounded-lg transition-all flex-shrink-0">
-                                        Withdraw
-                                    </button>
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        <button onclick="openOffRampFor('usdt-trc')" class="px-3 py-1.5 text-[11px] font-bold bg-everypay-600 hover:bg-everypay-700 text-white rounded-lg transition-all">Off-Ramp</button>
+                                        <button onclick="executeWithdraw('USDT', 'TRC-20')" class="px-3 py-1.5 text-[11px] font-bold bg-slate-800 hover:bg-black text-white rounded-lg transition-all">Withdraw</button>
+                                    </div>
                                 </div>
-                                <!-- ETH -->
+                                <!-- USDC — ERC-20 (Ethereum) -->
                                 <div class="px-6 py-5 flex items-center gap-6 hover:bg-slate-50 transition-colors">
-                                    <div class="flex items-center gap-3 w-40 flex-shrink-0">
-                                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">ETH</div>
+                                    <div class="flex items-center gap-3 w-36 flex-shrink-0">
+                                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-[10px] font-bold">USDC</div>
                                         <div>
-                                            <div class="text-sm font-bold text-slate-800">Ethereum</div>
-                                            <div class="text-[10px] text-gray-400">ERC-20</div>
+                                            <div class="text-sm font-bold text-slate-800">USD Coin</div>
+                                            <div class="text-[10px] text-emerald-600 font-medium">ERC-20 (Ethereum)</div>
                                         </div>
                                     </div>
                                     <div class="flex-1 grid grid-cols-3 gap-4 text-center">
@@ -367,21 +333,44 @@
                                         <div>
                                             <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Withdrawable</div>
                                             <div class="text-sm font-medium text-green-600 font-mono">180,100.50</div>
-                                            <div class="w-full bg-gray-100 rounded-full h-1 mt-1 overflow-hidden">
-                                                <div class="bg-green-500 h-1 rounded-full" style="width: 75%"></div>
-                                            </div>
                                         </div>
                                         <div>
                                             <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Payable</div>
                                             <div class="text-sm font-medium text-amber-600 font-mono">60,000.00</div>
-                                            <div class="w-full bg-gray-100 rounded-full h-1 mt-1 overflow-hidden">
-                                                <div class="bg-amber-500 h-1 rounded-full" style="width: 25%"></div>
-                                            </div>
                                         </div>
                                     </div>
-                                    <button onclick="executeWithdraw('eth')" class="px-4 py-2 text-xs font-bold bg-slate-800 hover:bg-black text-white rounded-lg transition-all flex-shrink-0">
-                                        Withdraw
-                                    </button>
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        <button onclick="openOffRampFor('usdc-eth')" class="px-3 py-1.5 text-[11px] font-bold bg-everypay-600 hover:bg-everypay-700 text-white rounded-lg transition-all">Off-Ramp</button>
+                                        <button onclick="executeWithdraw('USDC', 'ERC-20')" class="px-3 py-1.5 text-[11px] font-bold bg-slate-800 hover:bg-black text-white rounded-lg transition-all">Withdraw</button>
+                                    </div>
+                                </div>
+                                <!-- USDC — SPL (Solana) -->
+                                <div class="px-6 py-5 flex items-center gap-6 hover:bg-slate-50 transition-colors">
+                                    <div class="flex items-center gap-3 w-36 flex-shrink-0">
+                                        <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-[10px] font-bold">USDC</div>
+                                        <div>
+                                            <div class="text-sm font-bold text-slate-800">USD Coin</div>
+                                            <div class="text-[10px] text-emerald-600 font-medium">SPL (Solana)</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 grid grid-cols-3 gap-4 text-center">
+                                        <div>
+                                            <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Total</div>
+                                            <div class="text-sm font-bold text-slate-800 font-mono">315,000.00</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Withdrawable</div>
+                                            <div class="text-sm font-medium text-green-600 font-mono">240,000.00</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Payable</div>
+                                            <div class="text-sm font-medium text-amber-600 font-mono">75,000.00</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        <button onclick="openOffRampFor('usdc-sol')" class="px-3 py-1.5 text-[11px] font-bold bg-everypay-600 hover:bg-everypay-700 text-white rounded-lg transition-all">Off-Ramp</button>
+                                        <button onclick="executeWithdraw('USDC', 'SPL')" class="px-3 py-1.5 text-[11px] font-bold bg-slate-800 hover:bg-black text-white rounded-lg transition-all">Withdraw</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -539,10 +528,8 @@
                         </div>
                     </div>
 
-                    <!-- TAB 2: Off-Ramp Settlement -->
-                    <div id="view-offramp" class="hidden">
-                        <!-- Off-Ramp Flow Card -->
-                        <div id="offramp-flow" class="hidden bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                    <!-- Off-Ramp Flow Panel (hidden until user clicks Off-Ramp on an asset) -->
+                    <div id="offramp-flow-panel" class="hidden bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                             <!-- Flow Step Indicators -->
                             <div class="bg-gray-50 px-6 py-4 border-b border-gray-100">
                                 <div class="flex items-center justify-center">
@@ -595,7 +582,7 @@
                                         <select id="crypto-asset" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none mb-2" onchange="updateQuote()">
                                             <option value="usdt-eth" selected>USDT — Ethereum (ERC-20)</option>
                                             <option value="usdc-eth">USDC — Ethereum (ERC-20)</option>
-                                            <option value="usdt-sol">USDT — Solana (SPL)</option>
+                                            <option value="usdt-trc">USDT — TRON (TRC-20)</option>
                                             <option value="usdc-sol">USDC — Solana (SPL)</option>
                                         </select>
                                         <div class="relative">
@@ -785,13 +772,13 @@
                                     <button onclick="simulateProgress()" id="simulate-btn" class="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition-all shadow-lg text-sm">
                                         Simulate Progress (Mock)
                                     </button>
-                                    <button onclick="cancelFlow()" class="px-6 py-3 border border-gray-300 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-colors">
+                                    <button onclick="closeOffRampFlow()" class="px-6 py-3 border border-gray-300 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-colors">
                                         Close
                                     </button>
                                 </div>
                             </div>
                         </div>
-
+                    </div>
                 </div>
             </div>
         </div>
@@ -801,24 +788,26 @@
     <script src="assets/layout.js"></script>
 
     <script>
-        // ============ TAB SWITCHING ============
-        function switchTab(tab) {
-            const treasuryTab = document.getElementById('tab-treasury');
-            const offrampTab = document.getElementById('tab-offramp');
-            const treasuryView = document.getElementById('view-treasury');
-            const offrampView = document.getElementById('view-offramp');
-
-            if (tab === 'treasury') {
-                treasuryTab.className = 'flex-1 py-2.5 px-4 text-sm font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm';
-                offrampTab.className = 'flex-1 py-2.5 px-4 text-sm font-medium rounded-lg transition-all text-gray-500 hover:text-slate-700';
-                treasuryView.classList.remove('hidden');
-                offrampView.classList.add('hidden');
-            } else {
-                offrampTab.className = 'flex-1 py-2.5 px-4 text-sm font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm';
-                treasuryTab.className = 'flex-1 py-2.5 px-4 text-sm font-medium rounded-all transition-all text-gray-500 hover:text-slate-700';
-                offrampView.classList.remove('hidden');
-                treasuryView.classList.add('hidden');
+        // ============ OFF-RAMP FLOW PANEL ============
+        function openOffRampFor(assetKey) {
+            const panel = document.getElementById('offramp-flow-panel');
+            const select = document.getElementById('crypto-asset');
+            const assetMap = { 'usdt-eth': 'usdt-eth', 'usdt-trc': 'usdt-trc', 'usdc-eth': 'usdc-eth', 'usdc-sol': 'usdc-sol' };
+            if (select && assetMap[assetKey]) {
+                select.value = assetMap[assetKey];
             }
+            panel.classList.remove('hidden');
+            if (typeof showQuote === 'function') showQuote();
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function closeOffRampFlow() {
+            const panel = document.getElementById('offramp-flow-panel');
+            panel.classList.add('hidden');
+        }
+
+        function executeWithdraw(symbol, chain) {
+            alert('Withdraw ' + symbol + ' (' + chain + ') — on-chain withdrawal to external wallet.\n\n(This is a prototype placeholder)');
         }
 
         // ============ HISTORY TOGGLE ============
@@ -841,22 +830,6 @@
                 txBtn.className = inactiveBtn;
                 offrampBtn.className = activeBtn;
             }
-        }
-
-        // ============ ASSET -> OFF-RAMP / WITHDRAW ============
-        function selectAssetForOfframp(asset) {
-            const select = document.getElementById('crypto-asset');
-            if (!select) return;
-            const map = { usdt: 'usdt-eth', btc: 'usdt-eth', eth: 'usdc-eth' };
-            select.value = map[asset] || 'usdt-eth';
-            // Open the off-ramp flow
-            document.getElementById('offramp-flow').classList.remove('hidden');
-            if (typeof showQuote === 'function') showQuote();
-        }
-
-        function executeWithdraw(asset) {
-            const names = { btc: 'Bitcoin', eth: 'Ethereum', usdt: 'USDT' };
-            alert('Withdraw ' + (names[asset] || asset) + ' — on-chain withdrawal to external wallet.\n\n(This is a prototype placeholder)');
         }
 
         // ============ TREASURY: Mock Data for Plans ============
@@ -1172,7 +1145,7 @@
         const assetConfig = {
             'usdt-eth': { symbol: 'USDT', network: 'Ethereum (ERC-20)', gas: '~$2.50 (ETH gas)', rateBase: 1.0 },
             'usdc-eth': { symbol: 'USDC', network: 'Ethereum (ERC-20)', gas: '~$2.50 (ETH gas)', rateBase: 1.0 },
-            'usdt-sol': { symbol: 'USDT', network: 'Solana (SPL)', gas: '~$0.01 (SOL fee)', rateBase: 1.0 },
+            'usdt-trc': { symbol: 'USDT', network: 'TRON (TRC-20)', gas: '~$0.01 (TRX fee)', rateBase: 1.0 },
             'usdc-sol': { symbol: 'USDC', network: 'Solana (SPL)', gas: '~$0.01 (SOL fee)', rateBase: 1.0 }
         };
 
@@ -1200,10 +1173,7 @@
         let currentBank = 'bank-1';
 
         function openNewOffRamp() {
-            // Ensure off-ramp tab is active
-            switchTab('offramp');
-
-            document.getElementById('offramp-flow').classList.remove('hidden');
+            document.getElementById('offramp-flow-panel').classList.remove('hidden');
             currentFlowStep = 1;
             updateFlowSteps(1);
             document.getElementById('quote-panel').classList.remove('hidden');
@@ -1214,7 +1184,7 @@
         }
 
         function cancelFlow() {
-            document.getElementById('offramp-flow').classList.add('hidden');
+            document.getElementById('offramp-flow-panel').classList.add('hidden');
             if (quoteExpiryTimer) clearTimeout(quoteExpiryTimer);
         }
 
