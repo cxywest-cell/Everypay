@@ -2525,11 +2525,11 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Owner Name</label>
-                                    <input type="text" id="kyb-owner-name" placeholder="e.g., John Doe" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                    <input type="text" id="kyb-owner-name" value="John Doe" placeholder="e.g., John Doe" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Owner Email</label>
-                                    <input type="email" id="kyb-owner-email" placeholder="e.g., john.doe@acme.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                    <input type="email" id="kyb-owner-email" value="john.doe@acme.com" placeholder="e.g., john.doe@acme.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
                                 </div>
                             </div>
                         </div>
@@ -2569,8 +2569,16 @@
                             <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Bank Account Details</div>
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Bank Name</label>
-                                    <input type="text" id="org-bank-name" value="HSBC Hong Kong" placeholder="e.g., HSBC Hong Kong" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nickname</label>
+                                    <input type="text" id="org-bank-nickname" value="HSBC HKD Primary" placeholder="e.g., HSBC HKD Primary" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Account Type</label>
+                                    <select id="org-bank-account-type" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                        <option selected>Savings</option>
+                                        <option>Checking</option>
+                                        <option>Business</option>
+                                    </select>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
@@ -2578,13 +2586,36 @@
                                         <input type="text" id="org-bank-account" value="801-234567-001" placeholder="e.g., 801-234567-001" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
                                     </div>
                                     <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Account Holder Name</label>
+                                        <input type="text" id="org-bank-holder" value="Acme Trading Corp Ltd." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Bank Name</label>
+                                    <input type="text" id="org-bank-name" value="HSBC Hong Kong" placeholder="e.g., HSBC Hong Kong" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Bank Address</label>
+                                    <input type="text" id="org-bank-address" value="1 Queen's Road Central, Central, Hong Kong" placeholder="e.g., 1 Queen's Road Central" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Bank Country</label>
+                                        <select id="org-bank-country" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                            <option selected>Hong Kong</option>
+                                            <option>Singapore</option>
+                                            <option>United Kingdom</option>
+                                            <option>United States</option>
+                                        </select>
+                                    </div>
+                                    <div>
                                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">SWIFT / BIC</label>
                                         <input type="text" id="org-bank-swift" value="HSBCHKHHHKH" placeholder="e.g., HSBCHKHHHKH" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Account Holder Name</label>
-                                    <input type="text" id="org-bank-holder" value="Acme Trading Corp Ltd." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Recipient Address</label>
+                                    <input type="text" id="org-bank-recipient-address" value="Unit 1205, 12/F, Tower 2, Lippo Centre, 89 Queensway, Admiralty, Hong Kong" placeholder="e.g., Registered address" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Currency</label>
