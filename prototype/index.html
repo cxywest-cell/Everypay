@@ -3555,22 +3555,7 @@
         // --- Integration Page Logic ---
         // --- Onboarding Flow ---
         function openOnboardingPage() {
-            const view = document.getElementById('integration-view');
-            view.classList.remove('hidden');
-            // Reset to step 1
-            showOnboardingStep(1);
-            // Populate roles summary from wizard state
-            const rolesEl = document.getElementById('onboarding-roles-summary');
-            if (rolesEl) {
-                const roles = window.currentRoles || {
-                    "Pool Keeper": "Approves transactions",
-                    "Maker": "Creates transactions",
-                    "Checker": "Reviews transactions"
-                };
-                rolesEl.innerHTML = Object.entries(roles)
-                    .map(([role, desc]) => `<div class="flex justify-between py-1.5 border-b border-gray-100 last:border-0"><span class="font-medium">${role}</span><span class="text-gray-400 text-xs">${desc}</span></div>`)
-                    .join('');
-            }
+            window.location.href = 'console-onboard.html';
         }
 
         function closeIntegrationPage() {
