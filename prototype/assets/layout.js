@@ -59,12 +59,6 @@
 
   // Post-Onboarding: OSN Settlement section (hidden before onboarding)
   html += '<div id="ep-nav-post-onboard" class="pt-4 mt-4 border-t border-gray-100">';
-  // Compliance
-  var compActive = page === 'console-compliance.html';
-  html += '<a href="console-compliance.html" class="' + linkClasses(compActive) + '">';
-  html += svg('M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z');
-  html += 'Compliance';
-  html += '</a>';
   // Off-Ramp Settlement
   var offrampActive = page === 'console-offramp.html';
   html += '<a href="console-offramp.html" class="' + (offrampActive ? 'flex items-center gap-3 px-3 py-2 text-sm font-medium text-everypay-700 bg-everypay-50 rounded-lg' : 'flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg') + '">';
@@ -79,6 +73,14 @@
   html += '<span class="ml-auto w-2 h-2 rounded-full bg-green-500"></span>';
   html += '</a>';
   html += '</div>';
+
+  // Compliance (always visible at bottom)
+  var compActive = page === 'console-compliance.html';
+  html += '<div class="pt-4 mt-4 border-t border-gray-100">';
+  html += '<a href="console-compliance.html" class="' + linkClasses(compActive) + '">';
+  html += svg('M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z');
+  html += 'Compliance';
+  html += '</a>';
   html += '</div>';
 
   // User footer
