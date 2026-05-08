@@ -43,15 +43,16 @@
                 <div class="bg-gray-50 px-8 py-4 border-b border-gray-100">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Onboarding</span>
-                        <span id="onboarding-step-label" class="text-xs font-bold text-everypay-600">Step 1 of 3</span>
+                        <span id="onboarding-step-label" class="text-xs font-bold text-everypay-600">Step 1 of 4</span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-1.5">
-                        <div id="onboarding-progress-bar" class="bg-everypay-500 h-1.5 rounded-full transition-all duration-500" style="width: 33.33%"></div>
+                        <div id="onboarding-progress-bar" class="bg-everypay-500 h-1.5 rounded-full transition-all duration-500" style="width: 25%"></div>
                     </div>
                     <div class="flex justify-between mt-2 text-[10px] text-gray-400">
                         <span id="ob-label-1" class="text-everypay-600 font-bold">Roles</span>
                         <span id="ob-label-2">KYB</span>
                         <span id="ob-label-3">Bank</span>
+                        <span id="ob-label-4">Crypto Mgmt</span>
                     </div>
                 </div>
 
@@ -303,6 +304,140 @@
                     </div>
 
                     <div class="space-y-3">
+                        <button onclick="onboardingNext(4)" class="w-full py-3.5 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg flex items-center justify-center gap-2">
+                            <span>Continue to Crypto Asset Mgmt</span>
+                            <svg class="w-5 h-5 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </button>
+                        <button onclick="goToDashboard()" class="w-full py-3.5 text-gray-500 hover:text-gray-700 font-medium transition-colors">Save &amp; Exit</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Crypto Asset Management -->
+                <div id="onboarding-step-4" class="hidden p-8">
+                    <div class="mb-6">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold uppercase rounded tracking-wide">Final Step</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800">Crypto Asset Management</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed mt-2">
+                            Assign independent multi-signature teams for asset pools and payable assets.
+                        </p>
+                    </div>
+
+                    <div class="space-y-6 mb-8">
+                        <!-- Asset Pool Management Team -->
+                        <div class="border border-gray-200 rounded-xl overflow-hidden">
+                            <div class="bg-gradient-to-r from-[#D4AF37]/10 to-transparent px-5 py-3 border-b border-gray-200">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-[#D4AF37] flex items-center justify-center text-white text-[10px] font-bold">A</div>
+                                    <h4 class="text-sm font-bold text-slate-800">Asset Pool Management</h4>
+                                    <span class="ml-auto text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded">Treasury & Inbound</span>
+                                </div>
+                            </div>
+                            <div class="p-5 space-y-4">
+                                <!-- Team Members -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Team Members</label>
+                                    <div id="pool-members" class="space-y-2">
+                                        <div class="flex items-center gap-2 bg-gray-50 rounded-lg p-2">
+                                            <div class="w-7 h-7 rounded-full bg-everypay-100 text-everypay-700 flex items-center justify-center text-[10px] font-bold">JD</div>
+                                            <input type="text" value="john.doe@acme.com" class="flex-1 bg-transparent text-sm outline-none" placeholder="email@company.com">
+                                            <button onclick="removePoolMember(this)" class="text-gray-300 hover:text-red-500 p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                                        </div>
+                                        <div class="flex items-center gap-2 bg-gray-50 rounded-lg p-2">
+                                            <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold">JS</div>
+                                            <input type="text" value="jane.smith@acme.com" class="flex-1 bg-transparent text-sm outline-none" placeholder="email@company.com">
+                                            <button onclick="removePoolMember(this)" class="text-gray-300 hover:text-red-500 p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                                        </div>
+                                        <div class="flex items-center gap-2 bg-gray-50 rounded-lg p-2">
+                                            <div class="w-7 h-7 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-[10px] font-bold">MK</div>
+                                            <input type="text" value="mike.kim@acme.com" class="flex-1 bg-transparent text-sm outline-none" placeholder="email@company.com">
+                                            <button onclick="removePoolMember(this)" class="text-gray-300 hover:text-red-500 p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                                        </div>
+                                    </div>
+                                    <button onclick="addPoolMember()" class="mt-2 text-xs text-everypay-600 hover:text-everypay-700 font-medium flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                        Add Member
+                                    </button>
+                                </div>
+                                <!-- Multi-sig Threshold -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Multi-Signature Threshold</label>
+                                    <div class="flex items-center gap-3">
+                                        <select id="pool-threshold-n" class="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                            <option>1</option>
+                                            <option selected>2</option>
+                                            <option>3</option>
+                                        </select>
+                                        <span class="text-sm text-gray-400">of</span>
+                                        <span id="pool-threshold-total" class="text-sm font-bold text-slate-700">3</span>
+                                        <span class="text-sm text-gray-400">signatures required</span>
+                                    </div>
+                                    <p class="text-[10px] text-gray-400 mt-1">Minimum 2 members required for any treasury withdrawal.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payable Asset Management Team -->
+                        <div class="border border-gray-200 rounded-xl overflow-hidden">
+                            <div class="bg-gradient-to-r from-blue-500/10 to-transparent px-5 py-3 border-b border-gray-200">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-[10px] font-bold">P</div>
+                                    <h4 class="text-sm font-bold text-slate-800">Payable Asset Management</h4>
+                                    <span class="ml-auto text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded">Outbound Payments</span>
+                                </div>
+                            </div>
+                            <div class="p-5 space-y-4">
+                                <!-- Team Members -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Team Members</label>
+                                    <div id="payable-members" class="space-y-2">
+                                        <div class="flex items-center gap-2 bg-gray-50 rounded-lg p-2">
+                                            <div class="w-7 h-7 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center text-[10px] font-bold">AL</div>
+                                            <input type="text" value="alice.lee@acme.com" class="flex-1 bg-transparent text-sm outline-none" placeholder="email@company.com">
+                                            <button onclick="removePayableMember(this)" class="text-gray-300 hover:text-red-500 p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                                        </div>
+                                        <div class="flex items-center gap-2 bg-gray-50 rounded-lg p-2">
+                                            <div class="w-7 h-7 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-[10px] font-bold">BW</div>
+                                            <input type="text" value="bob.wang@acme.com" class="flex-1 bg-transparent text-sm outline-none" placeholder="email@company.com">
+                                            <button onclick="removePayableMember(this)" class="text-gray-300 hover:text-red-500 p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                                        </div>
+                                    </div>
+                                    <button onclick="addPayableMember()" class="mt-2 text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                        Add Member
+                                    </button>
+                                </div>
+                                <!-- Multi-sig Threshold -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Multi-Signature Threshold</label>
+                                    <div class="flex items-center gap-3">
+                                        <select id="payable-threshold-n" class="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                            <option selected>1</option>
+                                            <option>2</option>
+                                        </select>
+                                        <span class="text-sm text-gray-400">of</span>
+                                        <span id="payable-threshold-total" class="text-sm font-bold text-slate-700">2</span>
+                                        <span class="text-sm text-gray-400">signatures required</span>
+                                    </div>
+                                    <p class="text-[10px] text-gray-400 mt-1">Single signature sufficient for payments under daily limit.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Independence Notice -->
+                        <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 flex gap-3">
+                            <div class="w-8 h-8 bg-indigo-100 rounded flex items-center justify-center text-indigo-600 flex-shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-indigo-800">Segregation of Duties</div>
+                                <div class="text-xs text-indigo-700 mt-1">Asset Pool and Payable Asset teams are independent. Cross-team membership is allowed but each team's multi-sig threshold is enforced separately.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
                         <button onclick="onboardingComplete()" class="w-full py-3.5 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             <span>Complete Onboarding</span>
@@ -351,17 +486,17 @@
         function showOnboardingStep(step) {
             currentOnboardingStep = step;
             // Hide all steps
-            for (let i = 1; i <= 3; i++) {
+            for (let i = 1; i <= 4; i++) {
                 document.getElementById('onboarding-step-' + i).classList.add('hidden');
             }
             // Show target step
             document.getElementById('onboarding-step-' + step).classList.remove('hidden');
             // Update progress bar
-            const pct = (step / 3) * 100;
+            const pct = (step / 4) * 100;
             document.getElementById('onboarding-progress-bar').style.width = pct + '%';
-            document.getElementById('onboarding-step-label').textContent = 'Step ' + step + ' of 3';
+            document.getElementById('onboarding-step-label').textContent = 'Step ' + step + ' of 4';
             // Update step labels
-            for (let i = 1; i <= 3; i++) {
+            for (let i = 1; i <= 4; i++) {
                 const label = document.getElementById('ob-label-' + i);
                 if (label) {
                     label.className = i <= step ? 'text-everypay-600 font-bold' : 'text-gray-400';
@@ -384,6 +519,8 @@
                 }
                 err.classList.add('hidden');
                 showOnboardingStep(3);
+            } else if (step === 4) {
+                showOnboardingStep(4);
             }
         }
 
@@ -413,6 +550,106 @@
                 }
             }, 800);
         }
+
+        // --- Crypto Asset Mgmt: Team Member Management ---
+        const poolColors = ['bg-everypay-100 text-everypay-700', 'bg-blue-100 text-blue-700', 'bg-green-100 text-green-700', 'bg-purple-100 text-purple-700', 'bg-orange-100 text-orange-700'];
+        const payableColors = ['bg-orange-100 text-orange-700', 'bg-purple-100 text-purple-700', 'bg-pink-100 text-pink-700', 'bg-teal-100 text-teal-700', 'bg-indigo-100 text-indigo-700'];
+
+        function getInitials(email) {
+            var parts = email.replace(/@.*/, '').split('.');
+            return parts.map(p => p[0].toUpperCase()).join('').substring(0, 2);
+        }
+
+        function addPoolMember() {
+            var container = document.getElementById('pool-members');
+            var idx = container.children.length;
+            var color = poolColors[idx % poolColors.length];
+            var div = document.createElement('div');
+            div.className = 'flex items-center gap-2 bg-gray-50 rounded-lg p-2 animate-fadeIn';
+            div.innerHTML = '<div class="w-7 h-7 rounded-full ' + color + ' flex items-center justify-center text-[10px] font-bold initials-badge"></div>' +
+                '<input type="text" value="" class="flex-1 bg-transparent text-sm outline-none" placeholder="email@company.com" oninput="updateInitials(this)">' +
+                '<button onclick="removePoolMember(this)" class="text-gray-300 hover:text-red-500 p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>';
+            container.appendChild(div);
+            updatePoolThreshold();
+            div.querySelector('input').focus();
+        }
+
+        function removePoolMember(btn) {
+            var container = document.getElementById('pool-members');
+            if (container.children.length <= 2) return; // minimum 2
+            btn.closest('.flex.items-center').remove();
+            updatePoolThreshold();
+        }
+
+        function addPayableMember() {
+            var container = document.getElementById('payable-members');
+            var idx = container.children.length;
+            var color = payableColors[idx % payableColors.length];
+            var div = document.createElement('div');
+            div.className = 'flex items-center gap-2 bg-gray-50 rounded-lg p-2 animate-fadeIn';
+            div.innerHTML = '<div class="w-7 h-7 rounded-full ' + color + ' flex items-center justify-center text-[10px] font-bold initials-badge"></div>' +
+                '<input type="text" value="" class="flex-1 bg-transparent text-sm outline-none" placeholder="email@company.com" oninput="updateInitials(this)">' +
+                '<button onclick="removePayableMember(this)" class="text-gray-300 hover:text-red-500 p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>';
+            container.appendChild(div);
+            updatePayableThreshold();
+            div.querySelector('input').focus();
+        }
+
+        function removePayableMember(btn) {
+            var container = document.getElementById('payable-members');
+            if (container.children.length <= 1) return; // minimum 1
+            btn.closest('.flex.items-center').remove();
+            updatePayableThreshold();
+        }
+
+        function updateInitials(input) {
+            var badge = input.parentElement.querySelector('.initials-badge');
+            var email = input.value.trim();
+            badge.textContent = email ? getInitials(email) : '??';
+        }
+
+        function updatePoolThreshold() {
+            var container = document.getElementById('pool-members');
+            var total = container.children.length;
+            document.getElementById('pool-threshold-total').textContent = total;
+            // Update threshold dropdown options
+            var sel = document.getElementById('pool-threshold-n');
+            var current = parseInt(sel.value);
+            sel.innerHTML = '';
+            for (var i = 1; i <= total; i++) {
+                var opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = i;
+                if (i === Math.min(current, total)) opt.selected = true;
+                sel.appendChild(opt);
+            }
+        }
+
+        function updatePayableThreshold() {
+            var container = document.getElementById('payable-members');
+            var total = container.children.length;
+            document.getElementById('payable-threshold-total').textContent = total;
+            var sel = document.getElementById('payable-threshold-n');
+            var current = parseInt(sel.value);
+            sel.innerHTML = '';
+            for (var i = 1; i <= total; i++) {
+                var opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = i;
+                if (i === Math.min(current, total)) opt.selected = true;
+                sel.appendChild(opt);
+            }
+        }
+
+        // Init threshold displays
+        (function initThresholds() {
+            updatePoolThreshold();
+            updatePayableThreshold();
+            // Set initials for pre-populated members
+            document.querySelectorAll('#pool-members input, #payable-members input').forEach(function(input) {
+                updateInitials(input);
+            });
+        })();
 
         // Close button: return to referring page
         (function() {
