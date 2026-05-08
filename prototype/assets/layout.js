@@ -83,7 +83,10 @@
   html += '</a>';
   html += '</div>';
 
-  // User footer
+  // Close nav container (flex-1) so footer stays pinned at bottom
+  html += '</div>';
+
+  // User footer (outside flex-1 container)
   html += '<div class="p-4 border-t border-gray-200">';
   html += '<div class="flex items-center justify-between">';
   html += '<div class="flex items-center gap-3">';
