@@ -144,10 +144,62 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Bank Account -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                Linked Bank Account
+                            </h3>
+                            <span id="bank-status-badge" class="px-2.5 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium border border-green-200 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                Active
+                            </span>
+                        </div>
+                        <div id="bank-info-content" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Populated by JS from localStorage -->
+                        </div>
+                        <div id="bank-info-empty" class="hidden text-center py-8">
+                            <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            <p class="text-sm text-gray-500">No bank account linked yet.</p>
+                            <a href="console-onboard.html" class="inline-block mt-3 px-4 py-2 bg-everypay-600 text-white text-sm font-medium rounded-lg hover:bg-everypay-700 transition-colors">Complete Onboarding</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
     <script src="assets/layout.js"></script>
+    <script>
+        (function loadBankInfo() {
+            var raw = localStorage.getItem('everypay-bank-info');
+            if (!raw) {
+                document.getElementById('bank-info-content').classList.add('hidden');
+                document.getElementById('bank-status-badge').classList.add('hidden');
+                document.getElementById('bank-info-empty').classList.remove('hidden');
+                return;
+            }
+            var bank = JSON.parse(raw);
+            var labels = {
+                'org-bank-nickname': 'Nickname',
+                'org-bank-account-type': 'Account Type',
+                'org-bank-account': 'Account Number',
+                'org-bank-holder': 'Account Holder',
+                'org-bank-name': 'Bank Name',
+                'org-bank-address': 'Bank Address',
+                'org-bank-country': 'Bank Country',
+                'org-bank-swift': 'SWIFT / BIC',
+                'org-bank-recipient-address': 'Recipient Address',
+                'org-bank-currency': 'Currency'
+            };
+            var html = '';
+            Object.keys(labels).forEach(function(key) {
+                html += '<div><label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">' + labels[key] + '</label>';
+                html += '<div class="text-sm font-medium text-slate-800 p-2 bg-gray-50 rounded border border-gray-100">' + (bank[key] || '-') + '</div></div>';
+            });
+            document.getElementById('bank-info-content').innerHTML = html;
+        })();
+    </script>
 </body>
 </html>

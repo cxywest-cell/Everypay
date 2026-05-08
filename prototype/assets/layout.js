@@ -31,6 +31,9 @@
 
   var html = '';
 
+  // Default hidden state for onboarding-gated sections
+  html += '<style>#ep-nav-post-onboard,#ep-nav-settings{display:none}</style>';
+
   // Logo
   html += '<div class="h-16 flex items-center px-6 border-b border-gray-100">';
   html += '<div class="w-8 h-8 bg-everypay-600 rounded-lg flex items-center justify-center text-white font-bold text-xl mr-3">E</div>';
@@ -46,16 +49,30 @@
     html += '</a>';
   });
 
-  // Integrations
-  html += '<div class="pt-4 mt-4 border-t border-gray-100">';
-  html += '<div class="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase">OSN Settlement</div>';
-  // Onboarding entry
+  // Pre-Onboarding: "+ Onboard" button (hidden once onboarded)
+  html += '<div id="ep-nav-pre-onboard" class="pt-4 mt-4 border-t border-gray-100 px-3">';
+  html += '<a href="console-onboard.html" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg border border-dashed border-gray-300 transition-colors">';
+  html += '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>';
+  html += '<span>Onboard</span>';
+  html += '</a>';
+  html += '</div>';
+
+  // Post-Onboarding: OSN Settlement section (hidden before onboarding)
+  html += '<div id="ep-nav-post-onboard" class="pt-4 mt-4 border-t border-gray-100">';
+  html += '<div class="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">OSN Settlement</div>';
+  // Onboarding
   var onboardingActive = page === 'console-onboarding.html';
   html += '<a href="console-onboarding.html" class="' + (onboardingActive ? 'flex items-center gap-3 px-3 py-2 text-sm font-medium text-everypay-700 bg-everypay-50 rounded-lg' : 'flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg') + '">';
   html += '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a4 4 0 018 0v1h-8v-1z"></path></svg>';
   html += '<span>Onboarding</span>';
   html += '</a>';
-  // Crypto Treasury (merged with Off-Ramp)
+  // Off-Ramp Settlement
+  var offrampActive = page === 'console-offramp.html';
+  html += '<a href="console-offramp.html" class="' + (offrampActive ? 'flex items-center gap-3 px-3 py-2 text-sm font-medium text-everypay-700 bg-everypay-50 rounded-lg' : 'flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg') + '">';
+  html += '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>';
+  html += '<span>Off-Ramp Settlement</span>';
+  html += '</a>';
+  // Crypto Treasury
   var cryptoActive = page === 'console-crypto.html';
   html += '<a href="console-crypto.html" class="' + (cryptoActive ? 'flex items-center gap-3 px-3 py-2 text-sm font-medium text-everypay-700 bg-everypay-50 rounded-lg' : 'flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-800 hover:bg-gray-50 rounded-lg') + '">';
   html += '<div class="w-5 h-5 rounded-full bg-[#D4AF37] flex items-center justify-center text-white text-[10px] font-bold">C</div>';
@@ -65,7 +82,7 @@
   html += '</div>';
 
   // Settings
-  html += '<div class="pt-4 mt-4 border-t border-gray-100">';
+  html += '<div id="ep-nav-settings" class="pt-4 mt-4 border-t border-gray-100">';
   html += '<div class="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase">Settings</div>';
   var compActive = page === 'console-compliance.html';
   html += '<a href="console-compliance.html" class="' + linkClasses(compActive) + '">';
@@ -83,13 +100,31 @@
   html += '<div><div class="text-sm font-medium text-slate-800">John Doe</div>';
   html += '<div class="text-xs text-gray-500">Acme Trading Corp</div></div>';
   html += '</div>';
+  html += '<div class="flex items-center gap-2">';
+  // Reset demo state
+  html += '<button onclick="localStorage.removeItem(\'everypay-onboarded\');localStorage.removeItem(\'everypay-bank-info\');location.reload()" class="text-[10px] text-gray-300 hover:text-red-400 transition-colors" title="Reset to pre-onboard state">Reset</button>';
   html += '<a href="website.html" class="text-gray-400 hover:text-red-500">';
   html += '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>';
-  html += '</a></div></div>';
+  html += '</a>';
+  html += '</div>';
+  html += '</div>';
 
   // Inject
   var sidebar = document.getElementById('ep-sidebar');
   if (sidebar) {
     sidebar.innerHTML = html;
+
+    // Toggle pre/post onboarding state based on localStorage
+    var onboarded = localStorage.getItem('everypay-onboarded') === 'true';
+    var preEl = document.getElementById('ep-nav-pre-onboard');
+    var postEl = document.getElementById('ep-nav-post-onboard');
+    var settingsEl = document.getElementById('ep-nav-settings');
+    if (preEl && postEl) {
+      preEl.style.display = onboarded ? 'none' : 'block';
+      postEl.style.display = onboarded ? 'block' : 'none';
+    }
+    if (settingsEl) {
+      settingsEl.style.display = onboarded ? 'block' : 'none';
+    }
   }
 })();
