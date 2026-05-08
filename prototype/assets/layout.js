@@ -32,7 +32,7 @@
   var html = '';
 
   // Default hidden state for onboarding-gated sections
-  html += '<style>#ep-nav-post-onboard{display:none}</style>';
+  html += '<style>#ep-nav-post-onboard,#ep-nav-compliance{display:none}</style>';
 
   // Logo
   html += '<div class="h-16 flex items-center px-6 border-b border-gray-100">';
@@ -69,9 +69,9 @@
   html += '</a>';
   html += '</div>';
 
-  // Compliance (always visible at bottom)
+  // Compliance (hidden before onboarding)
   var compActive = page === 'console-compliance.html';
-  html += '<div class="pt-4 mt-4 border-t border-gray-100">';
+  html += '<div id="ep-nav-compliance" class="pt-4 mt-4 border-t border-gray-100">';
   html += '<a href="console-compliance.html" class="' + linkClasses(compActive) + '">';
   html += svg('M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z');
   html += 'Compliance';
@@ -107,9 +107,13 @@
     var onboarded = localStorage.getItem('everypay-onboarded') === 'true';
     var preEl = document.getElementById('ep-nav-pre-onboard');
     var postEl = document.getElementById('ep-nav-post-onboard');
+    var compEl = document.getElementById('ep-nav-compliance');
     if (preEl && postEl) {
       preEl.style.display = onboarded ? 'none' : 'block';
       postEl.style.display = onboarded ? 'block' : 'none';
+    }
+    if (compEl) {
+      compEl.style.display = onboarded ? 'block' : 'none';
     }
   }
 })();
