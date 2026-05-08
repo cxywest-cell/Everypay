@@ -1,0 +1,16 @@
+[
+  {
+    "corridor": "BRL",
+    "complianceRules": ["BCB_PAYMENT_INSTITUTION_AUTHORIZED", "CPF_REQUIRED", "IOF_TAX_APPLICABLE"],
+    "currencySymbol": "R$",
+    "numberFormat": "1.234,56",
+    "partnerApiUptime": 99.0
+  },
+  {
+    "corridor": "ARS",
+    "complianceRules": ["BCRA_RES_8430_2020", "CUIL_REQUIRED", "USDT_RESTRICTIONS_APPLY"],
+    "currencySymbol": "$",
+    "numberFormat": "1.234,56",
+    "partnerApiUptime": 98.5
+  }
+]

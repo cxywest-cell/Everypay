@@ -1,0 +1,101 @@
+[
+  {
+    "id": "ac-org-beta-settlement",
+    "organizationId": "org-beta",
+    "type": "SETTLEMENT",
+    "status": "active",
+    "approvers": [
+      {
+        "userId": "user-3",
+        "role": "APPROVER",
+        "order": 1,
+        "status": "pending",
+        "comment": null,
+        "timestamp": null
+      }
+    ],
+    "createdAt": "2026-03-01T00:00:00Z",
+    "updatedAt": "2026-03-01T00:00:00Z"
+  },
+  {
+    "id": "ac-org-beta-terms",
+    "organizationId": "org-beta",
+    "type": "PAYMENT_TERMS",
+    "status": "active",
+    "approvers": [
+      {
+        "userId": "user-3",
+        "role": "APPROVER",
+        "order": 1,
+        "status": "pending",
+        "comment": null,
+        "timestamp": null
+      }
+    ],
+    "createdAt": "2026-03-01T00:00:00Z",
+    "updatedAt": "2026-03-01T00:00:00Z"
+  },
+  {
+    "id": "ac-org-beta-activity",
+    "organizationId": "org-beta",
+    "type": "ACTIVITY",
+    "status": "active",
+    "approvers": [
+      {
+        "userId": "user-3",
+        "role": "APPROVER",
+        "order": 1,
+        "status": "pending",
+        "comment": null,
+        "timestamp": null
+      }
+    ],
+    "createdAt": "2026-03-01T00:00:00Z",
+    "updatedAt": "2026-03-01T00:00:00Z"
+  },
+  {
+    "id": "ac-org-alpha-settlement",
+    "organizationId": "org-alpha",
+    "type": "SETTLEMENT",
+    "status": "active",
+    "approvers": [
+      {
+        "userId": "user-1",
+        "role": "ADMIN",
+        "order": 1,
+        "status": "pending",
+        "comment": null,
+        "timestamp": null
+      }
+    ],
+    "createdAt": "2026-03-01T00:00:00Z",
+    "updatedAt": "2026-04-23T08:12:13.043Z"
+  },
+  {
+    "id": "ac-org-alpha-terms",
+    "organizationId": "org-alpha",
+    "type": "PAYMENT_TERMS",
+    "status": "active",
+    "approvers": [
+      {
+        "userId": "user-1",
+        "role": "ADMIN",
+        "order": 1,
+        "status": "pending",
+        "comment": null,
+        "timestamp": null
+      }
+    ],
+    "createdAt": "2026-03-01T00:00:00Z",
+    "updatedAt": "2026-03-01T00:00:00Z"
+  },
+  {
+    "id": "ac-org-alpha-activity",
+    "organizationId": "org-alpha",
+    "type": "ACTIVITY",
+    "status": "active",
+    "approvers": [],
+    "createdAt": "2026-03-01T00:00:00Z",
+    "updatedAt": "2026-03-01T00:00:00Z"
+  }
+]

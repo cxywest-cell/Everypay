@@ -1,0 +1,64 @@
+[
+  {
+    "id": "tpa-1",
+    "procurementId": "po-1",
+    "sellerId": "user-2",
+    "buyerId": "user-1",
+    "status": "SENT_TO_BUYER",
+    "rateMethod": "PRELOCK",
+    "proposedRate": 5.22,
+    "marketRate": 5.18,
+    "totalAmount": 8650,
+    "feeBreakdown": {
+      "fxFee": 312.5,
+      "platformFee": 156.25,
+      "corridorFee": 93.75,
+      "totalFees": 562.5
+    },
+    "createdAt": "2026-04-12T10:30:00Z",
+    "updatedAt": "2026-04-12T10:30:00Z",
+    "expiresAt": "2026-04-19T10:30:00Z",
+    "proposalHistory": [
+      {
+        "round": 1,
+        "proposer": "seller",
+        "rate": 5.22,
+        "feeBreakdown": { "fxFee": 312.5, "platformFee": 156.25, "corridorFee": 93.75, "totalFees": 562.5 },
+        "status": "proposed",
+        "timestamp": "2026-04-12T10:30:00Z",
+        "changes": ["Initial proposal based on po-1 procurement terms", "Auto-approved: amount $8,650 below threshold $10,000"]
+      }
+    ]
+  },
+  {
+    "id": "tpa-2",
+    "procurementId": "po-2",
+    "sellerId": "user-2",
+    "buyerId": "user-1",
+    "status": "PROPOSED",
+    "rateMethod": "PRELOCK",
+    "proposedRate": 5.24,
+    "marketRate": 5.18,
+    "totalAmount": 15000,
+    "feeBreakdown": {
+      "fxFee": 375.0,
+      "platformFee": 187.5,
+      "corridorFee": 112.5,
+      "totalFees": 675.0
+    },
+    "createdAt": "2026-04-15T09:00:00Z",
+    "updatedAt": "2026-04-15T09:00:00Z",
+    "expiresAt": "2026-04-17T09:00:00Z",
+    "proposalHistory": [
+      {
+        "round": 1,
+        "proposer": "seller",
+        "rate": 5.24,
+        "feeBreakdown": { "fxFee": 375.0, "platformFee": 187.5, "corridorFee": 112.5, "totalFees": 675.0 },
+        "status": "proposed",
+        "timestamp": "2026-04-15T09:00:00Z",
+        "changes": ["Initial proposal based on po-2 procurement terms"]
+      }
+    ]
+  }
+]

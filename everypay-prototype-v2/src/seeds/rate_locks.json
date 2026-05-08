@@ -1,0 +1,12 @@
+[
+  {
+    "id": "rl-1",
+    "settlementId": "stl-2",
+    "invoiceId": "inv-1",
+    "status": "LOCKED",
+    "lockedRate": 5.22,
+    "marketRateAtLock": 5.18,
+    "expiryAt": "2026-04-16T09:00:00Z",
+    "createdAt": "2026-04-13T08:00:00Z"
+  }
+]

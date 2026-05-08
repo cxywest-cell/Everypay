@@ -1,0 +1,15 @@
+[
+  {
+    "id": "audit-1",
+    "eventType": "ROLE_CHANGE",
+    "settlementId": null,
+    "actor": "user-2",
+    "timestamp": "2024-03-01T10:00:00.000Z",
+    "hashReference": "sha256-audit-1",
+    "metadata": {
+      "targetUserId": "user-3",
+      "previousRoles": ["VIEWER"],
+      "newRoles": ["APPROVER", "COMPLIANCE"]
+    }
+  }
+]

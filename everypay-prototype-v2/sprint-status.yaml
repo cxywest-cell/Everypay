@@ -1,0 +1,85 @@
+# Sprint Status - Everypay Prototype
+# Last updated: 2026-04-14
+
+epics:
+  epic-0-foundation:
+    status: done
+    stories:
+      0.1-type-system: done
+      0.2-mock-api-layer: done
+      0.3-seed-data: done
+
+  epic-1-user-management:
+    status: done
+    stories:
+      1.1-user-registration: done
+      1.2-individual-kyc: done
+      1.3-business-kyb: done
+      1.4-rbac: done
+      1.5-team-invitation: done
+      1.6-kyc-tiers: done
+
+  epic-2-documents-review:
+    status: done
+    stories:
+      2.1-invoice-create: done
+      2.2-invoice-detail: done
+      2.3-evidence-pack: pending
+      2.4-payment-agreement-review: done
+      2.5-payment-initiation: done
+      2.6-template-management: done
+
+  epic-3-settlement-engine:
+    status: done
+    stories:
+      3.1-settlement-init: done
+      3.2-3.4-settlement-processing: done
+      3.5-settlement-confirm: done
+
+  epic-4-settlement-tracking:
+    status: done
+    stories:
+      4.1-4.2-settlement-tracking: done
+      4.3-4.5-settlement-details: done
+
+  epic-5-rate-management:
+    status: done
+    stories:
+      5.1-5.2-rate-propose-lock: done
+      5.3-5.4-rate-display-expiry: done
+
+  epic-6-corridor-operations:
+    status: done
+    stories:
+      6.1-corridor-compliance: done
+      6.2-corridor-formatting: done
+
+  epic-8-approval-workflow:
+    status: done
+    stories:
+      8.1-8.2-approval-chain-config: done
+      8.3-8.4-approve-reject: done
+
+  epic-10-aml-compliance:
+    status: done
+    stories:
+      10.1-sanctions-screening: done
+      10.2-kyc-retention: done
+
+  epic-11-counterparty-crm:
+    status: done
+    stories:
+      11.1-counterparty-list: done
+      11.2-trust-indicators: done
+
+  epic-12-purchase-ledger:
+    status: done
+    stories:
+      12.1-pending-invoices: done
+      12.2-running-balance: done
+
+  epic-13-sales-ledger:
+    status: done
+    stories:
+      13.1-outstanding-invoices: done
+      13.2-aging-fx-exposure: done

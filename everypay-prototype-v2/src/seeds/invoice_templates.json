@@ -1,0 +1,30 @@
+[
+  {
+    "id": "tpl-1",
+    "sellerId": "user-2",
+    "name": "Electronics Standard Order",
+    "version": 1,
+    "lineItems": [
+      {
+        "id": "tpl-li-1",
+        "description": "Electronic Components - Standard Batch",
+        "quantity": 500,
+        "unitPrice": 120.00,
+        "currency": "USD"
+      },
+      {
+        "id": "tpl-li-2",
+        "description": "Shipping & Handling",
+        "quantity": 1,
+        "unitPrice": 2500.00,
+        "currency": "USD"
+      }
+    ],
+    "contractReference": "/contracts/standard-electronics.pdf",
+    "paymentTerms": "NET 30",
+    "defaultForBuyerId": "user-1",
+    "createdAt": "2026-03-01T09:00:00Z",
+    "updatedAt": "2026-03-15T14:00:00Z",
+    "supersededBy": null
+  }
+]

@@ -1,0 +1,43 @@
+[
+  {
+    "id": "kyb-1",
+    "userId": "user-2",
+    "businessDetails": {
+      "companyName": "Beta Trading Co., Ltd.",
+      "registrationNumber": "HK-12345678",
+      "incorporationDate": "2018-03-15",
+      "incorporationCountry": "Hong Kong",
+      "businessType": "corporation",
+      "registeredAddress": "Room 1201, Tower A, 100 Queens Road Central, Hong Kong",
+      "taxId": "12345678",
+      "documentUrl": "/mock/certificate-beta-trading.pdf",
+      "submittedAt": "2024-02-01T09:00:00.000Z"
+    },
+    "authorizedSignatories": ["user-2"],
+    "beneficialOwners": [
+      {
+        "id": "bo-1",
+        "fullName": "Wei Zhang",
+        "nationality": "Chinese",
+        "ownershipPercentage": 75,
+        "idDocumentType": "passport",
+        "idDocumentNumber": "E12345678",
+        "dateOfBirth": "1985-06-20",
+        "residentialAddress": "Room 1201, Tower A, 100 Queens Road Central, Hong Kong",
+        "sanctionsScreening": "passed"
+      }
+    ],
+    "businessActivity": {
+      "primaryActivity": "Import/Export of consumer electronics",
+      "industrySector": "Trading",
+      "expectedMonthlyVolume": "500k+",
+      "primaryCorridor": "BRL",
+      "settlementCurrency": "USD",
+      "supportingDocumentUrl": "/mock/business-plan-beta.pdf",
+      "submittedAt": "2024-02-01T09:30:00.000Z"
+    },
+    "status": "verified",
+    "submittedAt": "2024-02-01T09:00:00.000Z",
+    "completedAt": "2024-02-01T10:00:00.000Z"
+  }
+]
