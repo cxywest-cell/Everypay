@@ -534,12 +534,25 @@
             localStorage.setItem('everypay-bank-info', JSON.stringify(data));
         }
 
+        function saveCryptoMgmtInfo() {
+            var poolMembers = Array.from(document.querySelectorAll('#pool-members input')).map(function(i) { return i.value; });
+            var payableMembers = Array.from(document.querySelectorAll('#payable-members input')).map(function(i) { return i.value; });
+            var data = {
+                pool_members: poolMembers,
+                pool_threshold: document.getElementById('pool-threshold-n').value,
+                payable_members: payableMembers,
+                payable_threshold: document.getElementById('payable-threshold-n').value
+            };
+            localStorage.setItem('everypay-crypto-mgmt', JSON.stringify(data));
+        }
+
         function onboardingComplete() {
             var btn = event.target.closest('button');
             btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Activating...';
             btn.disabled = true;
             localStorage.setItem('everypay-onboarded', 'true');
             saveBankInfo();
+            saveCryptoMgmtInfo();
             setTimeout(() => {
                 var params = new URLSearchParams(window.location.search);
                 var returnUrl = params.get('return');
