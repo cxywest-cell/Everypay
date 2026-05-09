@@ -37,7 +37,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="flex-1 overflow-y-auto p-8 flex items-start justify-center">
+    <div id="onboard-scroll-area" class="flex-1 overflow-y-auto p-8 flex items-start justify-center">
         <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200 my-8 animate-fadeIn">
                 <!-- Progress Bar -->
                 <div class="bg-gray-50 px-8 py-4 border-b border-gray-100">
@@ -523,8 +523,11 @@
             }
             // Show target step
             document.getElementById('onboarding-step-' + step).classList.remove('hidden');
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Scroll to top of the scrollable container
+            requestAnimationFrame(function() {
+                const el = document.getElementById('onboard-scroll-area');
+                if (el) el.scrollTop = 0;
+            });
             // Update progress bar
             const pct = (step / 4) * 100;
             document.getElementById('onboarding-progress-bar').style.width = pct + '%';
