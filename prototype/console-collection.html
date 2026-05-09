@@ -70,7 +70,7 @@
                                             <th class="px-6 py-3">From (Payer)</th>
                                             <th class="px-6 py-3">To (Payee)</th>
                                             <th class="px-6 py-3">Asset (Network)</th>
-                                            <th class="px-6 py-3">Activity / Phase</th>
+                                            <th class="px-6 py-3">Activity</th>
                                             <th class="px-6 py-3">Expiry</th>
                                             <th class="px-6 py-3">Received / Expected</th>
                                             <th class="px-6 py-3">Status</th>
@@ -109,8 +109,7 @@
                                             <td class="px-6 py-4">
                                                 <div class="flex flex-col">
                                                     <span class="font-medium text-slate-800">BA-2025-002</span>
-                                                    <span class="text-xs text-gray-500">Phase 1: Deposit (20%)</span>
-                                                </div>
+</div>
                                             </td>
                                             <td class="px-6 py-4 text-gray-500">-</td>
                                             <td class="px-6 py-4">
@@ -288,13 +287,6 @@
                             </select>
                         </div>
 
-                        <!-- Phase Selection -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Activity Phase</label>
-                            <select id="invoice-phase-select" onchange="onInvoicePhaseChange()" disabled class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm rounded-md bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400">
-                                <option>Select Phase...</option>
-                            </select>
-                        </div>
 
                         <!-- Auto-filled Details -->
                         <div class="grid grid-cols-2 gap-4">
@@ -351,27 +343,13 @@
 
         const activityPlans = {
             'BA-2025-001': {
-                phases: [
-                    { name: 'Phase 1: Down Payment (30%)', status: 'Paid', amount: '3,750.00' },
-                    { name: 'Phase 2: Final (70%)', status: 'Pending', amount: '8,750.00' }
-                ]
-            },
+},
             'BA-2025-002': {
-                phases: [
-                    { name: 'Phase 1: Deposit (20%)', status: 'Received', amount: '9,000.00', reference: '0x8f...2a' },
-                    { name: 'Phase 2: Balance (80%)', status: 'Pending', amount: '36,000.00' }
-                ]
-            },
+},
             'BA-2025-003': {
-                phases: [
-                    { name: 'Phase 1: Full Payment (100%)', status: 'Paid', amount: '8,950.00' }
-                ]
-            },
+},
             'BA-2025-004': {
-                phases: [
-                    { name: 'Full Payment', status: 'Pending', amount: '12,000.00' }
-                ]
-            }
+}
         };
 
         function openNewInvoiceModal() {
@@ -384,8 +362,6 @@
                 }
             });
 
-            document.getElementById('invoice-phase-select').innerHTML = '<option value="">Select Phase...</option>';
-            document.getElementById('invoice-phase-select').disabled = true;
             document.getElementById('invoice-amount').value = '';
             document.getElementById('invoice-asset').value = '';
             document.getElementById('invoice-payer').value = '';
@@ -399,35 +375,14 @@
 
         function onInvoiceActivityChange() {
             const activityId = document.getElementById('invoice-activity-select').value;
-            const phaseSelect = document.getElementById('invoice-phase-select');
 
-            if (!activityId) {
-                phaseSelect.innerHTML = '<option value="">Select Phase...</option>';
-                phaseSelect.disabled = true;
-                return;
-            }
-
-            const phases = activityPlans[activityId].phases;
-            phaseSelect.innerHTML = '<option value="">Select Phase...</option>';
-            phases.forEach((phase, index) => {
-                phaseSelect.innerHTML += `<option value="${index}">${phase.name}</option>`;
-            });
-            phaseSelect.disabled = false;
+            if (!activityId) return;
 
             const activity = activitiesDB[activityId];
             document.getElementById('invoice-asset').value = `${activity.asset} (${activity.network})`;
             document.getElementById('invoice-payer').value = activity.counterparty;
         }
 
-        function onInvoicePhaseChange() {
-            const activityId = document.getElementById('invoice-activity-select').value;
-            const phaseIndex = document.getElementById('invoice-phase-select').value;
-
-            if (phaseIndex === '') return;
-
-            const phase = activityPlans[activityId].phases[phaseIndex];
-            document.getElementById('invoice-amount').value = phase.amount;
-        }
 
         function submitNewInvoice() {
             const btn = event.target;

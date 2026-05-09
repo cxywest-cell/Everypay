@@ -154,7 +154,6 @@
                                         <th class="px-6 py-3">Asset (Network)</th>
                                         <th class="px-6 py-3">Amount</th>
                                         <th class="px-6 py-3">Documents</th>
-                                        <th class="px-6 py-3">Payment Plan</th>
                                         <th class="px-6 py-3">Description</th>
                                     </tr>
                                 </thead>
@@ -195,18 +194,6 @@
                                                 <div class="flex items-center gap-2">
                                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                                     <a href="#" class="text-everypay-600 hover:underline text-xs" onclick="event.stopPropagation()">insurance_policy.pdf</a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div id="plan-cell-BA-2025-001" onclick="event.stopPropagation(); openPlanModal('BA-2025-001', 'payment')" class="space-y-2 min-w-[180px] cursor-pointer hover:bg-blue-50 p-2 rounded transition-colors" title="Click to manage Payment Plan">
-                                                <div class="flex items-center justify-between text-xs">
-                                                    <span class="text-gray-500">Phase 1: Down Payment (30%)</span>
-                                                    <span class="font-bold text-green-600">Paid</span>
-                                                </div>
-                                                <div class="flex items-center justify-between text-xs">
-                                                    <span class="text-gray-500">Phase 2: Final (70%)</span>
-                                                    <span class="font-bold text-yellow-600">Pending</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -258,14 +245,6 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div id="plan-cell-BA-2025-003" onclick="event.stopPropagation(); openPlanModal('BA-2025-003', 'payment')" class="space-y-2 min-w-[220px] cursor-pointer hover:bg-blue-50 p-2 pr-4 rounded transition-colors" title="Click to manage Payment Plan">
-                                                <div class="flex items-center justify-between text-xs">
-                                                    <span class="text-gray-500">Phase 1: Full Payment (100%)</span>
-                                                    <span class="font-bold text-green-600 whitespace-nowrap">Paid</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
                                             <div class="text-sm text-gray-600 truncate max-w-xs">Hardware procurement for new office wing.</div>
                                         </td>
                                     </tr>
@@ -305,14 +284,6 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div id="plan-cell-BA-2025-004" onclick="event.stopPropagation(); openPlanModal('BA-2025-004', 'payment')" class="space-y-2 min-w-[180px] cursor-pointer hover:bg-blue-50 p-2 rounded transition-colors" title="Click to manage Payment Plan">
-                                                <div class="flex items-center justify-between text-xs">
-                                                    <span class="text-gray-500">Phase 1: Full Payment (100%)</span>
-                                                    <span class="font-bold text-green-600">Paid</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
                                             <div class="text-sm text-gray-600 truncate max-w-xs">Logistics fee for Q1 shipments.</div>
                                         </td>
                                     </tr>
@@ -348,18 +319,6 @@
                                                 <div class="flex items-center gap-2">
                                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                                     <a href="#" class="text-everypay-600 hover:underline text-xs" onclick="event.stopPropagation()">po_office_supplies.pdf</a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div id="plan-cell-BA-2025-005" onclick="event.stopPropagation(); openPlanModal('BA-2025-005', 'payment')" class="space-y-2 min-w-[180px] cursor-pointer hover:bg-blue-50 p-2 rounded transition-colors" title="Click to manage Payment Plan">
-                                                <div class="flex items-center justify-between text-xs">
-                                                    <span class="text-gray-500">Phase 1: Deposit (50%)</span>
-                                                    <span class="font-bold text-green-600">Paid</span>
-                                                </div>
-                                                <div class="flex items-center justify-between text-xs">
-                                                    <span class="text-gray-500">Phase 2: Balance (50%)</span>
-                                                    <span class="font-bold text-yellow-600">Pending</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -440,23 +399,6 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div id="plan-cell-BA-2025-002" onclick="event.stopPropagation(); openPlanModal('BA-2025-002', 'collection')" class="space-y-2 min-w-[220px] cursor-pointer hover:bg-green-50 p-2 pr-4 rounded transition-colors" title="Click to manage Collection Plan">
-                                                <div class="mb-1 last:mb-0">
-                                                    <div class="flex items-center justify-between text-xs">
-                                                        <span class="text-gray-500">Phase 1: Deposit (20%)</span>
-                                                        <span class="font-bold text-green-600 whitespace-nowrap">Received</span>
-                                                    </div>
-                                                    <div class="text-[10px] text-gray-400 text-right font-mono mt-0.5" title="Ref: 0x8f...2a">0x8f...2a</div>
-                                                </div>
-                                                <div class="mb-1 last:mb-0">
-                                                    <div class="flex items-center justify-between text-xs">
-                                                        <span class="text-gray-500">Phase 2: Balance (80%)</span>
-                                                        <span class="font-bold text-yellow-600 whitespace-nowrap">Pending</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
                                             <div class="font-medium text-slate-800">Export Sale Batch #42</div>
                                         </td>
                                     </tr>
@@ -471,8 +413,7 @@
     </main>
 
     <script>
-        // --- Partner & Plan Management Logic ---
-        let currentPlanActivityId = null;
+        // --- Partner Management Logic ---
 
         // Mock Data for Plans
         const activitiesDB = {
@@ -481,183 +422,6 @@
             'BA-2025-003': { type: 'procurement', counterparty: 'TechSource Inc.', asset: 'USDT', network: 'ERC20', description: 'Hardware Equipment' },
             'BA-2025-004': { type: 'sales', counterparty: 'FinSecure Bank', asset: 'USDC', network: 'ERC20', description: 'Institutional Purchase' }
         };
-
-        const activityPlans = {
-            'BA-2025-001': {
-                phases: [
-                    { name: 'Phase 1: Down Payment (30%)', status: 'Paid', amount: '3,750.00' },
-                    { name: 'Phase 2: Final (70%)', status: 'Pending', amount: '8,750.00' }
-                ]
-            },
-            'BA-2025-002': {
-                phases: [
-                    { name: 'Phase 1: Deposit (20%)', status: 'Received', amount: '9,000.00', reference: '0x8f...2a' },
-                    { name: 'Phase 2: Balance (80%)', status: 'Pending', amount: '36,000.00' }
-                ]
-            },
-            'BA-2025-003': {
-                phases: [
-                    { name: 'Phase 1: Full Payment (100%)', status: 'Paid', amount: '8,950.00' }
-                ]
-            },
-            'BA-2025-004': {
-                phases: [
-                    { name: 'Full Payment', status: 'Pending', amount: '12,000.00' }
-                ]
-            }
-        };
-
-        // --- Activity Phase Logic ---
-        function addActivityPhase() {
-            const container = document.getElementById('activity-phases-container');
-            const newRow = document.createElement('div');
-            newRow.className = 'flex gap-3 items-start phase-row animate-fadeIn';
-            newRow.innerHTML = `
-                <div class="flex-grow">
-                    <input type="text" class="phase-title block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm" placeholder="Phase Title">
-                </div>
-                <div class="w-24 relative">
-                    <input type="number" class="phase-percent block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm" placeholder="%" min="0" max="100">
-                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                        <span class="text-gray-500 sm:text-sm">%</span>
-                    </div>
-                </div>
-                <button type="button" onclick="removeActivityPhase(this)" class="mt-1.5 text-gray-400 hover:text-red-500">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                </button>
-            `;
-            container.appendChild(newRow);
-            updatePhaseRemoveButtons();
-        }
-
-        function removeActivityPhase(btn) {
-            const row = btn.closest('.phase-row');
-            row.remove();
-            updatePhaseRemoveButtons();
-        }
-
-        function updatePhaseRemoveButtons() {
-            const rows = document.querySelectorAll('.phase-row');
-            const buttons = document.querySelectorAll('.phase-row button');
-            if (rows.length === 1) {
-                buttons[0].disabled = true;
-                buttons[0].classList.add('disabled:opacity-50');
-            } else {
-                buttons.forEach(b => {
-                    b.disabled = false;
-                    b.classList.remove('disabled:opacity-50');
-                });
-            }
-        }
-
-        // --- Plan Modal Logic ---
-        function closePlanModal() {
-            document.getElementById('plan-modal').classList.add('hidden');
-        }
-
-        function openPlanModal(activityId, type) {
-            currentPlanActivityId = activityId;
-            const modal = document.getElementById('plan-modal');
-            const title = document.getElementById('plan-modal-title');
-            const container = document.getElementById('plan-phases-container');
-
-            if (type === 'payment') {
-                title.innerText = `Payment Plan: ${activityId}`;
-            } else {
-                title.innerText = `Collection Plan: ${activityId}`;
-            }
-
-            // Load phases
-            container.innerHTML = '';
-            const plan = activityPlans[activityId] || { phases: [] };
-
-            if (plan.phases.length === 0) {
-                // Default empty phase if new
-                addPhase();
-            } else {
-                plan.phases.forEach(phase => {
-                    container.innerHTML += renderPhaseInput(phase);
-                });
-            }
-
-            modal.classList.remove('hidden');
-        }
-
-        function renderPhaseInput(phase = { name: '', amount: '', status: 'Pending', reference: '' }) {
-            return `
-                <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 phase-item">
-                    <div class="grid grid-cols-2 gap-3 mb-2">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-1">Phase Name</label>
-                            <input type="text" value="${phase.name}" class="phase-name w-full text-sm border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 px-2 py-1" placeholder="e.g. Deposit">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-1">Amount</label>
-                            <input type="text" value="${phase.amount}" class="phase-amount w-full text-sm border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 px-2 py-1" placeholder="0.00">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-1">Status</label>
-                            <select class="phase-status w-full text-sm border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 px-2 py-1">
-                                <option value="Pending" ${phase.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                                <option value="Paid" ${phase.status === 'Paid' ? 'selected' : ''}>Paid</option>
-                                <option value="Received" ${phase.status === 'Received' ? 'selected' : ''}>Received</option>
-                                <option value="Overdue" ${phase.status === 'Overdue' ? 'selected' : ''}>Overdue</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-1">Reference</label>
-                            <input type="text" value="${phase.reference || ''}" class="phase-ref w-full text-sm border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 px-2 py-1 font-mono" placeholder="Tx Hash / Ref">
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function addPhase() {
-            const container = document.getElementById('plan-phases-container');
-            container.insertAdjacentHTML('beforeend', renderPhaseInput());
-        }
-
-        function savePlan() {
-            if (!currentPlanActivityId) return;
-
-            const container = document.getElementById('plan-phases-container');
-            const phaseDivs = container.querySelectorAll('.phase-item');
-            const newPhases = [];
-
-            phaseDivs.forEach(div => {
-                newPhases.push({
-                    name: div.querySelector('.phase-name').value,
-                    amount: div.querySelector('.phase-amount').value,
-                    status: div.querySelector('.phase-status').value,
-                    reference: div.querySelector('.phase-ref').value
-                });
-            });
-
-            // Update data
-            if (!activityPlans[currentPlanActivityId]) activityPlans[currentPlanActivityId] = {};
-            activityPlans[currentPlanActivityId].phases = newPhases;
-
-            // Update UI
-            const cellId = `plan-cell-${currentPlanActivityId}`;
-            const cell = document.getElementById(cellId);
-            if (cell) {
-                cell.innerHTML = newPhases.map(p => `
-                    <div class="mb-1 last:mb-0">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-gray-500 truncate max-w-[120px]" title="${p.name}">${p.name}</span>
-                            <span class="font-bold ${getStatusColor(p.status)}">${p.status}</span>
-                        </div>
-                        ${p.reference ? `<div class="text-[10px] text-gray-400 text-right font-mono mt-0.5" title="Ref: ${p.reference}">${p.reference}</div>` : ''}
-                    </div>
-                `).join('');
-            }
-
-            closePlanModal();
-        }
-
 
         // --- New Activity Modal Logic ---
         function openNewActivityModal(type = 'procurement') {
