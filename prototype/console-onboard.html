@@ -523,6 +523,8 @@
             }
             // Show target step
             document.getElementById('onboarding-step-' + step).classList.remove('hidden');
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             // Update progress bar
             const pct = (step / 4) * 100;
             document.getElementById('onboarding-progress-bar').style.width = pct + '%';
