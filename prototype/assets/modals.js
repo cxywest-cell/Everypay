@@ -271,33 +271,6 @@
                             </div>
                         </div>
 
-                        <!-- Dynamic Activity Phases -->
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <label class="block text-sm font-medium text-gray-700">Activity Phases / Milestones</label>
-                                <button type="button" onclick="addActivityPhase()" class="text-sm text-everypay-600 hover:text-everypay-800 font-medium flex items-center gap-1">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                                    Add Phase
-                                </button>
-                            </div>
-                            <div id="activity-phases-container" class="space-y-3">
-                                <!-- Initial Phase Row -->
-                                <div class="flex gap-3 items-start phase-row">
-                                    <div class="flex-grow">
-                                        <input type="text" class="phase-title block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm" placeholder="Phase Title (e.g. Deposit)">
-                                    </div>
-                                    <div class="w-24 relative">
-                                        <input type="number" class="phase-percent block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm" placeholder="%" min="0" max="100">
-                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <span class="text-gray-500 sm:text-sm">%</span>
-                                        </div>
-                                    </div>
-                                    <button type="button" onclick="removeActivityPhase(this)" class="mt-1.5 text-gray-400 hover:text-red-500 disabled:opacity-50" disabled>
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Description</label>
                             <textarea id="new-activity-desc" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm" placeholder="e.g. Q3 Supply Order"></textarea>
