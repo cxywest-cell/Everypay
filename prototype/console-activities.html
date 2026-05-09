@@ -41,7 +41,7 @@
                             <!-- Status Badges -->
                             <div class="flex flex-wrap gap-2">
                                 <span id="detail-type" class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Procurement</span>
-                                <span id="detail-agreement" class="inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">Proposed by counterparty</span>
+                                <span id="detail-agreement" class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset">Unpaid</span>
                             </div>
 
                             <!-- Core Info -->
@@ -293,12 +293,13 @@
         }
 
         // --- Activity Data ---
+        // Single status: proposed, unpaid, partially paid, paid, overpaid
         const activitiesData = {
             'BA-2025-001': {
                 id: 'BA-2025-001',
                 type: 'Procurement',
-                status: 'Active',
-                agreementStatus: 'Proposed by you',
+                status: 'partially paid',
+                proposedBy: 'you',
                 counterparty: 'Acme Supplies Ltd.',
                 asset: 'USDT',
                 network: 'TRC20',
@@ -314,14 +315,14 @@
             'BA-2025-002': {
                 id: 'BA-2025-002',
                 type: 'Sales',
-                status: 'Active',
-                agreementStatus: 'Proposed by counterparty',
+                status: 'proposed',
+                proposedBy: 'counterparty',
                 counterparty: 'Global Trade Partners',
                 asset: 'BTC',
                 network: 'Bitcoin',
                 amount: '0.50',
                 expected: '45,000.00',
-                received: '22,500.00',
+                received: '0.00',
                 description: 'Export of electronics batch #442.',
                 documents: [
                     { name: 'commercial_invoice.pdf', type: 'invoice' },
@@ -331,8 +332,8 @@
             'BA-2025-003': {
                 id: 'BA-2025-003',
                 type: 'Procurement',
-                status: 'Completed',
-                agreementStatus: 'Accepted',
+                status: 'paid',
+                proposedBy: 'you',
                 counterparty: 'TechSource Inc.',
                 asset: 'USDC',
                 network: 'ERC20',
@@ -349,8 +350,8 @@
             'BA-2025-004': {
                 id: 'BA-2025-004',
                 type: 'Procurement',
-                status: 'Pending',
-                agreementStatus: 'Proposed by you',
+                status: 'unpaid',
+                proposedBy: 'you',
                 counterparty: 'FastLogistics Co.',
                 asset: 'USDT',
                 network: 'TRC20',
@@ -365,8 +366,8 @@
             'BA-2025-005': {
                 id: 'BA-2025-005',
                 type: 'Procurement',
-                status: 'Active',
-                agreementStatus: 'Proposed by you',
+                status: 'partially paid',
+                proposedBy: 'you',
                 counterparty: 'Office Depot Inc.',
                 asset: 'USDC',
                 network: 'ERC20',
@@ -409,30 +410,27 @@
             salesTbody.innerHTML = '';
 
             Object.values(activitiesData).forEach(data => {
-                const pct = data.type === 'Procurement'
-                    ? (parseFloat(data.paid.replace(/,/g, '')) / parseFloat(data.expected.replace(/,/g, '')) * 100)
-                    : (parseFloat(data.received.replace(/,/g, '')) / parseFloat(data.expected.replace(/,/g, '')) * 100);
+                const paidReceived = data.type === 'Procurement' ? data.paid : data.received;
+                const expected = parseFloat(data.expected.replace(/,/g, ''));
+                const paid = parseFloat(paidReceived.replace(/,/g, ''));
+                const pct = expected > 0 ? (paid / expected * 100) : 0;
                 const pctStr = isNaN(pct) ? '0' : Math.round(pct);
                 const barColor = pct === 0 ? 'bg-gray-300' : pct >= 100 ? 'bg-green-500' : 'bg-everypay-500';
-                const paidReceived = data.type === 'Procurement' ? data.paid : data.received;
                 const paidLabel = data.type === 'Procurement' ? 'Paid' : 'Received';
 
-                // Agreement badge
-                let agreeBadge = '';
-                if (data.agreementStatus === 'Proposed by you') {
-                    agreeBadge = '<span class="inline-flex items-center rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-600 ring-1 ring-inset ring-blue-600/10">Proposed</span>';
-                } else if (data.agreementStatus === 'Proposed by counterparty') {
-                    agreeBadge = '<span class="inline-flex items-center rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-600 ring-1 ring-inset ring-amber-600/10">Pending Accept</span>';
-                } else {
-                    agreeBadge = '<span class="inline-flex items-center rounded-md bg-green-50 px-1.5 py-0.5 text-[10px] font-medium text-green-600 ring-1 ring-inset ring-green-600/10">Accepted</span>';
-                }
+                // Single status badge with color
+                const statusColors = {
+                    'proposed': 'bg-amber-50 text-amber-700 ring-amber-600/20',
+                    'unpaid': 'bg-red-50 text-red-700 ring-red-600/10',
+                    'partially paid': 'bg-blue-50 text-blue-700 ring-blue-600/10',
+                    'paid': 'bg-green-50 text-green-700 ring-green-600/20',
+                    'overpaid': 'bg-purple-50 text-purple-700 ring-purple-600/20'
+                };
+                const colorClass = statusColors[data.status] || 'bg-gray-50 text-gray-700 ring-gray-500/10';
 
                 const statusCell = `
                     <td class="px-6 py-4">
-                        <div class="flex flex-col gap-1">
-                            <span class="inline-flex items-center rounded-md bg-gray-50 px-1.5 py-0.5 text-[10px] font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10 w-fit">${data.status}</span>
-                            ${agreeBadge}
-                        </div>
+                        <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset w-fit ${colorClass}">${data.status.charAt(0).toUpperCase() + data.status.slice(1)}</span>
                     </td>
                 `;
 
@@ -453,7 +451,7 @@
                                 </div>
                                 <div class="flex items-baseline justify-between">
                                     <span class="text-[10px] text-gray-400">${paidLabel}</span>
-                                    <span class="font-medium ${parseFloat(paidReceived.replace(/,/g, '')) > 0 ? 'text-green-600' : 'text-gray-400'}">${paidReceived}</span>
+                                    <span class="font-medium ${paid > 0 ? 'text-green-600' : 'text-gray-400'}">${paidReceived}</span>
                                 </div>
                                 <div class="w-full bg-gray-100 rounded-full h-1.5">
                                     <div class="${barColor} h-1.5 rounded-full" style="width: ${pctStr}%"></div>
@@ -488,16 +486,17 @@
                 typeBadge.className = 'inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20';
             }
 
-            // Agreement badge
-            const agreeBadge = document.getElementById('detail-agreement');
-            agreeBadge.textContent = data.agreementStatus;
-            if (data.agreementStatus === 'Accepted') {
-                agreeBadge.className = 'inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20';
-            } else if (data.agreementStatus === 'Proposed by counterparty') {
-                agreeBadge.className = 'inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20';
-            } else {
-                agreeBadge.className = 'inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/10';
-            }
+            // Single status badge
+            const statusBadge = document.getElementById('detail-agreement');
+            statusBadge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+            const statusColors = {
+                'proposed': 'bg-amber-50 text-amber-700 ring-amber-600/20',
+                'unpaid': 'bg-red-50 text-red-700 ring-red-600/10',
+                'partially paid': 'bg-blue-50 text-blue-700 ring-blue-600/10',
+                'paid': 'bg-green-50 text-green-700 ring-green-600/20',
+                'overpaid': 'bg-purple-50 text-purple-700 ring-purple-600/20'
+            };
+            statusBadge.className = `inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${statusColors[data.status] || 'bg-gray-50 text-gray-700 ring-gray-500/10'}`;
 
             document.getElementById('detail-counterparty').textContent = data.counterparty;
             document.getElementById('detail-amount').textContent = data.expected;
@@ -517,10 +516,10 @@
                 </li>
             `).join('');
 
-            // Accept/Reject actions - show only when proposed by counterparty
+            // Accept/Reject actions - show only when status is 'proposed' and proposed by counterparty
             const actionsDiv = document.getElementById('detail-actions');
             const footer = document.getElementById('detail-footer-actions');
-            if (data.agreementStatus === 'Proposed by counterparty') {
+            if (data.status === 'proposed' && data.proposedBy === 'counterparty') {
                 actionsDiv.classList.remove('hidden');
                 footer.classList.add('hidden');
             } else {
@@ -538,7 +537,8 @@
         function acceptActivity() {
             const activityId = document.getElementById('detail-id').textContent;
             if (activitiesData[activityId]) {
-                activitiesData[activityId].agreementStatus = 'Accepted';
+                activitiesData[activityId].status = 'unpaid';
+                activitiesData[activityId].proposedBy = 'you';
                 openActivityDetails(activityId);
                 renderActivityTables();
             }
@@ -547,8 +547,7 @@
         function rejectActivity() {
             const activityId = document.getElementById('detail-id').textContent;
             if (activitiesData[activityId]) {
-                activitiesData[activityId].status = 'Rejected';
-                activitiesData[activityId].agreementStatus = 'Rejected';
+                delete activitiesData[activityId];
                 closeActivityDetails();
                 renderActivityTables();
             }
