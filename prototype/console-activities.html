@@ -38,17 +38,19 @@
 
                         <!-- Content -->
                         <div class="relative flex-1 px-4 py-6 sm:px-6 space-y-6">
-                            <!-- Status Badge -->
-                            <div>
-                                <span id="detail-status" class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>
-                                <span id="detail-type" class="ml-2 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">Procurement</span>
+                            <!-- Status Badges -->
+                            <div class="flex flex-wrap gap-2">
+                                <span id="detail-type" class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Procurement</span>
+                                <span id="detail-agreement" class="inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">Proposed by counterparty</span>
                             </div>
 
                             <!-- Core Info -->
-                            <div class="grid grid-cols-2 gap-4 border-b border-gray-100 pb-6">
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-500">Counterparty</label>
-                                    <div class="mt-1 text-sm font-medium text-gray-900" id="detail-counterparty">Acme Supplies Ltd.</div>
+                            <div class="border-b border-gray-100 pb-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-500">Counterparty</label>
+                                        <div class="mt-1 text-sm font-medium text-gray-900" id="detail-counterparty">Acme Supplies Ltd.</div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -84,20 +86,20 @@
                                 </ul>
                             </div>
 
-                            <!-- Plan/Timeline -->
-                            <div>
-                                <label class="block text-xs font-medium text-gray-500 mb-2">Execution Plan</label>
-                                <div class="flow-root">
-                                    <ul role="list" class="-mb-8" id="detail-plan">
-                                        <!-- Populated by JS -->
-                                    </ul>
-                                </div>
+                            <!-- Accept/Reject Actions (shown when proposed by counterparty) -->
+                            <div id="detail-actions" class="hidden space-y-2">
+                                <button type="button" onclick="acceptActivity()" class="flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
+                                    Accept Activity
+                                </button>
+                                <button type="button" onclick="rejectActivity()" class="flex w-full justify-center rounded-md bg-white border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50">
+                                    Reject
+                                </button>
                             </div>
                         </div>
 
                         <!-- Footer Actions -->
-                        <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
-                            <button type="button" class="flex w-full justify-center rounded-md bg-everypay-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-everypay-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-everypay-600">
+                        <div id="detail-footer-actions" class="border-t border-gray-200 px-4 py-6 sm:px-6">
+                            <button type="button" class="flex w-full justify-center rounded-md bg-everypay-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-everypay-500">
                                 Manage Activity
                             </button>
                         </div>
@@ -133,215 +135,58 @@
                         </button>
                     </div>
 
-                    <!-- Procurement Activities (Payment) -->
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                                <span class="bg-red-100 text-red-800 p-1.5 rounded-lg">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-                                </span>
-                                Procurement (Outbound Payments)
-                            </h3>
+                    <!-- Tab Switch: Procurement / Sales -->
+                    <div>
+                        <div class="flex items-center gap-4 border-b border-gray-200">
+                            <button id="tab-procurement" onclick="switchActivityTab('procurement')" class="pb-3 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600">
+                                Procurement
+                            </button>
+                            <button id="tab-sales" onclick="switchActivityTab('sales')" class="pb-3 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                Sales
+                            </button>
                         </div>
-                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto">
-                                <table class="w-full min-w-[1000px] text-sm text-left">
-                                <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
-                                    <tr>
-                                        <th class="px-6 py-3">ID</th>
-                                        <th class="px-6 py-3">Supplier</th>
-                                        <th class="px-6 py-3">Asset (Network)</th>
-                                        <th class="px-6 py-3 min-w-[140px]">Amount</th>
-                                        <th class="px-6 py-3 min-w-[80px] max-w-[160px]">Description</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100">
-                                    <!-- Activity 1: Outbound Payment (CIF) -->
-                                    <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-001')">
-                                        <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-001</td>
-                                        <td class="px-6 py-4">
-                                            <span class="font-medium text-slate-700">Acme Supplies Ltd.</span>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-1">
-                                                <span class="font-medium text-slate-700">USDT</span>
-                                                <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">TRC20</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col gap-1">
-                                                <div class="flex items-baseline justify-between">
-                                                    <span class="text-[10px] text-gray-400">Expected</span>
-                                                    <span class="font-medium text-slate-800">12,500.00</span>
-                                                </div>
-                                                <div class="flex items-baseline justify-between">
-                                                    <span class="text-[10px] text-gray-400">Paid</span>
-                                                    <span class="font-medium text-green-600">7,500.00</span>
-                                                </div>
-                                                <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                                    <div class="bg-everypay-500 h-1.5 rounded-full" style="width: 60%"></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="text-sm text-gray-600 truncate max-w-xs">Final payment for Q1 bulk supplies.</div>
-                                        </td>
-                                    </tr>
-                                    <!-- Activity 3: Outbound Payment (DDP) -->
-                                    <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-003')">
-                                        <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-003</td>
-                                        <td class="px-6 py-4">
-                                            <span class="font-medium text-slate-700">TechSource Inc.</span>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-1">
-                                                <span class="font-medium text-slate-700">USDC</span>
-                                                <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">ERC20</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col gap-1">
-                                                <div class="flex items-baseline justify-between">
-                                                    <span class="text-[10px] text-gray-400">Expected</span>
-                                                    <span class="font-medium text-slate-800">8,950.00</span>
-                                                </div>
-                                                <div class="flex items-baseline justify-between">
-                                                    <span class="text-[10px] text-gray-400">Paid</span>
-                                                    <span class="font-medium text-green-600">8,950.00</span>
-                                                </div>
-                                                <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                                    <div class="bg-green-500 h-1.5 rounded-full" style="width: 100%"></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="text-sm text-gray-600 truncate max-w-xs">Hardware procurement for new office wing.</div>
-                                        </td>
-                                    </tr>
-                                    <!-- Activity 4: Outbound Payment (EXW) -->
-                                    <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-004')">
-                                        <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-004</td>
-                                        <td class="px-6 py-4">
-                                            <span class="font-medium text-slate-700">FastLogistics Co.</span>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-1">
-                                                <span class="font-medium text-slate-700">USDT</span>
-                                                <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">TRC20</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col gap-1">
-                                                <div class="flex items-baseline justify-between">
-                                                    <span class="text-[10px] text-gray-400">Expected</span>
-                                                    <span class="font-medium text-slate-800">2,500.00</span>
-                                                </div>
-                                                <div class="flex items-baseline justify-between">
-                                                    <span class="text-[10px] text-gray-400">Paid</span>
-                                                    <span class="font-medium text-gray-400">$0.00</span>
-                                                </div>
-                                                <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                                    <div class="bg-gray-300 h-1.5 rounded-full" style="width: 0%"></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="text-sm text-gray-600 truncate max-w-xs">Logistics fee for Q1 shipments.</div>
-                                        </td>
-                                    </tr>
-                                    <!-- Activity 5: Outbound Payment (DAP) -->
-                                    <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-005')">
-                                        <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-005</td>
-                                        <td class="px-6 py-4">
-                                            <span class="font-medium text-slate-700">Office Depot Inc.</span>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-1">
-                                                <span class="font-medium text-slate-700">USDC</span>
-                                                <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">ERC20</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col gap-1">
-                                                <div class="flex items-baseline justify-between">
-                                                    <span class="text-[10px] text-gray-400">Expected</span>
-                                                    <span class="font-medium text-slate-800">5,000.00</span>
-                                                </div>
-                                                <div class="flex items-baseline justify-between">
-                                                    <span class="text-[10px] text-gray-400">Paid</span>
-                                                    <span class="font-medium text-green-600">1,250.00</span>
-                                                </div>
-                                                <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                                    <div class="bg-everypay-500 h-1.5 rounded-full" style="width: 25%"></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="text-sm text-gray-600 truncate max-w-xs">Office supplies replenishment.</div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+
+                        <!-- Procurement Table -->
+                        <div id="panel-procurement" class="mt-4">
+                            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full min-w-[800px] text-sm text-left">
+                                    <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
+                                        <tr>
+                                            <th class="px-6 py-3">ID</th>
+                                            <th class="px-6 py-3">Supplier</th>
+                                            <th class="px-6 py-3">Asset</th>
+                                            <th class="px-6 py-3 min-w-[180px]">Amount</th>
+                                            <th class="px-6 py-3">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="procurement-tbody" class="divide-y divide-gray-100">
+                                        <!-- Populated by JS -->
+                                    </tbody>
+                                </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Sales Activities (Collection) -->
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                                <span class="bg-green-100 text-green-800 p-1.5 rounded-lg">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-                                </span>
-                                Sales (Inbound Collections)
-                            </h3>
-                        </div>
-                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto">
-                                <table class="w-full min-w-[1000px] text-sm text-left">
-                                <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
-                                    <tr>
-                                        <th class="px-6 py-3">ID</th>
-                                        <th class="px-6 py-3">Customer</th>
-                                        <th class="px-6 py-3">Asset (Network)</th>
-                                        <th class="px-6 py-3 min-w-[140px]">Amount</th>
-                                        <th class="px-6 py-3 min-w-[80px] max-w-[160px]">Description</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100">
-                                    <!-- Activity 2: Inbound Collection (FOB) -->
-                                    <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-002')">
-                                        <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-002</td>
-                                        <td class="px-6 py-4">
-                                            <span class="font-medium text-slate-700">Global Trade Partners</span>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-1">
-                                                <span class="font-medium text-slate-700">BTC</span>
-                                                <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">Bitcoin</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col gap-1">
-                                                <div class="flex items-baseline justify-between">
-                                                    <span class="text-[10px] text-gray-400">Expected</span>
-                                                    <span class="font-medium text-slate-800">45,000.00</span>
-                                                </div>
-                                                <div class="flex items-baseline justify-between">
-                                                    <span class="text-[10px] text-gray-400">Received</span>
-                                                    <span class="font-medium text-green-600">22,500.00</span>
-                                                </div>
-                                                <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                                    <div class="bg-green-500 h-1.5 rounded-full" style="width: 50%"></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="font-medium text-slate-800">Export Sale Batch #42</div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <!-- Sales Table -->
+                        <div id="panel-sales" class="mt-4 hidden">
+                            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full min-w-[800px] text-sm text-left">
+                                    <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
+                                        <tr>
+                                            <th class="px-6 py-3">ID</th>
+                                            <th class="px-6 py-3">Customer</th>
+                                            <th class="px-6 py-3">Asset</th>
+                                            <th class="px-6 py-3 min-w-[180px]">Amount</th>
+                                            <th class="px-6 py-3">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sales-tbody" class="divide-y divide-gray-100">
+                                        <!-- Populated by JS -->
+                                    </tbody>
+                                </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -379,101 +224,6 @@
     </div>
 
     <script>
-        // --- Partner Management Logic ---
-
-        // Mock Data for Plans
-        const activitiesDB = {
-            'BA-2025-001': { type: 'procurement', counterparty: 'Acme Supplies Ltd.', asset: 'USDT', network: 'TRC20', description: 'Supplier Agreement Q1' },
-            'BA-2025-002': { type: 'sales', counterparty: 'Global Trade Partners', asset: 'USDT', network: 'TRC20', description: 'Export Sale Batch #42' },
-            'BA-2025-003': { type: 'procurement', counterparty: 'TechSource Inc.', asset: 'USDT', network: 'ERC20', description: 'Hardware Equipment' },
-            'BA-2025-004': { type: 'sales', counterparty: 'FinSecure Bank', asset: 'USDC', network: 'ERC20', description: 'Institutional Purchase' }
-        };
-
-        // --- New Activity Modal Logic ---
-        function openNewActivityModal(type = 'procurement') {
-            document.getElementById('new-activity-modal').classList.remove('hidden');
-            const typeSelect = document.getElementById('new-activity-type');
-            if (typeSelect) {
-                typeSelect.value = type;
-            }
-        }
-
-        function closeNewActivityModal() {
-            document.getElementById('new-activity-modal').classList.add('hidden');
-            // Reset document list
-            const docList = document.getElementById('activity-documents-list');
-            if (docList) docList.innerHTML = '';
-            const docInput = document.getElementById('activity-documents-input');
-            if (docInput) docInput.value = '';
-        }
-
-        function createNewActivity() {
-            const btn = event.target;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Creating...';
-
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                closeNewActivityModal();
-            }, 1000);
-        }
-
-        // --- Document Upload ---
-        function addActivityDocuments(event) {
-            const files = event.target.files;
-            const docList = document.getElementById('activity-documents-list');
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const fileId = 'doc-' + Date.now() + '-' + i;
-                const fileSize = formatFileSize(file.size);
-                const fileIcon = getFileIcon(file.name);
-                const item = document.createElement('div');
-                item.id = fileId;
-                item.className = 'flex items-center justify-between px-3 py-2 bg-gray-50 rounded-md text-sm';
-                item.innerHTML = `
-                    <div class="flex items-center min-w-0 flex-1">
-                        <span class="text-gray-400 mr-2">${fileIcon}</span>
-                        <span class="text-gray-700 truncate">${file.name}</span>
-                        <span class="text-gray-400 ml-2 text-xs">${fileSize}</span>
-                    </div>
-                    <button type="button" onclick="removeActivityDocument('${fileId}')" class="text-gray-400 hover:text-red-500 ml-2 flex-shrink-0">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                `;
-                docList.appendChild(item);
-            }
-            // Reset input so the same file can be selected again
-            event.target.value = '';
-        }
-
-        function removeActivityDocument(fileId) {
-            const el = document.getElementById(fileId);
-            if (el) el.remove();
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-        }
-
-        function getFileIcon(filename) {
-            const ext = filename.split('.').pop().toLowerCase();
-            const icons = {
-                pdf: '<svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg>',
-                doc: '<svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg>',
-                docx: '<svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg>',
-                xls: '<svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg>',
-                xlsx: '<svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg>',
-                jpg: '<svg class="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg>',
-                jpeg: '<svg class="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg>',
-                png: '<svg class="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg>'
-            };
-            return icons[ext] || '<svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg>';
-        }
-
         // --- Upload Documents Modal ---
         let currentUploadActivityId = '';
 
@@ -487,7 +237,6 @@
 
         function closeUploadDocsModal() {
             document.getElementById('upload-docs-modal').classList.add('hidden');
-            // Refresh drawer documents if it's open
             const drawer = document.getElementById('activity-details-drawer');
             if (!drawer.classList.contains('hidden') && currentUploadActivityId) {
                 openActivityDetails(currentUploadActivityId);
@@ -514,98 +263,214 @@
             event.target.value = '';
         }
 
+        // --- New Activity Modal (Procurement only - users can only propose procurement) ---
+        function openNewActivityModal() {
+            document.getElementById('new-activity-modal').classList.remove('hidden');
+            const typeSelect = document.getElementById('new-activity-type');
+            if (typeSelect) {
+                typeSelect.value = 'procurement';
+                typeSelect.disabled = true;
+            }
+        }
+
+        function closeNewActivityModal() {
+            document.getElementById('new-activity-modal').classList.add('hidden');
+            const docList = document.getElementById('activity-documents-list');
+            if (docList) docList.innerHTML = '';
+            const docInput = document.getElementById('activity-documents-input');
+            if (docInput) docInput.value = '';
+        }
+
+        function createNewActivity() {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Creating...';
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                closeNewActivityModal();
+            }, 1000);
+        }
+
         // --- Activity Data ---
         const activitiesData = {
             'BA-2025-001': {
                 id: 'BA-2025-001',
                 type: 'Procurement',
                 status: 'Active',
+                agreementStatus: 'Proposed by you',
                 counterparty: 'Acme Supplies Ltd.',
                 asset: 'USDT',
                 network: 'TRC20',
                 amount: '12,500.00',
+                expected: '12,500.00',
+                paid: '7,500.00',
                 description: 'Final payment for Q1 bulk supplies (Stationery & Office).',
                 documents: [
                     { name: 'contract_signed.pdf', type: 'contract' },
                     { name: 'insurance_policy.pdf', type: 'policy' }
-                ],
-                plan: [
-                    { name: 'Phase 1: Down Payment (30%)', status: 'Paid', date: '2025-01-15' },
-                    { name: 'Phase 2: Final (70%)', status: 'Pending', date: '2025-02-28' }
                 ]
             },
             'BA-2025-002': {
                 id: 'BA-2025-002',
                 type: 'Sales',
                 status: 'Active',
+                agreementStatus: 'Proposed by counterparty',
                 counterparty: 'Global Trade Partners',
                 asset: 'BTC',
                 network: 'Bitcoin',
                 amount: '0.50',
-                amountUsd: '$45,000.00',
+                expected: '45,000.00',
+                received: '22,500.00',
                 description: 'Export of electronics batch #442.',
                 documents: [
                     { name: 'commercial_invoice.pdf', type: 'invoice' },
                     { name: 'bill_of_lading.pdf', type: 'shipping' }
-                ],
-                plan: [
-                    { name: 'Phase 1: Deposit (20%)', status: 'Received', date: '2025-01-20' },
-                    { name: 'Phase 2: Shipment (50%)', status: 'Pending', date: '2025-02-15' },
-                    { name: 'Phase 3: Final (30%)', status: 'Pending', date: '2025-03-01' }
                 ]
             },
             'BA-2025-003': {
                 id: 'BA-2025-003',
                 type: 'Procurement',
                 status: 'Completed',
+                agreementStatus: 'Accepted',
                 counterparty: 'TechSource Inc.',
                 asset: 'USDC',
                 network: 'ERC20',
                 amount: '8,950.00',
+                expected: '8,950.00',
+                paid: '8,950.00',
                 description: 'Hardware procurement for new office wing.',
                 documents: [
                     { name: 'po_hardware.pdf', type: 'po' },
                     { name: 'customs_dec.pdf', type: 'customs' },
                     { name: 'packing_list.pdf', type: 'packing' }
-                ],
-                plan: [
-                    { name: 'Phase 1: Full Payment (100%)', status: 'Paid', date: '2025-01-10' }
                 ]
             },
             'BA-2025-004': {
                 id: 'BA-2025-004',
                 type: 'Procurement',
                 status: 'Pending',
+                agreementStatus: 'Proposed by you',
                 counterparty: 'FastLogistics Co.',
                 asset: 'USDT',
                 network: 'TRC20',
                 amount: '2,500.00',
+                expected: '2,500.00',
+                paid: '0.00',
                 description: 'Logistics fee for Q1 shipments.',
                 documents: [
                     { name: 'invoice_logistics.pdf', type: 'invoice' }
-                ],
-                plan: [
-                    { name: 'Phase 1: Full Payment (100%)', status: 'Pending', date: '2025-03-15' }
                 ]
             },
             'BA-2025-005': {
                 id: 'BA-2025-005',
                 type: 'Procurement',
                 status: 'Active',
+                agreementStatus: 'Proposed by you',
                 counterparty: 'Office Depot Inc.',
                 asset: 'USDC',
                 network: 'ERC20',
                 amount: '5,000.00',
+                expected: '5,000.00',
+                paid: '1,250.00',
                 description: 'Office supplies replenishment.',
                 documents: [
                     { name: 'po_office_supplies.pdf', type: 'po' }
-                ],
-                plan: [
-                    { name: 'Phase 1: Deposit (25%)', status: 'Paid', date: '2025-02-01' },
-                    { name: 'Phase 2: Balance (75%)', status: 'Pending', date: '2025-03-01' }
                 ]
             }
         };
+
+        // --- Tab Switching ---
+        function switchActivityTab(tab) {
+            const procTab = document.getElementById('tab-procurement');
+            const salesTab = document.getElementById('tab-sales');
+            const procPanel = document.getElementById('panel-procurement');
+            const salesPanel = document.getElementById('panel-sales');
+
+            if (tab === 'procurement') {
+                procTab.className = 'pb-3 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600';
+                salesTab.className = 'pb-3 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                procPanel.classList.remove('hidden');
+                salesPanel.classList.add('hidden');
+            } else {
+                salesTab.className = 'pb-3 px-1 text-sm font-medium border-b-2 border-green-600 text-green-600';
+                procTab.className = 'pb-3 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                salesPanel.classList.remove('hidden');
+                procPanel.classList.add('hidden');
+            }
+        }
+
+        // --- Dynamic Table Rendering ---
+        function renderActivityTables() {
+            const procurementTbody = document.getElementById('procurement-tbody');
+            const salesTbody = document.getElementById('sales-tbody');
+
+            procurementTbody.innerHTML = '';
+            salesTbody.innerHTML = '';
+
+            Object.values(activitiesData).forEach(data => {
+                const pct = data.type === 'Procurement'
+                    ? (parseFloat(data.paid.replace(/,/g, '')) / parseFloat(data.expected.replace(/,/g, '')) * 100)
+                    : (parseFloat(data.received.replace(/,/g, '')) / parseFloat(data.expected.replace(/,/g, '')) * 100);
+                const pctStr = isNaN(pct) ? '0' : Math.round(pct);
+                const barColor = pct === 0 ? 'bg-gray-300' : pct >= 100 ? 'bg-green-500' : 'bg-everypay-500';
+                const paidReceived = data.type === 'Procurement' ? data.paid : data.received;
+                const paidLabel = data.type === 'Procurement' ? 'Paid' : 'Received';
+
+                // Agreement badge
+                let agreeBadge = '';
+                if (data.agreementStatus === 'Proposed by you') {
+                    agreeBadge = '<span class="inline-flex items-center rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-600 ring-1 ring-inset ring-blue-600/10">Proposed</span>';
+                } else if (data.agreementStatus === 'Proposed by counterparty') {
+                    agreeBadge = '<span class="inline-flex items-center rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-600 ring-1 ring-inset ring-amber-600/10">Pending Accept</span>';
+                } else {
+                    agreeBadge = '<span class="inline-flex items-center rounded-md bg-green-50 px-1.5 py-0.5 text-[10px] font-medium text-green-600 ring-1 ring-inset ring-green-600/10">Accepted</span>';
+                }
+
+                const statusCell = `
+                    <td class="px-6 py-4">
+                        <div class="flex flex-col gap-1">
+                            <span class="inline-flex items-center rounded-md bg-gray-50 px-1.5 py-0.5 text-[10px] font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10 w-fit">${data.status}</span>
+                            ${agreeBadge}
+                        </div>
+                    </td>
+                `;
+
+                const row = `
+                    <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('${data.id}')">
+                        <td class="px-6 py-4 font-mono text-xs text-gray-500">${data.id}</td>
+                        <td class="px-6 py-4">
+                            <span class="font-medium text-slate-700">${data.counterparty}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="font-medium text-slate-700">${data.asset}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col gap-1">
+                                <div class="flex items-baseline justify-between">
+                                    <span class="text-[10px] text-gray-400">Expected</span>
+                                    <span class="font-medium text-slate-800">${data.expected}</span>
+                                </div>
+                                <div class="flex items-baseline justify-between">
+                                    <span class="text-[10px] text-gray-400">${paidLabel}</span>
+                                    <span class="font-medium ${parseFloat(paidReceived.replace(/,/g, '')) > 0 ? 'text-green-600' : 'text-gray-400'}">${paidReceived}</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                    <div class="${barColor} h-1.5 rounded-full" style="width: ${pctStr}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        ${statusCell}
+                    </tr>
+                `;
+
+                if (data.type === 'Procurement') {
+                    procurementTbody.innerHTML += row;
+                } else {
+                    salesTbody.innerHTML += row;
+                }
+            });
+        }
 
         // --- Activity Details Drawer Logic ---
         function openActivityDetails(id) {
@@ -613,19 +478,29 @@
             if (!data) return;
 
             document.getElementById('detail-id').textContent = data.id;
-            document.getElementById('detail-status').textContent = data.status;
-            document.getElementById('detail-type').textContent = data.type;
 
-            // Colors based on type
+            // Type badge
             const typeBadge = document.getElementById('detail-type');
+            typeBadge.textContent = data.type;
             if (data.type === 'Procurement') {
-                typeBadge.className = 'ml-2 inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10';
+                typeBadge.className = 'inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10';
             } else {
-                typeBadge.className = 'ml-2 inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20';
+                typeBadge.className = 'inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20';
+            }
+
+            // Agreement badge
+            const agreeBadge = document.getElementById('detail-agreement');
+            agreeBadge.textContent = data.agreementStatus;
+            if (data.agreementStatus === 'Accepted') {
+                agreeBadge.className = 'inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20';
+            } else if (data.agreementStatus === 'Proposed by counterparty') {
+                agreeBadge.className = 'inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20';
+            } else {
+                agreeBadge.className = 'inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/10';
             }
 
             document.getElementById('detail-counterparty').textContent = data.counterparty;
-            document.getElementById('detail-amount').textContent = data.amount;
+            document.getElementById('detail-amount').textContent = data.expected;
             document.getElementById('detail-asset').textContent = data.asset;
             document.getElementById('detail-network').textContent = 'Network: ' + data.network;
             document.getElementById('detail-description').textContent = data.description;
@@ -642,32 +517,16 @@
                 </li>
             `).join('');
 
-            // Plan
-            const planList = document.getElementById('detail-plan');
-            planList.innerHTML = data.plan.map((phase, index) => `
-                <li>
-                    <div class="relative pb-8">
-                        ${index !== data.plan.length - 1 ? '<span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>' : ''}
-                        <div class="relative flex space-x-3">
-                            <div>
-                                <span class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white ${phase.status === 'Paid' || phase.status === 'Received' || phase.status === 'Completed' ? 'bg-green-500' : 'bg-gray-200'}">
-                                    <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-                                    </svg>
-                                </span>
-                            </div>
-                            <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
-                                <div>
-                                    <p class="text-sm text-gray-500">${phase.name}</p>
-                                </div>
-                                <div class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    <time datetime="${phase.date}">${phase.date}</time>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            `).join('');
+            // Accept/Reject actions - show only when proposed by counterparty
+            const actionsDiv = document.getElementById('detail-actions');
+            const footer = document.getElementById('detail-footer-actions');
+            if (data.agreementStatus === 'Proposed by counterparty') {
+                actionsDiv.classList.remove('hidden');
+                footer.classList.add('hidden');
+            } else {
+                actionsDiv.classList.add('hidden');
+                footer.classList.remove('hidden');
+            }
 
             document.getElementById('activity-details-drawer').classList.remove('hidden');
         }
@@ -676,10 +535,32 @@
             document.getElementById('activity-details-drawer').classList.add('hidden');
         }
 
+        function acceptActivity() {
+            const activityId = document.getElementById('detail-id').textContent;
+            if (activitiesData[activityId]) {
+                activitiesData[activityId].agreementStatus = 'Accepted';
+                openActivityDetails(activityId);
+                renderActivityTables();
+            }
+        }
+
+        function rejectActivity() {
+            const activityId = document.getElementById('detail-id').textContent;
+            if (activitiesData[activityId]) {
+                activitiesData[activityId].status = 'Rejected';
+                activitiesData[activityId].agreementStatus = 'Rejected';
+                closeActivityDetails();
+                renderActivityTables();
+            }
+        }
+
         function openUploadFromDrawer() {
             const activityId = document.getElementById('detail-id').textContent;
             openUploadDocsModal(activityId);
         }
+
+        // Initialize tables on load
+        renderActivityTables();
     </script>
     <script src="assets/layout.js"></script>
 </body>
