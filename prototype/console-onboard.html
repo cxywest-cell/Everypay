@@ -597,6 +597,10 @@
             bankAccounts.push(data);
             renderBankAccounts();
             clearBankForm();
+            var newCard = document.getElementById('bank-card-' + data.id);
+            if (newCard) {
+                newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
 
         function cancelBankForm() {
@@ -616,7 +620,7 @@
             }
             var html = '';
             bankAccounts.forEach(function(acct, idx) {
-                html += '<div class="bg-white border border-gray-200 rounded-xl p-4 animate-fadeIn">' +
+                html += '<div id="bank-card-' + acct.id + '" class="bg-white border border-gray-200 rounded-xl p-4 animate-fadeIn">' +
                     '<div class="flex justify-between items-start mb-3">' +
                         '<div class="flex items-center gap-2">' +
                             '<div class="w-8 h-8 rounded-full bg-everypay-100 flex items-center justify-center text-everypay-700 font-bold text-xs">#' + (idx + 1) + '</div>' +
