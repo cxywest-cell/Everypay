@@ -765,39 +765,32 @@
                                     <select id="recipient-bank" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
                                         <option value="">Select a bank account...</option>
                                     </select>
-                                    <button onclick="openAddBankModal()" class="mt-2 text-xs text-everypay-600 hover:text-everypay-700 font-medium flex items-center gap-1">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                                        Add new recipient bank
-                                    </button>
                                 </div>
 
                                 <!-- Asset Selection (Multi-stablecoin) -->
                                 <div class="grid grid-cols-2 gap-4 mb-6">
                                     <div>
-                                        <label class="block text-sm font-bold text-gray-700 mb-2">You Send (Stablecoin)</label>
+                                        <label class="block text-sm font-bold text-gray-700 mb-2">You Send</label>
                                         <select id="crypto-asset" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none mb-2" onchange="updateQuote()">
-                                            <option value="usdt-eth" selected>USDT — Ethereum (ERC-20)</option>
+                                            <option value="">Select an asset</option>
+                                            <option value="usdt-eth">USDT — Ethereum (ERC-20)</option>
                                             <option value="usdc-eth">USDC — Ethereum (ERC-20)</option>
                                             <option value="usdt-trc">USDT — TRON (TRC-20)</option>
                                             <option value="usdc-sol">USDC — Solana (SPL)</option>
                                         </select>
                                         <div class="relative">
-                                            <input type="number" id="crypto-amount" value="50000" step="100" min="100" class="w-full px-3 py-2.5 pr-16 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none font-mono" oninput="updateQuote()">
+                                            <input type="number" id="crypto-amount" value="0" step="100" min="0" class="w-full px-3 py-2.5 pr-16 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none font-mono" oninput="updateQuote()">
                                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold" id="crypto-symbol">USDT</span>
                                         </div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-bold text-gray-700 mb-2">You Receive (Fiat)</label>
-                                        <select id="fiat-currency" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none mb-2" onchange="updateQuote()">
-                                            <option value="HKD" selected>HKD — Hong Kong Dollar</option>
-                                            <option value="USD">USD — US Dollar</option>
-                                            <option value="EUR">EUR — Euro</option>
-                                            <option value="SGD">SGD — Singapore Dollar</option>
-                                            <option value="GBP">GBP — British Pound</option>
-                                        </select>
+                                        <div class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500 mb-2" id="fiat-currency-display">
+                                            Select a recipient bank
+                                        </div>
                                         <div class="relative">
                                             <input type="text" id="fiat-amount" value="391,250.00" readonly class="w-full px-3 py-2.5 pr-16 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700 font-mono">
-                                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold" id="fiat-symbol">HKD</span>
+                                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold" id="fiat-symbol">—</span>
                                         </div>
                                     </div>
                                 </div>
@@ -873,6 +866,23 @@
                                     </div>
                                 </div>
 
+                                <!-- Deposit Address -->
+                                <div class="bg-slate-900 rounded-lg p-4 mb-6">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm font-bold text-white">Deposit Address</span>
+                                        <span class="text-xs font-medium text-gray-400" id="deposit-network">Ethereum (ERC-20)</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="bg-slate-800 rounded-lg px-3 py-2.5 flex-1">
+                                            <code class="text-sm text-amber-400 font-mono break-all" id="deposit-address">0x7A2B8C4D9E1F3A6B5C0D7E8F2A4B6C3D1E5F9A2B</code>
+                                        </div>
+                                        <button onclick="copyDepositAddress()" class="p-2 rounded-lg bg-slate-700 hover:bg-slate-600 transition-colors text-gray-300 hover:text-white" title="Copy address">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                        </button>
+                                    </div>
+                                    <p class="text-xs text-gray-400 mt-2">This will be set to the withdrawal destination address for <span id="deposit-asset-label" class="text-amber-400">USDT</span> on <span id="deposit-chain-label" class="text-amber-400">Ethereum (ERC-20)</span>.</p>
+                                </div>
+
                                 <!-- Auto-processing notice -->
                                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                                     <div class="flex items-start gap-3">
@@ -919,6 +929,7 @@
             rebuildBankLabels();
             const sel = document.getElementById('recipient-bank');
             sel.innerHTML = '<option value="">Select a bank account...</option>';
+            sel.onchange = function() { updateQuote(); };
             const raw = localStorage.getItem('everypay-bank-info');
             if (!raw) return;
             try {
@@ -936,7 +947,6 @@
                         ? nickname + ' — ' + name + ' (' + currency + ')'
                         : name + ' — ' + masked + ' (' + currency + ')';
                     opt.textContent = label;
-                    if (i === 0) opt.selected = true;
                     sel.appendChild(opt);
                 });
             } catch (e) { /* ignore parse errors */ }
@@ -1284,10 +1294,10 @@
 
         // --- Multi-Asset Configuration ---
         const assetConfig = {
-            'usdt-eth': { symbol: 'USDT', network: 'Ethereum (ERC-20)', gas: '~$2.50 (ETH gas)', rateBase: 1.0 },
-            'usdc-eth': { symbol: 'USDC', network: 'Ethereum (ERC-20)', gas: '~$2.50 (ETH gas)', rateBase: 1.0 },
-            'usdt-trc': { symbol: 'USDT', network: 'TRON (TRC-20)', gas: '~$0.01 (TRX fee)', rateBase: 1.0 },
-            'usdc-sol': { symbol: 'USDC', network: 'Solana (SPL)', gas: '~$0.01 (SOL fee)', rateBase: 1.0 }
+            'usdt-eth': { symbol: 'USDT', network: 'Ethereum (ERC-20)', gas: '~$2.50 (ETH gas)', rateBase: 1.0, depositAddress: '0x7A2B8C4D9E1F3A6B5C0D7E8F2A4B6C3D1E5F9A2B' },
+            'usdc-eth': { symbol: 'USDC', network: 'Ethereum (ERC-20)', gas: '~$2.50 (ETH gas)', rateBase: 1.0, depositAddress: '0x7A2B8C4D9E1F3A6B5C0D7E8F2A4B6C3D1E5F9A2B' },
+            'usdt-trc': { symbol: 'USDT', network: 'TRON (TRC-20)', gas: '~$0.01 (TRX fee)', rateBase: 1.0, depositAddress: 'TXq9R7s4V2mW8nY3kJ6hL1pB5cA0dF4eG7' },
+            'usdc-sol': { symbol: 'USDC', network: 'Solana (SPL)', gas: '~$0.01 (SOL fee)', rateBase: 1.0, depositAddress: '7xKp3nM2vR9wQ5yL8jF1hS4tB6cA0dE3gU' }
         };
 
         const fiatConfig = {
@@ -1321,18 +1331,21 @@
         let currentFlowStep = 1;
         let quoteExpiryTimer = null;
         let transferCounter = 4;
-        let currentAsset = 'usdt-eth';
-        let currentFiat = 'HKD';
+        let currentAsset = '';
+        let currentFiat = '';
         let currentBank = '';
 
         function openNewOffRamp() {
             document.getElementById('offramp-modal').classList.remove('hidden');
+            document.getElementById('crypto-asset').value = '';
+            document.getElementById('crypto-amount').value = '0';
             currentFlowStep = 1;
             updateFlowSteps(1);
             document.getElementById('quote-panel').classList.remove('hidden');
             document.getElementById('transfer-panel').classList.add('hidden');
             document.getElementById('track-panel').classList.add('hidden');
             resetQuote();
+            loadRecipientBanks();
             updateQuote();
         }
 
@@ -1363,21 +1376,60 @@
         }
 
         // --- Quote ---
+        function getBankCurrency(bankValue) {
+            if (!bankValue) return '';
+            const raw = localStorage.getItem('everypay-bank-info');
+            if (!raw) return '';
+            try {
+                const banks = JSON.parse(raw);
+                const arr = Array.isArray(banks) ? banks : [banks];
+                const idx = parseInt(bankValue.replace('bank-', ''), 10);
+                const bank = arr[idx];
+                if (!bank) return '';
+                return bank.currency || bank['org-bank-currency'] || '';
+            } catch (e) { return ''; }
+        }
+
         function updateQuote() {
             const cryptoSelect = document.getElementById('crypto-asset');
-            const fiatSelect = document.getElementById('fiat-currency');
             const cryptoAmount = parseFloat(document.getElementById('crypto-amount').value) || 0;
 
             currentAsset = cryptoSelect.value;
-            currentFiat = fiatSelect.value;
             currentBank = document.getElementById('recipient-bank').value;
 
+            if (!currentAsset) {
+                document.getElementById('crypto-symbol').textContent = '';
+                document.getElementById('fiat-amount').value = '—';
+                document.getElementById('quote-rate').textContent = 'Select an asset';
+                document.getElementById('quote-network').textContent = '—';
+                document.getElementById('quote-fee').textContent = '—';
+                document.getElementById('fiat-currency-display').textContent = '—';
+                document.getElementById('fiat-symbol').textContent = '—';
+                return;
+            }
+
+            // Derive fiat currency from the selected bank account
+            currentFiat = getBankCurrency(currentBank);
+            const fiat = currentFiat ? fiatConfig[currentFiat] : null;
+
             const asset = assetConfig[currentAsset];
-            const fiat = fiatConfig[currentFiat];
 
             // Update labels
             document.getElementById('crypto-symbol').textContent = asset.symbol;
-            document.getElementById('fiat-symbol').textContent = fiat.symbol;
+            document.getElementById('fiat-currency-display').textContent = currentFiat || '—';
+            document.getElementById('fiat-currency-display').className = currentFiat
+                ? 'w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700 font-bold mb-2'
+                : 'w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500 mb-2';
+            document.getElementById('fiat-symbol').textContent = fiat ? fiat.symbol : '—';
+
+            if (!fiat || !currentBank) {
+                // No bank selected or unsupported currency — show placeholder
+                document.getElementById('fiat-amount').value = '—';
+                document.getElementById('quote-rate').textContent = currentBank ? 'Unsupported currency: ' + currentFiat : 'Select a recipient bank';
+                document.getElementById('quote-network').textContent = asset.network;
+                document.getElementById('quote-fee').textContent = '—';
+                return;
+            }
 
             // Calculate
             const fiatAmount = cryptoAmount * fiat.rate;
@@ -1448,6 +1500,32 @@
             document.getElementById('transfer-recipient').textContent = bankLabels[currentBank] + ' (' + currentFiat + ')';
             document.getElementById('transfer-fee').textContent = feeStr;
             document.getElementById('transfer-rate').textContent = document.getElementById('quote-rate').textContent;
+
+            // Populate deposit address
+            document.getElementById('deposit-address').textContent = asset.depositAddress;
+            document.getElementById('deposit-address').dataset.full = asset.depositAddress;
+            document.getElementById('deposit-network').textContent = asset.network;
+            document.getElementById('deposit-asset-label').textContent = asset.symbol;
+            document.getElementById('deposit-chain-label').textContent = asset.network;
+        }
+
+        // --- Copy Deposit Address ---
+        function copyDepositAddress() {
+            const addr = document.getElementById('deposit-address').textContent;
+            navigator.clipboard.writeText(addr).then(function() {
+                const btn = document.querySelector('[onclick="copyDepositAddress()"]');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                setTimeout(function() { btn.innerHTML = originalHTML; }, 2000);
+            }).catch(function() {
+                // Fallback for older browsers
+                const ta = document.createElement('textarea');
+                ta.value = addr;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+            });
         }
 
         // --- Confirm Withdrawal (auto-process, close modal, add to history) ---

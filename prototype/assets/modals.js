@@ -279,6 +279,17 @@
                             <label class="block text-sm font-medium text-gray-700">Expiry Date (Optional)</label>
                             <input type="date" id="new-activity-expiry" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm">
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Documents (Optional)</label>
+                            <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                                <div class="flex flex-col items-center justify-center pt-2 pb-2">
+                                    <svg class="w-6 h-6 mb-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3"></path></svg>
+                                    <p class="text-xs text-gray-500">Click to upload files</p>
+                                </div>
+                                <input type="file" id="activity-documents-input" class="hidden" multiple onchange="addActivityDocuments(event)" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
+                            </label>
+                            <div id="activity-documents-list" class="mt-2 space-y-1"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
