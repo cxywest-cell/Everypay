@@ -143,13 +143,12 @@
                                 <table class="w-full min-w-[1000px] text-sm text-left">
                                 <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
                                     <tr>
-                                        <th class="px-6 py-3">Activity ID</th>
-                                        <th class="px-6 py-3">Counterparty</th>
+                                        <th class="px-6 py-3">ID</th>
                                         <th class="px-6 py-3">Beneficiary</th>
                                         <th class="px-6 py-3">Asset (Network)</th>
-                                        <th class="px-6 py-3">Amount</th>
+                                        <th class="px-6 py-3 min-w-[140px]">Amount</th>
                                         <th class="px-6 py-3">Documents</th>
-                                        <th class="px-6 py-3">Description</th>
+                                        <th class="px-6 py-3 min-w-[80px] max-w-[160px]">Description</th>
                                         <th class="px-6 py-3">Actions</th>
                                     </tr>
                                 </thead>
@@ -157,13 +156,6 @@
                                     <!-- Activity 1: Outbound Payment (CIF) -->
                                     <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-001')">
                                         <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-001</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">Acme Supplies Ltd.</td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col">
-                                                <span class="text-xs font-bold text-slate-700">Acme Supplies Ltd.</span>
-                                                <span class="font-mono text-[10px] text-gray-500">0x92B...F11</span>
-                                            </div>
-                                        </td>
                                         <td class="px-6 py-4">
                                             <div class="flex items-center gap-1">
                                                 <span class="font-medium text-slate-700">USDT</span>
@@ -210,13 +202,6 @@
                                     <!-- Activity 3: Outbound Payment (DDP) -->
                                     <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-003')">
                                         <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-003</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">TechSource Inc.</td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col">
-                                                <span class="text-xs font-bold text-slate-700">TechSource Inc.</span>
-                                                <span class="font-mono text-[10px] text-gray-500">0x92B...C11</span>
-                                            </div>
-                                        </td>
                                         <td class="px-6 py-4">
                                             <div class="flex items-center gap-1">
                                                 <span class="font-medium text-slate-700">USDC</span>
@@ -267,13 +252,6 @@
                                     <!-- Activity 4: Outbound Payment (EXW) -->
                                     <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-004')">
                                         <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-004</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">FastLogistics Co.</td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col">
-                                                <span class="text-xs font-bold text-slate-700">FastLogistics Co.</span>
-                                                <span class="font-mono text-[10px] text-gray-500">0x3f1...E89</span>
-                                            </div>
-                                        </td>
                                         <td class="px-6 py-4">
                                             <div class="flex items-center gap-1">
                                                 <span class="font-medium text-slate-700">USDT</span>
@@ -316,13 +294,6 @@
                                     <!-- Activity 5: Outbound Payment (DAP) -->
                                     <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-005')">
                                         <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-005</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">Office Depot Inc.</td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col">
-                                                <span class="text-xs font-bold text-slate-700">Office Depot Inc.</span>
-                                                <span class="font-mono text-[10px] text-gray-500">0x8a2...B14</span>
-                                            </div>
-                                        </td>
                                         <td class="px-6 py-4">
                                             <div class="flex items-center gap-1">
                                                 <span class="font-medium text-slate-700">USDC</span>
@@ -383,13 +354,12 @@
                                 <table class="w-full min-w-[1000px] text-sm text-left">
                                 <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
                                     <tr>
-                                        <th class="px-6 py-3">Activity ID</th>
-                                        <th class="px-6 py-3">Counterparty</th>
+                                        <th class="px-6 py-3">ID</th>
                                         <th class="px-6 py-3">Deposit To</th>
                                         <th class="px-6 py-3">Asset (Network)</th>
-                                        <th class="px-6 py-3">Amount</th>
+                                        <th class="px-6 py-3 min-w-[140px]">Amount</th>
                                         <th class="px-6 py-3">Documents</th>
-                                        <th class="px-6 py-3">Description</th>
+                                        <th class="px-6 py-3 min-w-[80px] max-w-[160px]">Description</th>
                                         <th class="px-6 py-3">Actions</th>
                                     </tr>
                                 </thead>
@@ -397,13 +367,6 @@
                                     <!-- Activity 2: Inbound Collection (FOB) -->
                                     <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('BA-2025-002')">
                                         <td class="px-6 py-4 font-mono text-xs text-gray-500">BA-2025-002</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">Global Trade Partners</td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col">
-                                                <span class="text-xs font-bold text-slate-700">Everypay Treasury</span>
-                                                <span class="font-mono text-[10px] text-gray-500">0x742...391</span>
-                                            </div>
-                                        </td>
                                         <td class="px-6 py-4">
                                             <div class="flex items-center gap-1">
                                                 <span class="font-medium text-slate-700">BTC</span>
