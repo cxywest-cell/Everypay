@@ -144,10 +144,10 @@
                                     </div>
                                     <div>
                                         <div class="text-sm font-medium text-slate-800">Proof of Address (Utility Bill)</div>
-                                        <div class="text-xs text-red-500">Action Required: Document expired</div>
+                                        <div class="text-xs text-red-500">Expired — re-onboard to update</div>
                                     </div>
                                 </div>
-                                <button class="px-3 py-1 bg-everypay-600 text-white rounded text-xs font-medium hover:bg-everypay-700">Upload New</button>
+                                <span class="text-[10px] text-red-500 font-medium">Expired</span>
                             </div>
                         </div>
                     </div>
@@ -170,6 +170,28 @@
                         <div id="bank-info-empty" class="hidden text-center py-8">
                             <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                             <p class="text-sm text-gray-500">No bank account linked yet.</p>
+                            <a href="console-onboard.html" class="inline-block mt-3 px-4 py-2 bg-everypay-600 text-white text-sm font-medium rounded-lg hover:bg-everypay-700 transition-colors">Complete Onboarding</a>
+                        </div>
+                    </div>
+
+                    <!-- Crypto Asset Management -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                                Crypto Asset Management
+                            </h3>
+                            <span id="crypto-status-badge" class="px-2.5 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium border border-green-200 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                Active
+                            </span>
+                        </div>
+                        <div id="crypto-info-content" class="space-y-4">
+                            <!-- Populated by JS from localStorage -->
+                        </div>
+                        <div id="crypto-info-empty" class="hidden text-center py-8">
+                            <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                            <p class="text-sm text-gray-500">No crypto management configured yet.</p>
                             <a href="console-onboard.html" class="inline-block mt-3 px-4 py-2 bg-everypay-600 text-white text-sm font-medium rounded-lg hover:bg-everypay-700 transition-colors">Complete Onboarding</a>
                         </div>
                     </div>
@@ -206,6 +228,55 @@
                 html += '<div class="text-sm font-medium text-slate-800 p-2 bg-gray-50 rounded border border-gray-100">' + (bank[key] || '-') + '</div></div>';
             });
             document.getElementById('bank-info-content').innerHTML = html;
+        })();
+        (function loadCryptoMgmt() {
+            var raw = localStorage.getItem('everypay-crypto-mgmt');
+            if (!raw) {
+                document.getElementById('crypto-info-content').classList.add('hidden');
+                document.getElementById('crypto-status-badge').classList.add('hidden');
+                document.getElementById('crypto-info-empty').classList.remove('hidden');
+                return;
+            }
+            var crypto = JSON.parse(raw);
+            var html = '';
+            function renderTeam(title, badgeColor, members, threshold, total) {
+                var h = '<div class="border border-gray-200 rounded-xl overflow-hidden">';
+                h += '<div class="' + badgeColor + ' px-5 py-3 border-b border-gray-200">';
+                h += '<h4 class="text-sm font-bold text-slate-800">' + title + '</h4>';
+                h += '</div>';
+                h += '<div class="p-5">';
+                // Members table
+                h += '<table class="w-full text-sm text-left mb-4"><thead class="text-xs text-gray-500 uppercase bg-gray-50"><tr>';
+                h += '<th class="px-3 py-2">Member</th><th class="px-3 py-2">Key ID</th><th class="px-3 py-2">Status</th>';
+                h += '</tr></thead><tbody class="divide-y divide-gray-100">';
+                members.forEach(function(m) {
+                    var initials = m.email ? m.email.replace(/@.*/, '').split('.').map(function(p) { return p[0].toUpperCase(); }).join('').substring(0, 2) : '??';
+                    h += '<tr><td class="px-3 py-2"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-[10px] font-bold">' + initials + '</div><span class="font-medium">' + (m.email || '-') + '</span></div></td>';
+                    h += '<td class="px-3 py-2 font-mono text-xs">' + (m.key || '-') + '</td>';
+                    h += '<td class="px-3 py-2"><span class="text-green-600 text-xs font-medium">Active</span></td></tr>';
+                });
+                h += '</tbody></table>';
+                // Threshold
+                h += '<div class="flex items-center gap-2 text-sm"><span class="font-bold">' + threshold + '</span><span class="text-gray-400">of</span><span class="font-bold">' + total + '</span><span class="text-gray-400">signatures required</span></div>';
+                h += '</div></div>';
+                return h;
+            }
+            if (crypto.pool_members && crypto.pool_members.length) {
+                html += renderTeam('Asset Pool Management (Treasury & Inbound)', 'bg-gradient-to-r from-[#D4AF37]/10 to-transparent', crypto.pool_members, crypto.pool_threshold, crypto.pool_members.length);
+            }
+            if (crypto.payable_members && crypto.payable_members.length) {
+                html += renderTeam('Payable Asset Management (Outbound Payments)', 'bg-gradient-to-r from-blue-500/10 to-transparent', crypto.payable_members, crypto.payable_threshold, crypto.payable_members.length);
+            }
+            if (!html) {
+                document.getElementById('crypto-info-content').classList.add('hidden');
+                document.getElementById('crypto-status-badge').classList.add('hidden');
+                document.getElementById('crypto-info-empty').classList.remove('hidden');
+                return;
+            }
+            // Segregation notice
+            html += '<div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4"><div class="text-sm font-bold text-indigo-800">Segregation of Duties</div>';
+            html += '<div class="text-xs text-indigo-700 mt-1">Asset Pool and Payable Asset teams are independent. Each team\'s multi-sig threshold is enforced separately.</div></div>';
+            document.getElementById('crypto-info-content').innerHTML = html;
         })();
     </script>
 </body>
