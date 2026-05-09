@@ -559,9 +559,19 @@
         // --- Bank Accounts Management ---
         var bankAccounts = []; // Array of saved bank account objects
 
+        var defaultBankValues = {
+            'org-bank-nickname': 'HSBC HKD Primary',
+            'org-bank-account': '801-234567-001',
+            'org-bank-holder': 'Acme Trading Corp Ltd.',
+            'org-bank-name': 'HSBC Hong Kong',
+            'org-bank-address': "1 Queen's Road Central",
+            'org-bank-swift': 'HSBCHKHHHKH',
+            'org-bank-recipient-address': 'Unit 2801, 28/F, One Island East, Taikoo Place, Quarry Bay'
+        };
+
         function clearBankForm() {
             var fields = ['org-bank-nickname', 'org-bank-account', 'org-bank-holder', 'org-bank-name', 'org-bank-address', 'org-bank-swift', 'org-bank-recipient-address'];
-            fields.forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
+            fields.forEach(function(id) { var el = document.getElementById(id); if (el) el.value = defaultBankValues[id] || ''; });
             document.getElementById('org-bank-account-type').selectedIndex = 2; // Business
             document.getElementById('org-bank-country').selectedIndex = 0; // HK
             document.getElementById('org-bank-currency').selectedIndex = 0; // HKD
