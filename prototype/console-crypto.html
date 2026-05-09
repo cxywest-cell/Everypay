@@ -764,10 +764,6 @@
                                     <label class="block text-sm font-bold text-gray-700 mb-2">Recipient Bank Account</label>
                                     <select id="recipient-bank" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
                                         <option value="">Select a bank account...</option>
-                                        <option value="bank-1" selected>HSBC Hong Kong — ****6789 (HKD)</option>
-                                        <option value="bank-2">Standard Chartered — ****4321 (USD)</option>
-                                        <option value="bank-3">DBS Singapore — ****9876 (SGD)</option>
-                                        <option value="bank-4">Barclays UK — ****5544 (GBP)</option>
                                     </select>
                                     <button onclick="openAddBankModal()" class="mt-2 text-xs text-everypay-600 hover:text-everypay-700 font-medium flex items-center gap-1">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -912,9 +908,38 @@
             if (select && assetMap[assetKey]) {
                 select.value = assetMap[assetKey];
             }
+            loadRecipientBanks();
             panel.classList.remove('hidden');
             if (typeof showQuote === 'function') showQuote();
             panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Load recipient bank accounts from localStorage (shared with onboarding/compliance)
+        function loadRecipientBanks() {
+            rebuildBankLabels();
+            const sel = document.getElementById('recipient-bank');
+            sel.innerHTML = '<option value="">Select a bank account...</option>';
+            const raw = localStorage.getItem('everypay-bank-info');
+            if (!raw) return;
+            try {
+                const banks = JSON.parse(raw);
+                const arr = Array.isArray(banks) ? banks : [banks];
+                arr.forEach(function(bank, i) {
+                    const opt = document.createElement('option');
+                    opt.value = 'bank-' + i;
+                    const acct = bank.account_number || bank['org-bank-account'] || '';
+                    const masked = acct.length > 4 ? '****' + acct.slice(-4) : acct;
+                    const name = bank.bank_name || bank['org-bank-name'] || 'Unknown Bank';
+                    const currency = bank.currency || bank['org-bank-currency'] || '';
+                    const nickname = bank.nickname || bank['org-bank-nickname'] || '';
+                    const label = nickname
+                        ? nickname + ' — ' + name + ' (' + currency + ')'
+                        : name + ' — ' + masked + ' (' + currency + ')';
+                    opt.textContent = label;
+                    if (i === 0) opt.selected = true;
+                    sel.appendChild(opt);
+                });
+            } catch (e) { /* ignore parse errors */ }
         }
 
         function closeOffRampFlow() {
@@ -1273,12 +1298,24 @@
             'GBP': { symbol: '£', prefix: '£', rate: 0.79, decimals: 2 }
         };
 
-        const bankLabels = {
-            'bank-1': 'HSBC Hong Kong ****6789',
-            'bank-2': 'SCB ****4321',
-            'bank-3': 'DBS ****9876',
-            'bank-4': 'Barclays ****5544'
-        };
+        // Dynamic bank labels — rebuilt from shared localStorage on each modal open
+        let bankLabels = {};
+        function rebuildBankLabels() {
+            bankLabels = {};
+            const raw = localStorage.getItem('everypay-bank-info');
+            if (!raw) return;
+            try {
+                const banks = Array.isArray(JSON.parse(raw)) ? JSON.parse(raw) : [JSON.parse(raw)];
+                banks.forEach(function(bank, i) {
+                    const key = 'bank-' + i;
+                    const nickname = bank.nickname || bank['org-bank-nickname'] || '';
+                    const name = bank.bank_name || bank['org-bank-name'] || 'Unknown Bank';
+                    const acct = bank.account_number || bank['org-bank-account'] || '';
+                    const masked = acct.length > 4 ? '****' + acct.slice(-4) : acct;
+                    bankLabels[key] = nickname ? nickname + ' ' + masked : name + ' ' + masked;
+                });
+            } catch (e) { /* ignore */ }
+        }
 
         // --- Off-Ramp Flow State ---
         let currentFlowStep = 1;
@@ -1286,7 +1323,7 @@
         let transferCounter = 4;
         let currentAsset = 'usdt-eth';
         let currentFiat = 'HKD';
-        let currentBank = 'bank-1';
+        let currentBank = '';
 
         function openNewOffRamp() {
             document.getElementById('offramp-modal').classList.remove('hidden');
@@ -1498,20 +1535,29 @@
         function submitNewBank() {
             const bankName = document.getElementById('new-bank-name').value.trim();
             const account = document.getElementById('new-bank-account').value.trim();
+            const currency = document.getElementById('new-bank-currency').value;
             if (!bankName || !account) {
                 alert('Please fill in bank name and account number.');
                 return;
             }
 
+            // Persist to shared localStorage (aligned with onboarding Step 3 / compliance)
+            const raw = localStorage.getItem('everypay-bank-info');
+            const banks = raw ? (Array.isArray(JSON.parse(raw)) ? JSON.parse(raw) : [JSON.parse(raw)]) : [];
+            banks.push({
+                nickname: bankName,
+                bank_name: bankName,
+                account_number: account,
+                currency: currency,
+                account_holder_name: document.getElementById('new-bank-holder')?.value || '',
+                swift: document.getElementById('new-bank-swift')?.value || ''
+            });
+            localStorage.setItem('everypay-bank-info', JSON.stringify(banks));
+
             closeAddBankModal();
 
-            // Add to dropdown
-            const select = document.getElementById('recipient-bank');
-            const option = document.createElement('option');
-            option.value = 'bank-new-' + Date.now();
-            option.textContent = bankName + ' — ****' + account.slice(-4) + ' (' + document.getElementById('new-bank-currency').value + ') [Under Review]';
-            select.appendChild(option);
-            select.value = option.value;
+            // Reload the bank selector
+            loadRecipientBanks();
 
             alert('Bank account submitted for OSN compliance review. It will be available for transfers once approved (1-2 business days).');
         }
