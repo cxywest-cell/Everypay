@@ -157,7 +157,7 @@
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                                Linked Bank Account
+                                Recipients Bank Accounts
                             </h3>
                             <span id="bank-status-badge" class="px-2.5 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium border border-green-200 flex items-center gap-1">
                                 <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
@@ -169,7 +169,7 @@
                         </div>
                         <div id="bank-info-empty" class="hidden text-center py-8">
                             <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                            <p class="text-sm text-gray-500">No bank account linked yet.</p>
+                            <p class="text-sm text-gray-500">No recipient bank accounts linked yet.</p>
                             <a href="console-onboard.html" class="inline-block mt-3 px-4 py-2 bg-everypay-600 text-white text-sm font-medium rounded-lg hover:bg-everypay-700 transition-colors">Complete Onboarding</a>
                         </div>
                     </div>
@@ -209,7 +209,18 @@
                 document.getElementById('bank-info-empty').classList.remove('hidden');
                 return;
             }
-            var bank = JSON.parse(raw);
+            var banks = JSON.parse(raw);
+            // Support both array (new) and single object (legacy)
+            if (!Array.isArray(banks)) banks = [banks];
+            if (banks.length === 0) {
+                document.getElementById('bank-info-content').classList.add('hidden');
+                document.getElementById('bank-status-badge').classList.add('hidden');
+                document.getElementById('bank-info-empty').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('bank-info-empty').classList.add('hidden');
+            document.getElementById('bank-info-content').classList.remove('hidden');
+
             var labels = {
                 'org-bank-nickname': 'Nickname',
                 'org-bank-account-type': 'Account Type',
@@ -223,9 +234,18 @@
                 'org-bank-currency': 'Currency'
             };
             var html = '';
-            Object.keys(labels).forEach(function(key) {
-                html += '<div><label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">' + labels[key] + '</label>';
-                html += '<div class="text-sm font-medium text-slate-800 p-2 bg-gray-50 rounded border border-gray-100">' + (bank[key] || '-') + '</div></div>';
+            banks.forEach(function(bank, idx) {
+                html += '<div class="bg-white border border-gray-200 rounded-xl overflow-hidden">' +
+                    '<div class="bg-gray-50 px-5 py-3 border-b border-gray-200 flex justify-between items-center">' +
+                        '<h4 class="text-sm font-bold text-slate-800">' + (bank['org-bank-nickname'] || 'Bank Account #' + (idx + 1)) + '</h4>' +
+                        '<span class="px-2 py-0.5 bg-green-50 text-green-700 text-[10px] font-bold rounded border border-green-200">Active</span>' +
+                    '</div>' +
+                    '<div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">';
+                Object.keys(labels).forEach(function(key) {
+                    html += '<div><label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">' + labels[key] + '</label>';
+                    html += '<div class="text-sm font-medium text-slate-800 p-2 bg-gray-50 rounded border border-gray-100">' + (bank[key] || '-') + '</div></div>';
+                });
+                html += '</div></div>';
             });
             document.getElementById('bank-info-content').innerHTML = html;
         })();
