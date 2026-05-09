@@ -242,7 +242,7 @@
                                 <option value="Global Trade Partners">Global Trade Partners</option>
                             </select>
                         </div>
-                         <div class="grid grid-cols-3 gap-4">
+                         <div class="grid grid-cols-2 gap-4">
                              <div>
                                 <label class="block text-sm font-medium text-gray-700">Asset (Network)</label>
                                 <select id="new-activity-asset" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm">
@@ -259,15 +259,6 @@
                                     </div>
                                     <input type="number" id="new-activity-amount" class="focus:ring-everypay-500 focus:border-everypay-500 block w-full pl-7 sm:text-sm border-gray-300 rounded-md" placeholder="0.00">
                                 </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Incoterms</label>
-                                <select id="new-activity-incoterms" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm">
-                                    <option value="CIF">CIF</option>
-                                    <option value="FOB">FOB</option>
-                                    <option value="DDP">DDP</option>
-                                    <option value="EXW">EXW</option>
-                                </select>
                             </div>
                         </div>
 
