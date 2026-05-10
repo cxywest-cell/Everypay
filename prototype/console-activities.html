@@ -301,8 +301,7 @@
                 status: 'partially paid',
                 proposedBy: 'you',
                 counterparty: 'Acme Supplies Ltd.',
-                asset: 'USDT',
-                network: 'TRC20',
+                asset: 'USDT-TRON',
                 amount: '12,500.00',
                 expected: '12,500.00',
                 paid: '7,500.00',
@@ -318,8 +317,7 @@
                 status: 'proposed',
                 proposedBy: 'counterparty',
                 counterparty: 'Global Trade Partners',
-                asset: 'BTC',
-                network: 'Bitcoin',
+                asset: 'BTC-Bitcoin',
                 amount: '0.50',
                 expected: '45,000.00',
                 received: '0.00',
@@ -335,8 +333,7 @@
                 status: 'paid',
                 proposedBy: 'you',
                 counterparty: 'TechSource Inc.',
-                asset: 'USDC',
-                network: 'ERC20',
+                asset: 'USDC-Ethereum',
                 amount: '8,950.00',
                 expected: '8,950.00',
                 paid: '8,950.00',
@@ -353,8 +350,7 @@
                 status: 'unpaid',
                 proposedBy: 'you',
                 counterparty: 'FastLogistics Co.',
-                asset: 'USDT',
-                network: 'TRC20',
+                asset: 'USDT-TRON',
                 amount: '2,500.00',
                 expected: '2,500.00',
                 paid: '0.00',
@@ -369,8 +365,7 @@
                 status: 'partially paid',
                 proposedBy: 'you',
                 counterparty: 'Office Depot Inc.',
-                asset: 'USDC',
-                network: 'ERC20',
+                asset: 'USDC-Ethereum',
                 amount: '5,000.00',
                 expected: '5,000.00',
                 paid: '1,250.00',
@@ -501,7 +496,7 @@
             document.getElementById('detail-counterparty').textContent = data.counterparty;
             document.getElementById('detail-amount').textContent = data.expected;
             document.getElementById('detail-asset').textContent = data.asset;
-            document.getElementById('detail-network').textContent = 'Network: ' + data.network;
+            document.getElementById('detail-network').textContent = data.asset.split('-')[1] + ' network';
             document.getElementById('detail-description').textContent = data.description;
 
             // Documents
