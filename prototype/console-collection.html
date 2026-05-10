@@ -98,7 +98,7 @@
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4">
-                                                    <span class="font-medium text-slate-800">BA-2025-002</span>
+                                                    <a href="javascript:void(0)" class="font-medium text-everypay-600 hover:text-everypay-500 hover:underline cursor-pointer" onclick="openActivityDetails('BA-2025-002')">BA-2025-002</a>
                                                 </td>
                                             <td class="px-6 py-4 text-gray-600 text-nowrap">Oct 24, 2025 14:32</td>
                                         </tr>
@@ -132,7 +132,7 @@
                                             </td>
                                             <td class="px-6 py-4">
                                                 <div class="flex flex-col">
-                                                    <span class="font-medium text-slate-800">RF-2025-001</span>
+                                                    <a href="javascript:void(0)" class="font-medium text-everypay-600 hover:text-everypay-500 hover:underline cursor-pointer" onclick="openActivityDetails('RF-2025-001')">RF-2025-001</a>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 text-gray-600 text-nowrap">Oct 22, 2025 09:15</td>
@@ -167,7 +167,7 @@
                                             </td>
                                             <td class="px-6 py-4">
                                                 <div class="flex flex-col">
-                                                    <span class="font-medium text-slate-800">BA-2025-003</span>
+                                                    <a href="javascript:void(0)" class="font-medium text-everypay-600 hover:text-everypay-500 hover:underline cursor-pointer" onclick="openActivityDetails('BA-2025-003')">BA-2025-003</a>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 text-gray-600 text-nowrap">Oct 25, 2025 16:48</td>
@@ -202,7 +202,7 @@
                                             </td>
                                             <td class="px-6 py-4">
                                                 <div class="flex flex-col">
-                                                    <span class="font-medium text-slate-800">GM-2025-101</span>
+                                                    <a href="javascript:void(0)" class="font-medium text-everypay-600 hover:text-everypay-500 hover:underline cursor-pointer" onclick="openActivityDetails('GM-2025-101')">GM-2025-101</a>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 text-gray-600 text-nowrap">Oct 26, 2025 11:07</td>
@@ -217,6 +217,192 @@
         </div>
     </main>
 
+    <!-- Activity Details Modal -->
+    <div id="activity-details-drawer" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeActivityDetails()" aria-hidden="true"></div>
+            <div class="relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+                <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-start justify-between flex-shrink-0">
+                    <div>
+                        <h2 class="text-lg font-medium text-gray-900">Activity Details</h2>
+                        <p class="text-sm text-gray-500 mt-0.5" id="detail-id"></p>
+                    </div>
+                    <button type="button" onclick="closeActivityDetails()" class="rounded-md text-gray-400 hover:text-gray-500 focus:outline-none">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+                    <div class="flex flex-wrap gap-2">
+                        <span id="detail-type" class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10"></span>
+                        <span id="detail-status" class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset"></span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500">Counterparty</label>
+                            <div class="mt-1 text-sm font-medium text-gray-900" id="detail-counterparty"></div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500">Asset</label>
+                            <div class="mt-1 text-sm font-medium text-gray-900" id="detail-asset"></div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Amount</label>
+                        <div class="text-2xl font-bold text-gray-900" id="detail-amount"></div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Description</label>
+                        <p class="text-sm text-gray-600 leading-relaxed" id="detail-description"></p>
+                    </div>
+                    <div>
+                        <div class="flex border-b border-gray-200">
+                            <button id="detail-tab-timeline" onclick="switchDetailTab('timeline')" class="flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600">Timeline & Updates</button>
+                            <button id="detail-tab-docs" onclick="switchDetailTab('docs')" class="flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Documents</button>
+                        </div>
+                        <div id="detail-panel-timeline" class="py-4">
+                            <div class="space-y-3 max-h-60 overflow-y-auto pr-1" id="drawer-panel-timeline"></div>
+                        </div>
+                        <div id="detail-panel-docs" class="py-4 hidden">
+                            <ul class="space-y-1.5" id="detail-documents-repo"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="assets/layout.js"></script>
+    <script>
+        const collectionActivityData = {
+            'BA-2025-002': {
+                id: 'BA-2025-002', type: 'Sales', status: 'paid', counterparty: 'Global Trade Partners',
+                asset: 'USDT-TRON', amount: '12,500.00',
+                description: 'Payment received for Q1 export order.',
+                timeline: [
+                    { time: '2025-10-20 09:00', type: 'status', from: 'counterparty', content: 'Payment initiated' },
+                    { time: '2025-10-24 14:32', type: 'status', from: 'system', content: 'Payment confirmed — 12,500.00 USDT-TRON' }
+                ],
+                documents: [
+                    { name: 'transfer_receipt.pdf', type: 'receipt', uploadedBy: 'counterparty', uploadedAt: '2025-10-24 14:30' }
+                ]
+            },
+            'RF-2025-001': {
+                id: 'RF-2025-001', type: 'Refund', status: 'pending', counterparty: 'Acme Supplies Ltd.',
+                asset: 'USDC-Ethereum', amount: '3,200.00',
+                description: 'Refund for cancelled order #ACC-881.',
+                timeline: [
+                    { time: '2025-10-21 10:00', type: 'status', from: 'counterparty', content: 'Refund requested — order cancelled' },
+                    { time: '2025-10-22 09:15', type: 'status', from: 'system', content: 'Refund processing' }
+                ],
+                documents: [
+                    { name: 'cancellation_notice.pdf', type: 'notice', uploadedBy: 'counterparty', uploadedAt: '2025-10-21 10:00' }
+                ]
+            },
+            'BA-2025-003': {
+                id: 'BA-2025-003', type: 'Sales', status: 'partially_paid', counterparty: 'TechSource Inc.',
+                asset: 'USDT-Ethereum', amount: '8,950.00',
+                description: 'Partial payment received for hardware supply contract.',
+                timeline: [
+                    { time: '2025-10-22 08:00', type: 'status', from: 'counterparty', content: 'Milestone 1 payment sent' },
+                    { time: '2025-10-25 16:48', type: 'status', from: 'system', content: 'Payment confirmed — 4,475.00 USDT-Ethereum' }
+                ],
+                documents: [
+                    { name: 'milestone_1_invoice.pdf', type: 'invoice', uploadedBy: 'counterparty', uploadedAt: '2025-10-22 08:00' }
+                ]
+            },
+            'GM-2025-101': {
+                id: 'GM-2025-101', type: 'Sales', status: 'overpaid', counterparty: 'GlobalMall',
+                asset: 'BTC-Bitcoin', amount: '1.50',
+                description: 'Overpaid settlement — excess to be credited.',
+                timeline: [
+                    { time: '2025-10-25 10:00', type: 'status', from: 'counterparty', content: 'Settlement payment sent' },
+                    { time: '2025-10-26 11:07', type: 'status', from: 'system', content: 'Payment confirmed — 1.65 BTC (overpaid 0.15 BTC)' }
+                ],
+                documents: [
+                    { name: 'settlement_statement.pdf', type: 'statement', uploadedBy: 'counterparty', uploadedAt: '2025-10-25 10:00' }
+                ]
+            }
+        };
+
+        let currentDetailActivityId = '';
+
+        function openActivityDetails(id) {
+            const data = collectionActivityData[id];
+            if (!data) return;
+            currentDetailActivityId = id;
+
+            document.getElementById('detail-id').textContent = data.id;
+            document.getElementById('detail-type').textContent = data.type;
+            document.getElementById('detail-counterparty').textContent = data.counterparty;
+            document.getElementById('detail-asset').textContent = data.asset;
+            document.getElementById('detail-amount').textContent = data.amount;
+            document.getElementById('detail-description').textContent = data.description;
+
+            const statusColors = {
+                'paid': 'bg-green-50 text-green-700 ring-green-600/20',
+                'pending': 'bg-amber-50 text-amber-700 ring-amber-600/20',
+                'partially_paid': 'bg-blue-50 text-blue-700 ring-blue-600/10',
+                'overpaid': 'bg-purple-50 text-purple-700 ring-purple-600/20'
+            };
+            const sc = statusColors[data.status] || 'bg-gray-50 text-gray-700 ring-gray-500/10';
+            const statusEl = document.getElementById('detail-status');
+            statusEl.className = 'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ' + sc;
+            statusEl.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1).replace('_', ' ');
+
+            // Timeline
+            const timelineHtml = data.timeline.map(e => {
+                const badge = e.type === 'status'
+                    ? `<span class="inline-flex items-center rounded-full bg-everypay-50 px-2 py-0.5 text-xs text-everypay-700 ring-1 ring-inset ring-everypay-600/20">${e.content}</span>`
+                    : `<span class="inline-flex items-center rounded-full bg-gray-50 px-2 py-0.5 text-xs text-gray-600 ring-1 ring-inset ring-gray-500/10">📄 ${e.docName || e.content}</span>`;
+                return `<div class="flex items-start gap-3">
+                    <span class="text-xs text-gray-400 font-mono whitespace-nowrap pt-0.5">${e.time}</span>
+                    <div class="flex-1 min-w-0">${badge}<div class="text-[10px] text-gray-400 mt-0.5">${e.from === 'system' ? 'System' : e.from === 'counterparty' ? 'Counterparty' : 'You'}</div></div>
+                </div>`;
+            }).join('');
+            document.getElementById('drawer-panel-timeline').innerHTML = timelineHtml || '<p class="text-sm text-gray-400">No timeline entries yet.</p>';
+
+            // Documents
+            const docsHtml = data.documents.map(d =>
+                `<li class="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-md text-sm">
+                    <div class="flex items-center min-w-0 flex-1">
+                        <svg class="w-4 h-4 text-everypay-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span class="text-gray-700 truncate">${d.name}</span>
+                    </div>
+                    <span class="text-[10px] text-gray-400 ml-2 whitespace-nowrap">${d.uploadedAt}</span>
+                </li>`
+            ).join('');
+            document.getElementById('detail-documents-repo').innerHTML = docsHtml || '<li class="text-sm text-gray-400">No documents attached.</li>';
+
+            // Reset to Timeline tab
+            switchDetailTab('timeline');
+
+            document.getElementById('activity-details-drawer').classList.remove('hidden');
+        }
+
+        function closeActivityDetails() {
+            document.getElementById('activity-details-drawer').classList.add('hidden');
+        }
+
+        function switchDetailTab(tab) {
+            const tTab = document.getElementById('detail-tab-timeline');
+            const dTab = document.getElementById('detail-tab-docs');
+            const tPanel = document.getElementById('detail-panel-timeline');
+            const dPanel = document.getElementById('detail-panel-docs');
+
+            if (tab === 'timeline') {
+                tTab.className = 'flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600';
+                dTab.className = 'flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                tPanel.classList.remove('hidden');
+                dPanel.classList.add('hidden');
+            } else {
+                dTab.className = 'flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600';
+                tTab.className = 'flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                dPanel.classList.remove('hidden');
+                tPanel.classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 </html>
