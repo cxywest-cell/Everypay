@@ -737,5 +737,15 @@
         renderActivityTables();
     </script>
     <script src="assets/layout.js"></script>
+    <script>
+        // Auto-open activity detail from URL parameter (e.g. from Payments page)
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const openId = params.get('open');
+            if (openId && activitiesData[openId]) {
+                setTimeout(function() { openActivityDetails(openId); }, 300);
+            }
+        })();
+    </script>
 </body>
 </html>
