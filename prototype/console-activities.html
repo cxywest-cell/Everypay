@@ -72,18 +72,36 @@
                                 </p>
                             </div>
 
-                            <!-- Documents -->
+                            <!-- Timeline / Documents Toggle -->
                             <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <label class="text-xs font-medium text-gray-500">Attached Documents</label>
-                                    <button type="button" onclick="openUploadFromDrawer()" class="text-xs text-everypay-600 hover:text-everypay-700 font-medium flex items-center gap-1">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                                        Upload
+                                <div class="flex items-center gap-4 border-b border-gray-200">
+                                    <button id="drawer-tab-timeline" onclick="switchDrawerTab('timeline')" class="pb-2 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600">
+                                        Timeline
+                                    </button>
+                                    <button id="drawer-tab-docs" onclick="switchDrawerTab('docs')" class="pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                        Documents
                                     </button>
                                 </div>
-                                <ul class="space-y-2" id="detail-documents">
+
+                                <!-- Timeline View -->
+                                <div id="drawer-panel-timeline" class="mt-4 space-y-4 max-h-80 overflow-y-auto pr-1">
                                     <!-- Populated by JS -->
-                                </ul>
+                                </div>
+
+                                <!-- Documents Repository View -->
+                                <div id="drawer-panel-docs" class="mt-4 hidden">
+                                    <ul class="space-y-2" id="detail-documents-repo">
+                                        <!-- Populated by JS -->
+                                    </ul>
+                                </div>
+
+                                <!-- Upload button (shared) -->
+                                <div class="mt-4 flex justify-end">
+                                    <button type="button" onclick="openUploadFromDrawer()" class="text-xs text-everypay-600 hover:text-everypay-700 font-medium flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                        Upload Document
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Accept/Reject Actions (shown when proposed by counterparty) -->
@@ -293,12 +311,12 @@
         }
 
         // --- Activity Data ---
-        // Single status: proposed, unpaid, partially paid, paid, overpaid
+        // Single status: proposed, accepted, unpaid, partially_paid, paid, overpaid, rejected
         const activitiesData = {
             'BA-2025-001': {
                 id: 'BA-2025-001',
                 type: 'Procurement',
-                status: 'partially paid',
+                status: 'partially_paid',
                 proposedBy: 'you',
                 counterparty: 'Acme Supplies Ltd.',
                 asset: 'USDT-TRON',
@@ -307,8 +325,19 @@
                 paid: '7,500.00',
                 description: 'Final payment for Q1 bulk supplies (Stationery & Office).',
                 documents: [
-                    { name: 'contract_signed.pdf', type: 'contract' },
-                    { name: 'insurance_policy.pdf', type: 'policy' }
+                    { name: 'contract_signed.pdf', type: 'contract', uploadedBy: 'you', uploadedAt: '2025-03-15 10:00' },
+                    { name: 'insurance_policy.pdf', type: 'policy', uploadedBy: 'you', uploadedAt: '2025-03-15 10:05' },
+                    { name: 'bank_details.pdf', type: 'bank', uploadedBy: 'counterparty', uploadedAt: '2025-03-16 14:30' },
+                    { name: 'payment_receipt_1.pdf', type: 'receipt', uploadedBy: 'you', uploadedAt: '2025-03-20 15:00' }
+                ],
+                timeline: [
+                    { time: '2025-03-15 10:00', type: 'status', from: 'you', content: 'Activity proposed' },
+                    { time: '2025-03-15 10:02', type: 'doc', from: 'you', docName: 'contract_signed.pdf' },
+                    { time: '2025-03-15 10:05', type: 'doc', from: 'you', docName: 'insurance_policy.pdf' },
+                    { time: '2025-03-16 09:00', type: 'status', from: 'counterparty', content: 'Accepted' },
+                    { time: '2025-03-16 14:30', type: 'doc', from: 'counterparty', docName: 'bank_details.pdf' },
+                    { time: '2025-03-20 15:00', type: 'status', from: 'you', content: 'Partially paid — 7,500.00 USDT-TRON' },
+                    { time: '2025-03-20 15:00', type: 'doc', from: 'you', docName: 'payment_receipt_1.pdf' }
                 ]
             },
             'BA-2025-002': {
@@ -323,8 +352,13 @@
                 received: '0.00',
                 description: 'Export of electronics batch #442.',
                 documents: [
-                    { name: 'commercial_invoice.pdf', type: 'invoice' },
-                    { name: 'bill_of_lading.pdf', type: 'shipping' }
+                    { name: 'commercial_invoice.pdf', type: 'invoice', uploadedBy: 'counterparty', uploadedAt: '2025-04-01 09:00' },
+                    { name: 'bill_of_lading.pdf', type: 'shipping', uploadedBy: 'counterparty', uploadedAt: '2025-04-01 09:05' }
+                ],
+                timeline: [
+                    { time: '2025-04-01 09:00', type: 'status', from: 'counterparty', content: 'Activity proposed' },
+                    { time: '2025-04-01 09:00', type: 'doc', from: 'counterparty', docName: 'commercial_invoice.pdf' },
+                    { time: '2025-04-01 09:05', type: 'doc', from: 'counterparty', docName: 'bill_of_lading.pdf' }
                 ]
             },
             'BA-2025-003': {
@@ -339,9 +373,20 @@
                 paid: '8,950.00',
                 description: 'Hardware procurement for new office wing.',
                 documents: [
-                    { name: 'po_hardware.pdf', type: 'po' },
-                    { name: 'customs_dec.pdf', type: 'customs' },
-                    { name: 'packing_list.pdf', type: 'packing' }
+                    { name: 'po_hardware.pdf', type: 'po', uploadedBy: 'you', uploadedAt: '2025-02-10 11:00' },
+                    { name: 'customs_dec.pdf', type: 'customs', uploadedBy: 'counterparty', uploadedAt: '2025-02-12 14:00' },
+                    { name: 'packing_list.pdf', type: 'packing', uploadedBy: 'counterparty', uploadedAt: '2025-02-12 14:05' },
+                    { name: 'final_receipt.pdf', type: 'receipt', uploadedBy: 'you', uploadedAt: '2025-02-20 16:00' }
+                ],
+                timeline: [
+                    { time: '2025-02-10 11:00', type: 'status', from: 'you', content: 'Activity proposed' },
+                    { time: '2025-02-10 11:00', type: 'doc', from: 'you', docName: 'po_hardware.pdf' },
+                    { time: '2025-02-11 10:00', type: 'status', from: 'counterparty', content: 'Accepted' },
+                    { time: '2025-02-12 14:00', type: 'doc', from: 'counterparty', docName: 'customs_dec.pdf' },
+                    { time: '2025-02-12 14:05', type: 'doc', from: 'counterparty', docName: 'packing_list.pdf' },
+                    { time: '2025-02-20 16:00', type: 'status', from: 'you', content: 'Fully paid — 8,950.00 USDC-Ethereum' },
+                    { time: '2025-02-20 16:00', type: 'doc', from: 'you', docName: 'final_receipt.pdf' },
+                    { time: '2025-02-21 09:00', type: 'message', from: 'counterparty', content: 'Payment confirmed, delivery complete.' }
                 ]
             },
             'BA-2025-004': {
@@ -356,13 +401,18 @@
                 paid: '0.00',
                 description: 'Logistics fee for Q1 shipments.',
                 documents: [
-                    { name: 'invoice_logistics.pdf', type: 'invoice' }
+                    { name: 'invoice_logistics.pdf', type: 'invoice', uploadedBy: 'counterparty', uploadedAt: '2025-04-10 08:00' }
+                ],
+                timeline: [
+                    { time: '2025-04-08 10:00', type: 'status', from: 'you', content: 'Activity proposed' },
+                    { time: '2025-04-09 14:00', type: 'status', from: 'counterparty', content: 'Accepted' },
+                    { time: '2025-04-10 08:00', type: 'doc', from: 'counterparty', docName: 'invoice_logistics.pdf' }
                 ]
             },
             'BA-2025-005': {
                 id: 'BA-2025-005',
                 type: 'Procurement',
-                status: 'partially paid',
+                status: 'partially_paid',
                 proposedBy: 'you',
                 counterparty: 'Office Depot Inc.',
                 asset: 'USDC-Ethereum',
@@ -371,7 +421,16 @@
                 paid: '1,250.00',
                 description: 'Office supplies replenishment.',
                 documents: [
-                    { name: 'po_office_supplies.pdf', type: 'po' }
+                    { name: 'po_office_supplies.pdf', type: 'po', uploadedBy: 'you', uploadedAt: '2025-03-28 09:00' },
+                    { name: 'partial_receipt.pdf', type: 'receipt', uploadedBy: 'you', uploadedAt: '2025-04-02 11:00' }
+                ],
+                timeline: [
+                    { time: '2025-03-28 09:00', type: 'status', from: 'you', content: 'Activity proposed' },
+                    { time: '2025-03-28 09:00', type: 'doc', from: 'you', docName: 'po_office_supplies.pdf' },
+                    { time: '2025-03-29 10:00', type: 'status', from: 'counterparty', content: 'Accepted' },
+                    { time: '2025-04-02 11:00', type: 'status', from: 'you', content: 'Partially paid — 1,250.00 USDC-Ethereum' },
+                    { time: '2025-04-02 11:00', type: 'doc', from: 'you', docName: 'partial_receipt.pdf' },
+                    { time: '2025-04-02 14:00', type: 'message', from: 'counterparty', content: 'Acknowledged. Awaiting balance of 3,750.00.' }
                 ]
             }
         };
@@ -417,7 +476,7 @@
                 const statusColors = {
                     'proposed': 'bg-amber-50 text-amber-700 ring-amber-600/20',
                     'unpaid': 'bg-red-50 text-red-700 ring-red-600/10',
-                    'partially paid': 'bg-blue-50 text-blue-700 ring-blue-600/10',
+                    'partially_paid': 'bg-blue-50 text-blue-700 ring-blue-600/10',
                     'paid': 'bg-green-50 text-green-700 ring-green-600/20',
                     'overpaid': 'bg-purple-50 text-purple-700 ring-purple-600/20'
                 };
@@ -466,6 +525,99 @@
         }
 
         // --- Activity Details Drawer Logic ---
+
+        // Drawer tab switching
+        function switchDrawerTab(tab) {
+            const tabTimeline = document.getElementById('drawer-tab-timeline');
+            const tabDocs = document.getElementById('drawer-tab-docs');
+            const panelTimeline = document.getElementById('drawer-panel-timeline');
+            const panelDocs = document.getElementById('drawer-panel-docs');
+
+            if (tab === 'timeline') {
+                tabTimeline.className = 'pb-2 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600';
+                tabDocs.className = 'pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                panelTimeline.classList.remove('hidden');
+                panelDocs.classList.add('hidden');
+            } else {
+                tabDocs.className = 'pb-2 px-1 text-sm font-medium border-b-2 border-green-600 text-green-600';
+                tabTimeline.className = 'pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                panelDocs.classList.remove('hidden');
+                panelTimeline.classList.add('hidden');
+            }
+        }
+
+        // Render timeline events
+        function renderTimeline(timeline) {
+            if (!timeline || timeline.length === 0) {
+                return '<p class="text-sm text-gray-400 text-center py-4">No activity yet</p>';
+            }
+
+            return timeline.map((evt, i) => {
+                const isLast = i === timeline.length - 1;
+                const fromLabel = evt.from === 'you' ? 'You' : evt.from === 'counterparty' ? 'Counterparty' : evt.from;
+
+                let colors = { dot: 'bg-gray-400', ring: 'ring-gray-400' };
+                let icon = '';
+                let contentHtml = '';
+
+                if (evt.type === 'status') {
+                    colors = { dot: 'bg-green-400', ring: 'ring-green-400' };
+                    icon = '<span class="inline-flex items-center rounded-full bg-green-50 px-1.5 py-0.5 text-[10px] font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Status</span>';
+                    contentHtml = '<span class="text-sm text-gray-700">' + evt.content + '</span>';
+                } else if (evt.type === 'doc') {
+                    colors = { dot: 'bg-blue-400', ring: 'ring-blue-400' };
+                    icon = '<span class="inline-flex items-center rounded-full bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">Document</span>';
+                    contentHtml = '<span class="text-sm text-gray-700">Uploaded <span class="font-medium">' + evt.docName + '</span></span>';
+                } else if (evt.type === 'message') {
+                    colors = { dot: 'bg-gray-400', ring: 'ring-gray-400' };
+                    icon = '<span class="inline-flex items-center rounded-full bg-gray-50 px-1.5 py-0.5 text-[10px] font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">Note</span>';
+                    contentHtml = '<div class="mt-1 text-sm text-gray-600 bg-gray-50 rounded-md px-3 py-2">' + evt.content + '</div>';
+                }
+
+                return (
+                    '<div class="relative flex gap-3">' +
+                        '<div class="flex flex-col items-center">' +
+                            '<div class="w-2.5 h-2.5 rounded-full ' + colors.dot + ' ring-4 ring-white"></div>' +
+                            (!isLast ? '<div class="w-0.5 flex-1 bg-gray-200"></div>' : '') +
+                        '</div>' +
+                        '<div class="flex-1 pb-4">' +
+                            '<div class="flex items-center gap-2 mb-0.5">' +
+                                icon +
+                                '<span class="text-xs text-gray-400">' + fromLabel + '</span>' +
+                                '<span class="text-xs text-gray-300">' + evt.time + '</span>' +
+                            '</div>' +
+                            contentHtml +
+                        '</div>' +
+                    '</div>'
+                );
+            }).join('');
+        }
+
+        // Render document repository
+        function renderDocumentRepository(documents) {
+            if (!documents || documents.length === 0) {
+                return '<p class="text-sm text-gray-400 text-center py-4">No documents uploaded yet</p>';
+            }
+
+            return documents.map(doc => {
+                const uploaderLabel = doc.uploadedBy === 'you' ? 'You' : 'Counterparty';
+                const uploaderColor = doc.uploadedBy === 'you' ? 'text-everypay-600' : 'text-gray-500';
+                return (
+                    '<li class="flex items-center justify-between py-2.5 px-3 bg-gray-50 rounded-md border border-gray-200">' +
+                        '<div class="flex items-center gap-2 min-w-0">' +
+                            '<svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>' +
+                            '<div class="min-w-0">' +
+                                '<span class="text-xs font-medium text-gray-700 truncate block">' + doc.name + '</span>' +
+                                '<span class="text-[10px] ' + uploaderColor + '">' + uploaderLabel + '</span>' +
+                                '<span class="text-[10px] text-gray-300"> &middot; ' + doc.uploadedAt + '</span>' +
+                            '</div>' +
+                        '</div>' +
+                        '<a href="#" class="text-xs text-everypay-600 hover:text-everypay-800 font-medium flex-shrink-0">View</a>' +
+                    '</li>'
+                );
+            }).join('');
+        }
+
         function openActivityDetails(id) {
             const data = activitiesData[id];
             if (!data) return;
@@ -483,15 +635,18 @@
 
             // Single status badge
             const statusBadge = document.getElementById('detail-agreement');
-            statusBadge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+            const statusDisplay = data.status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            statusBadge.textContent = statusDisplay;
             const statusColors = {
                 'proposed': 'bg-amber-50 text-amber-700 ring-amber-600/20',
+                'accepted': 'bg-blue-50 text-blue-700 ring-blue-600/10',
                 'unpaid': 'bg-red-50 text-red-700 ring-red-600/10',
-                'partially paid': 'bg-blue-50 text-blue-700 ring-blue-600/10',
+                'partially_paid': 'bg-blue-50 text-blue-700 ring-blue-600/10',
                 'paid': 'bg-green-50 text-green-700 ring-green-600/20',
-                'overpaid': 'bg-purple-50 text-purple-700 ring-purple-600/20'
+                'overpaid': 'bg-purple-50 text-purple-700 ring-purple-600/20',
+                'rejected': 'bg-gray-100 text-gray-500 ring-gray-400/10'
             };
-            statusBadge.className = `inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${statusColors[data.status] || 'bg-gray-50 text-gray-700 ring-gray-500/10'}`;
+            statusBadge.className = 'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ' + (statusColors[data.status] || 'bg-gray-50 text-gray-700 ring-gray-500/10');
 
             document.getElementById('detail-counterparty').textContent = data.counterparty;
             document.getElementById('detail-amount').textContent = data.expected;
@@ -499,17 +654,14 @@
             document.getElementById('detail-network').textContent = data.asset.split('-')[1] + ' network';
             document.getElementById('detail-description').textContent = data.description;
 
-            // Documents
-            const docList = document.getElementById('detail-documents');
-            docList.innerHTML = data.documents.map(doc => `
-                <li class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-md border border-gray-200">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        <span class="text-xs font-medium text-gray-700">${doc.name}</span>
-                    </div>
-                    <a href="#" class="text-xs text-everypay-600 hover:text-everypay-800 font-medium">View</a>
-                </li>
-            `).join('');
+            // Render Timeline
+            document.getElementById('drawer-panel-timeline').innerHTML = renderTimeline(data.timeline);
+
+            // Render Document Repository
+            document.getElementById('detail-documents-repo').innerHTML = renderDocumentRepository(data.documents);
+
+            // Reset drawer to Timeline tab by default
+            switchDrawerTab('timeline');
 
             // Accept/Reject actions - show only when status is 'proposed' and proposed by counterparty
             const actionsDiv = document.getElementById('detail-actions');
@@ -531,9 +683,12 @@
 
         function acceptActivity() {
             const activityId = document.getElementById('detail-id').textContent;
-            if (activitiesData[activityId]) {
-                activitiesData[activityId].status = 'unpaid';
-                activitiesData[activityId].proposedBy = 'you';
+            const data = activitiesData[activityId];
+            if (data) {
+                const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
+                data.status = 'accepted';
+                data.proposedBy = 'you';
+                data.timeline.push({ time: now, type: 'status', from: 'you', content: 'Accepted' });
                 openActivityDetails(activityId);
                 renderActivityTables();
             }
@@ -541,8 +696,11 @@
 
         function rejectActivity() {
             const activityId = document.getElementById('detail-id').textContent;
-            if (activitiesData[activityId]) {
-                delete activitiesData[activityId];
+            const data = activitiesData[activityId];
+            if (data) {
+                const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
+                data.status = 'rejected';
+                data.timeline.push({ time: now, type: 'status', from: 'you', content: 'Rejected' });
                 closeActivityDetails();
                 renderActivityTables();
             }
