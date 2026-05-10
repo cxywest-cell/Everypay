@@ -8,7 +8,11 @@
     <script src="assets/tailwind-config.js"></script>
     <script src="assets/modals.js"></script>
     <script src="assets/utils.js"></script>
-    <!-- Activity Details Modal (centered) -->
+</head>
+
+<body class="bg-gray-50 flex flex-col h-screen overflow-hidden">
+    <main class="flex-1 flex h-screen overflow-hidden">
+        <!-- Activity Details Modal (centered) -->
     <div id="activity-details-drawer" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-center justify-center min-h-screen px-4">
             <!-- Background overlay -->
@@ -107,9 +111,7 @@
         </div>
     </div>
 
-<body class="bg-gray-50 flex flex-col h-screen overflow-hidden">
-    <main class="flex-1 flex h-screen overflow-hidden">
-        <!-- Sidebar -->
+    <!-- Sidebar -->
         <aside id="ep-sidebar" class="w-64 bg-white border-r border-gray-200 flex flex-col z-10">
         </aside>
 
@@ -133,6 +135,16 @@
                         </button>
                     </div>
 
+                    <!-- Tab Switch: Procurement / Sales -->
+                    <div class="flex items-center gap-4 border-b border-gray-200">
+                        <button id="tab-procurement" onclick="switchActivityTab('procurement')" class="pb-3 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600">
+                            Procurement
+                        </button>
+                        <button id="tab-sales" onclick="switchActivityTab('sales')" class="pb-3 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                            Sales
+                        </button>
+                    </div>
+
                     <!-- Procurement Table -->
                     <div id="panel-procurement" class="mt-4">
                         <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -148,6 +160,28 @@
                                     </tr>
                                 </thead>
                                 <tbody id="procurement-tbody" class="divide-y divide-gray-100">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sales Table -->
+                    <div id="panel-sales" class="mt-4 hidden">
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full min-w-[800px] text-sm text-left">
+                                <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
+                                    <tr>
+                                        <th class="px-6 py-3">ID</th>
+                                        <th class="px-6 py-3">Customer</th>
+                                        <th class="px-6 py-3">Asset</th>
+                                        <th class="px-6 py-3 min-w-[180px]">Amount</th>
+                                        <th class="px-6 py-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sales-tbody" class="divide-y divide-gray-100">
                                     <!-- Populated by JS -->
                                 </tbody>
                             </table>
@@ -396,11 +430,33 @@
             }
         };
 
+        // --- Tab Switching ---
+        function switchActivityTab(tab) {
+            const procTab = document.getElementById('tab-procurement');
+            const salesTab = document.getElementById('tab-sales');
+            const procPanel = document.getElementById('panel-procurement');
+            const salesPanel = document.getElementById('panel-sales');
+
+            if (tab === 'procurement') {
+                procTab.className = 'pb-3 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600';
+                salesTab.className = 'pb-3 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                procPanel.classList.remove('hidden');
+                salesPanel.classList.add('hidden');
+            } else {
+                salesTab.className = 'pb-3 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600';
+                procTab.className = 'pb-3 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                salesPanel.classList.remove('hidden');
+                procPanel.classList.add('hidden');
+            }
+        }
+
         // --- Dynamic Table Rendering ---
         function renderActivityTables() {
             const procurementTbody = document.getElementById('procurement-tbody');
+            const salesTbody = document.getElementById('sales-tbody');
 
             procurementTbody.innerHTML = '';
+            salesTbody.innerHTML = '';
 
             Object.values(activitiesData).forEach(data => {
                 const paidReceived = data.type === 'Procurement' ? data.paid : data.received;
@@ -455,11 +511,15 @@
                     </tr>
                 `;
 
-                procurementTbody.innerHTML += row;
+                if (data.type === 'Procurement') {
+                    procurementTbody.innerHTML += row;
+                } else if (data.type === 'Sales') {
+                    salesTbody.innerHTML += row;
+                }
             });
         }
 
-        // --- Activity Details Drawer Logic ---
+        // --- Activity Details Modal Logic ---
 
         // Render timeline events        // Render timeline events
         function renderTimeline(timeline) {
@@ -574,8 +634,6 @@
             // Render Document Repository
             document.getElementById('detail-documents-repo').innerHTML = renderDocumentRepository(data.documents);
 
-            // Reset drawer to Timeline tab by default
-            switchDrawerTab('timeline');
 
             // Accept/Reject actions - show only when status is 'proposed' and proposed by counterparty
             const actionsDiv = document.getElementById('detail-actions');
