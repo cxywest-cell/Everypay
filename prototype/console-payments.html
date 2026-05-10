@@ -164,7 +164,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-500">Asset</label>
-                            <div class="mt-1 text-sm font-medium text-gray-900" id="detail-asset">USDT-TRON</div>
+                            <div class="mt-1 text-sm font-medium text-gray-900 flex items-center gap-1" id="detail-asset"><span>USDT</span><span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">TRC20</span></div>
                         </div>
                     </div>
 
@@ -293,7 +293,7 @@
                                         </div>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <span class="font-medium text-slate-700">USDT <span class="text-xs text-gray-400 font-normal">(TRC20)</span></span>
+                                        <span class="font-medium text-slate-700">USDT</span><span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">TRC20</span>
                                     </td>
                                     <td class="px-4 py-3 text-slate-800 font-bold">8,750.00</td>
                                     <td class="px-4 py-3">
@@ -366,7 +366,7 @@
                                     </div>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <span class="font-medium text-slate-700">USDT <span class="text-xs text-gray-400 font-normal">(ERC20)</span></span>
+                                    <span class="font-medium text-slate-700">USDT</span><span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">ERC20</span>
                                 </td>
                                 <td class="px-4 py-3 text-slate-800 font-bold">8,950.00</td>
                                 <td class="px-4 py-3">
@@ -411,7 +411,7 @@
                                     </div>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <span class="font-medium text-slate-700">USDT <span class="text-xs text-gray-400 font-normal">(TRC20)</span></span>
+                                    <span class="font-medium text-slate-700">USDT</span><span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">TRC20</span>
                                 </td>
                                 <td class="px-4 py-3 text-slate-800 font-bold">3,750.00</td>
                                 <td class="px-4 py-3">
@@ -453,7 +453,7 @@
                                     </div>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <span class="font-medium text-slate-700">USDC <span class="text-xs text-gray-400 font-normal">(ERC20)</span></span>
+                                    <span class="font-medium text-slate-700">USDC</span><span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">ERC20</span>
                                 </td>
                                 <td class="px-4 py-3 text-slate-800 font-bold">12,500.00</td>
                                 <td class="px-4 py-3">
@@ -498,7 +498,7 @@
                                     </div>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <span class="font-medium text-slate-700">USDC <span class="text-xs text-gray-400 font-normal">(ERC20)</span></span>
+                                    <span class="font-medium text-slate-700">USDC</span><span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">ERC20</span>
                                 </td>
                                 <td class="px-4 py-3 text-slate-800 font-bold">5,000.00</td>
                                 <td class="px-4 py-3">
@@ -536,7 +536,7 @@
                                     </div>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <span class="font-medium text-slate-700">USDT <span class="text-xs text-gray-400 font-normal">(TRC20)</span></span>
+                                    <span class="font-medium text-slate-700">USDT</span><span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">TRC20</span>
                                 </td>
                                 <td class="px-4 py-3 text-slate-800 font-bold">2,000.00</td>
                                 <td class="px-4 py-3">
@@ -690,10 +690,10 @@
         }
         // --- Activity Details Modal ---
         const paymentsActivityData = {
-            'BA-2025-001': { type: 'procurement', counterparty: 'Acme Supplies Ltd.', asset: 'USDT-TRON', amount: '12,500.00', description: 'Supplier Agreement Q1 — Raw materials procurement with milestone-based payment schedule.', status: 'accepted', proposedBy: 'counterparty' },
-            'BA-2025-002': { type: 'sales', counterparty: 'Global Trade Partners', asset: 'USDT-TRON', amount: '28,000.00', description: 'Export Sale Batch #42 — Finished goods shipment.', status: 'unpaid', proposedBy: 'self' },
-            'BA-2025-003': { type: 'procurement', counterparty: 'TechSource Inc.', asset: 'USDT-Ethereum', amount: '15,000.00', description: 'Hardware Equipment — Server racks and networking gear.', status: 'accepted', proposedBy: 'self' },
-            'BA-2025-004': { type: 'procurement', counterparty: 'FinSecure Bank', asset: 'USDC-Ethereum', amount: '45,000.00', description: 'Institutional Purchase — Security appliances.', status: 'proposed', proposedBy: 'counterparty' }
+            'BA-2025-001': { type: 'procurement', counterparty: 'Acme Supplies Ltd.', asset: 'USDT TRC20', amount: '12,500.00', description: 'Supplier Agreement Q1 — Raw materials procurement with milestone-based payment schedule.', status: 'accepted', proposedBy: 'counterparty' },
+            'BA-2025-002': { type: 'sales', counterparty: 'Global Trade Partners', asset: 'USDT TRC20', amount: '28,000.00', description: 'Export Sale Batch #42 — Finished goods shipment.', status: 'unpaid', proposedBy: 'self' },
+            'BA-2025-003': { type: 'procurement', counterparty: 'TechSource Inc.', asset: 'USDT ERC20', amount: '15,000.00', description: 'Hardware Equipment — Server racks and networking gear.', status: 'accepted', proposedBy: 'self' },
+            'BA-2025-004': { type: 'procurement', counterparty: 'FinSecure Bank', asset: 'USDC ERC20', amount: '45,000.00', description: 'Institutional Purchase — Security appliances.', status: 'proposed', proposedBy: 'counterparty' }
         };
 
         let currentDetailActivityId = '';
@@ -709,7 +709,17 @@
             document.getElementById('detail-id').textContent = id;
             document.getElementById('detail-type').textContent = data.type.charAt(0).toUpperCase() + data.type.slice(1);
             document.getElementById('detail-counterparty').textContent = data.counterparty;
-            document.getElementById('detail-asset').textContent = data.asset;
+            let assetDisplay = data.asset || '';
+            // Handle legacy hyphenated format (USDT-TRON) -> space-separated (USDT TRC20)
+            if (assetDisplay && !assetDisplay.includes(' ')) {
+                const parts = assetDisplay.split('-');
+                const token = parts[0];
+                const chain = parts[1] || '';
+                const networkMap = { 'TRON': 'TRC20', 'Ethereum': 'ERC20', 'Bitcoin': 'Bitcoin' };
+                assetDisplay = token + ' ' + (networkMap[chain] || chain);
+            }
+            const [token, network] = assetDisplay.split(' ');
+            document.getElementById('detail-asset').innerHTML = token + ' <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded ml-1">' + network + '</span>';
             document.getElementById('detail-amount').textContent = data.amount;
             document.getElementById('detail-description').textContent = data.description;
 

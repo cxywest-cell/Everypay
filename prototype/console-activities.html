@@ -48,7 +48,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-500">Asset</label>
-                            <div class="mt-1 text-sm font-medium text-gray-900" id="detail-asset">USDT-TRON</div>
+                            <div class="mt-1 text-sm font-medium text-gray-900 flex items-center gap-1" id="detail-asset"><span>USDT</span><span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">TRC20</span></div>
                         </div>
                     </div>
 
@@ -324,7 +324,7 @@
                 status: 'partially_paid',
                 proposedBy: 'you',
                 counterparty: 'Acme Supplies Ltd.',
-                asset: 'USDT-TRON',
+                asset: 'USDT TRC20',
                 amount: '12,500.00',
                 expected: '12,500.00',
                 paid: '7,500.00',
@@ -341,7 +341,7 @@
                     { time: '2025-03-15 10:05', type: 'doc', from: 'you', docName: 'insurance_policy.pdf' },
                     { time: '2025-03-16 09:00', type: 'status', from: 'counterparty', content: 'Accepted' },
                     { time: '2025-03-16 14:30', type: 'doc', from: 'counterparty', docName: 'bank_details.pdf' },
-                    { time: '2025-03-20 15:00', type: 'status', from: 'you', content: 'Partially paid — 7,500.00 USDT-TRON' },
+                    { time: '2025-03-20 15:00', type: 'status', from: 'you', content: 'Partially paid — 7,500.00 USDT TRC20' },
                     { time: '2025-03-20 15:00', type: 'doc', from: 'you', docName: 'payment_receipt_1.pdf' }
                 ]
             },
@@ -351,7 +351,7 @@
                 status: 'proposed',
                 proposedBy: 'counterparty',
                 counterparty: 'Global Trade Partners',
-                asset: 'BTC-Bitcoin',
+                asset: 'BTC Bitcoin',
                 amount: '0.50',
                 expected: '45,000.00',
                 received: '0.00',
@@ -372,7 +372,7 @@
                 status: 'paid',
                 proposedBy: 'you',
                 counterparty: 'TechSource Inc.',
-                asset: 'USDC-Ethereum',
+                asset: 'USDC ERC20',
                 amount: '8,950.00',
                 expected: '8,950.00',
                 paid: '8,950.00',
@@ -389,7 +389,7 @@
                     { time: '2025-02-11 10:00', type: 'status', from: 'counterparty', content: 'Accepted' },
                     { time: '2025-02-12 14:00', type: 'doc', from: 'counterparty', docName: 'customs_dec.pdf' },
                     { time: '2025-02-12 14:05', type: 'doc', from: 'counterparty', docName: 'packing_list.pdf' },
-                    { time: '2025-02-20 16:00', type: 'status', from: 'you', content: 'Fully paid — 8,950.00 USDC-Ethereum' },
+                    { time: '2025-02-20 16:00', type: 'status', from: 'you', content: 'Fully paid — 8,950.00 USDC ERC20' },
                     { time: '2025-02-20 16:00', type: 'doc', from: 'you', docName: 'final_receipt.pdf' },
                     { time: '2025-02-21 09:00', type: 'message', from: 'counterparty', content: 'Payment confirmed, delivery complete.' }
                 ]
@@ -400,7 +400,7 @@
                 status: 'unpaid',
                 proposedBy: 'you',
                 counterparty: 'FastLogistics Co.',
-                asset: 'USDT-TRON',
+                asset: 'USDT TRC20',
                 amount: '2,500.00',
                 expected: '2,500.00',
                 paid: '0.00',
@@ -420,7 +420,7 @@
                 status: 'partially_paid',
                 proposedBy: 'you',
                 counterparty: 'Office Depot Inc.',
-                asset: 'USDC-Ethereum',
+                asset: 'USDC ERC20',
                 amount: '5,000.00',
                 expected: '5,000.00',
                 paid: '1,250.00',
@@ -433,7 +433,7 @@
                     { time: '2025-03-28 09:00', type: 'status', from: 'you', content: 'Activity proposed' },
                     { time: '2025-03-28 09:00', type: 'doc', from: 'you', docName: 'po_office_supplies.pdf' },
                     { time: '2025-03-29 10:00', type: 'status', from: 'counterparty', content: 'Accepted' },
-                    { time: '2025-04-02 11:00', type: 'status', from: 'you', content: 'Partially paid — 1,250.00 USDC-Ethereum' },
+                    { time: '2025-04-02 11:00', type: 'status', from: 'you', content: 'Partially paid — 1,250.00 USDC ERC20' },
                     { time: '2025-04-02 11:00', type: 'doc', from: 'you', docName: 'partial_receipt.pdf' },
                     { time: '2025-04-02 14:00', type: 'message', from: 'counterparty', content: 'Acknowledged. Awaiting balance of 3,750.00.' }
                 ]
@@ -500,7 +500,10 @@
                             <span class="font-medium text-slate-700">${data.counterparty}</span>
                         </td>
                         <td class="px-6 py-4">
-                            <span class="font-medium text-slate-700">${data.asset}</span>
+                            <div class="flex items-center gap-1">
+                                <span class="font-medium text-slate-700">${data.asset.split(' ')[0]}</span>
+                                <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">${data.asset.split(' ')[1]}</span>
+                            </div>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex flex-col gap-1">
@@ -638,7 +641,8 @@
 
             document.getElementById('detail-counterparty').textContent = data.counterparty;
             document.getElementById('detail-amount').textContent = data.expected;
-            document.getElementById('detail-asset').textContent = data.asset;
+            const [token, network] = data.asset.split(' ');
+            document.getElementById('detail-asset').innerHTML = token + ' <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded ml-1">' + network + '</span>';
             document.getElementById('detail-description').textContent = data.description;
 
             // Render Timeline

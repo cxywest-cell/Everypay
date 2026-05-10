@@ -220,11 +220,11 @@
         const collectionActivityData = {
             'BA-2025-002': {
                 id: 'BA-2025-002', type: 'Sales', status: 'paid', counterparty: 'Global Trade Partners',
-                asset: 'USDT-TRON', amount: '12,500.00',
+                asset: 'USDT TRC20', amount: '12,500.00',
                 description: 'Payment received for Q1 export order.',
                 timeline: [
                     { time: '2025-10-20 09:00', type: 'status', from: 'counterparty', content: 'Payment initiated' },
-                    { time: '2025-10-24 14:32', type: 'status', from: 'system', content: 'Payment confirmed — 12,500.00 USDT-TRON' }
+                    { time: '2025-10-24 14:32', type: 'status', from: 'system', content: 'Payment confirmed — 12,500.00 USDT TRC20' }
                 ],
                 documents: [
                     { name: 'transfer_receipt.pdf', type: 'receipt', uploadedBy: 'counterparty', uploadedAt: '2025-10-24 14:30' }
@@ -232,7 +232,7 @@
             },
             'RF-2025-001': {
                 id: 'RF-2025-001', type: 'Refund', status: 'pending', counterparty: 'Acme Supplies Ltd.',
-                asset: 'USDC-Ethereum', amount: '3,200.00',
+                asset: 'USDC ERC20', amount: '3,200.00',
                 description: 'Refund for cancelled order #ACC-881.',
                 timeline: [
                     { time: '2025-10-21 10:00', type: 'status', from: 'counterparty', content: 'Refund requested — order cancelled' },
@@ -244,11 +244,11 @@
             },
             'BA-2025-003': {
                 id: 'BA-2025-003', type: 'Sales', status: 'partially_paid', counterparty: 'TechSource Inc.',
-                asset: 'USDT-Ethereum', amount: '8,950.00',
+                asset: 'USDT ERC20', amount: '8,950.00',
                 description: 'Partial payment received for hardware supply contract.',
                 timeline: [
                     { time: '2025-10-22 08:00', type: 'status', from: 'counterparty', content: 'Milestone 1 payment sent' },
-                    { time: '2025-10-25 16:48', type: 'status', from: 'system', content: 'Payment confirmed — 4,475.00 USDT-Ethereum' }
+                    { time: '2025-10-25 16:48', type: 'status', from: 'system', content: 'Payment confirmed — 4,475.00 USDT ERC20' }
                 ],
                 documents: [
                     { name: 'milestone_1_invoice.pdf', type: 'invoice', uploadedBy: 'counterparty', uploadedAt: '2025-10-22 08:00' }
@@ -256,7 +256,7 @@
             },
             'GM-2025-101': {
                 id: 'GM-2025-101', type: 'Sales', status: 'overpaid', counterparty: 'GlobalMall',
-                asset: 'BTC-Bitcoin', amount: '1.50',
+                asset: 'BTC Bitcoin', amount: '1.50',
                 description: 'Overpaid settlement — excess to be credited.',
                 timeline: [
                     { time: '2025-10-25 10:00', type: 'status', from: 'counterparty', content: 'Settlement payment sent' },
@@ -278,7 +278,8 @@
             document.getElementById('detail-id').textContent = data.id;
             document.getElementById('detail-type').textContent = data.type;
             document.getElementById('detail-counterparty').textContent = data.counterparty;
-            document.getElementById('detail-asset').textContent = data.asset;
+            const [token, network] = data.asset.replace('-', ' ').split(' ');
+            document.getElementById('detail-asset').innerHTML = token + ' <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded ml-1">' + network + '</span>';
             document.getElementById('detail-amount').textContent = data.amount;
             document.getElementById('detail-description').textContent = data.description;
 
