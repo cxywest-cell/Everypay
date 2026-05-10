@@ -8,125 +8,105 @@
     <script src="assets/tailwind-config.js"></script>
     <script src="assets/modals.js"></script>
     <script src="assets/utils.js"></script>
-    <!-- Activity Details Drawer -->
-    <div id="activity-details-drawer" class="fixed inset-0 overflow-hidden z-[60] hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
-        <div class="absolute inset-0 overflow-hidden">
+    <!-- Activity Details Modal (centered) -->
+    <div id="activity-details-drawer" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen px-4">
             <!-- Background overlay -->
-            <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeActivityDetails()" aria-hidden="true"></div>
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeActivityDetails()" aria-hidden="true"></div>
 
-            <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
-                <div class="pointer-events-auto w-screen max-w-md">
-                    <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
-                        <!-- Header -->
-                        <div class="bg-gray-50 px-4 py-6 sm:px-6 border-b border-gray-200">
-                            <div class="flex items-start justify-between">
-                                <div>
-                                    <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">Activity Details</h2>
-                                    <p class="text-sm text-gray-500 mt-1" id="detail-id">BA-2025-001</p>
-                                </div>
-                                <div class="ml-3 flex h-7 items-center">
-                                    <button type="button" onclick="closeActivityDetails()" class="relative rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-everypay-500 focus:ring-offset-2">
-                                        <span class="absolute -inset-2.5"></span>
-                                        <span class="sr-only">Close panel</span>
-                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
+            <div class="relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+                <!-- Header -->
+                <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-start justify-between flex-shrink-0">
+                    <div>
+                        <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">Activity Details</h2>
+                        <p class="text-sm text-gray-500 mt-0.5" id="detail-id">BA-2025-001</p>
+                    </div>
+                    <button type="button" onclick="closeActivityDetails()" class="rounded-md text-gray-400 hover:text-gray-500 focus:outline-none">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Scrollable Content -->
+                <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+                    <!-- Status Badges -->
+                    <div class="flex flex-wrap gap-2">
+                        <span id="detail-type" class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Procurement</span>
+                        <span id="detail-agreement" class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset">Unpaid</span>
+                    </div>
+
+                    <!-- Core Info -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500">Counterparty</label>
+                            <div class="mt-1 text-sm font-medium text-gray-900" id="detail-counterparty">Acme Supplies Ltd.</div>
                         </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500">Asset</label>
+                            <div class="mt-1 text-sm font-medium text-gray-900" id="detail-asset">USDT-TRON</div>
+                        </div>
+                    </div>
 
-                        <!-- Content -->
-                        <div class="relative flex-1 px-4 py-6 sm:px-6 space-y-6">
-                            <!-- Status Badges -->
-                            <div class="flex flex-wrap gap-2">
-                                <span id="detail-type" class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Procurement</span>
-                                <span id="detail-agreement" class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset">Unpaid</span>
-                            </div>
+                    <!-- Financials -->
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Total Amount</label>
+                        <div class="text-2xl font-bold text-gray-900" id="detail-amount">12,500.00</div>
+                    </div>
 
-                            <!-- Core Info -->
-                            <div class="border-b border-gray-100 pb-4">
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-500">Counterparty</label>
-                                        <div class="mt-1 text-sm font-medium text-gray-900" id="detail-counterparty">Acme Supplies Ltd.</div>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Description</label>
+                        <p class="text-sm text-gray-600 leading-relaxed" id="detail-description"></p>
+                    </div>
 
-                            <!-- Financials -->
-                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Total Amount</label>
-                                <div class="flex items-baseline gap-2">
-                                    <span class="text-2xl font-bold text-gray-900" id="detail-amount">12,500.00</span>
-                                    <span class="text-sm font-medium text-gray-500" id="detail-asset">USDT</span>
-                                </div>
-                                <div class="mt-1 text-xs text-gray-400" id="detail-network">Network: TRC20</div>
-                            </div>
+                    <!-- Documents -->
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-2">Documents</label>
+                        <ul class="space-y-1.5" id="detail-documents-repo">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
 
-                            <!-- Description -->
-                            <div>
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Description</label>
-                                <p class="text-sm text-gray-600 leading-relaxed" id="detail-description">
-                                    Final payment for Q1 bulk supplies.
-                                </p>
-                            </div>
+                    <!-- Timeline / Updates -->
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-2">Timeline &amp; Updates</label>
+                        <div class="space-y-3 max-h-60 overflow-y-auto pr-1" id="drawer-panel-timeline">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
 
-                            <!-- Timeline / Documents Toggle -->
-                            <div>
-                                <div class="flex items-center gap-4 border-b border-gray-200">
-                                    <button id="drawer-tab-timeline" onclick="switchDrawerTab('timeline')" class="pb-2 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600">
-                                        Timeline
-                                    </button>
-                                    <button id="drawer-tab-docs" onclick="switchDrawerTab('docs')" class="pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                                        Documents
-                                    </button>
-                                </div>
-
-                                <!-- Timeline View -->
-                                <div id="drawer-panel-timeline" class="mt-4 space-y-4 max-h-80 overflow-y-auto pr-1">
-                                    <!-- Populated by JS -->
-                                </div>
-
-                                <!-- Documents Repository View -->
-                                <div id="drawer-panel-docs" class="mt-4 hidden">
-                                    <ul class="space-y-2" id="detail-documents-repo">
-                                        <!-- Populated by JS -->
-                                    </ul>
-                                </div>
-
-                                <!-- Upload button (shared) -->
-                                <div class="mt-4 flex justify-end">
-                                    <button type="button" onclick="openUploadFromDrawer()" class="text-xs text-everypay-600 hover:text-everypay-700 font-medium flex items-center gap-1">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                                        Upload Document
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Accept/Reject Actions (shown when proposed by counterparty) -->
-                            <div id="detail-actions" class="hidden space-y-2">
-                                <button type="button" onclick="acceptActivity()" class="flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
-                                    Accept Activity
+                <!-- Footer: Post Update -->
+                <div class="border-t border-gray-200 px-6 py-4 flex-shrink-0">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-1">
+                            <textarea id="timeline-message-input" rows="2" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-everypay-500 focus:outline-none focus:ring-1 focus:ring-everypay-500 resize-none" placeholder="Type a note or update..."></textarea>
+                            <div class="mt-2 flex items-center gap-2">
+                                <button type="button" onclick="openUploadFromDrawer()" class="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                    Attach doc
                                 </button>
-                                <button type="button" onclick="rejectActivity()" class="flex w-full justify-center rounded-md bg-white border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50">
-                                    Reject
+                                <button type="button" onclick="postTimelineMessage()" class="ml-auto rounded-md bg-everypay-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-everypay-500">
+                                    Post Update
                                 </button>
                             </div>
                         </div>
-
-                        <!-- Footer Actions -->
-                        <div id="detail-footer-actions" class="border-t border-gray-200 px-4 py-6 sm:px-6">
-                            <button type="button" class="flex w-full justify-center rounded-md bg-everypay-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-everypay-500">
-                                Manage Activity
-                            </button>
-                        </div>
+                    </div>
+                    <!-- Accept/Reject (shown when proposed by counterparty) -->
+                    <div id="detail-actions" class="hidden mt-3 pt-3 border-t border-gray-100 flex gap-3">
+                        <button type="button" onclick="acceptActivity()" class="flex-1 justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
+                            Accept Activity
+                        </button>
+                        <button type="button" onclick="rejectActivity()" class="flex-1 justify-center rounded-md bg-white border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50">
+                            Reject
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</head>
+
 <body class="bg-gray-50 flex flex-col h-screen overflow-hidden">
     <main class="flex-1 flex h-screen overflow-hidden">
         <!-- Sidebar -->
@@ -153,67 +133,29 @@
                         </button>
                     </div>
 
-                    <!-- Tab Switch: Procurement / Sales -->
-                    <div>
-                        <div class="flex items-center gap-4 border-b border-gray-200">
-                            <button id="tab-procurement" onclick="switchActivityTab('procurement')" class="pb-3 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600">
-                                Procurement
-                            </button>
-                            <button id="tab-sales" onclick="switchActivityTab('sales')" class="pb-3 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                                Sales
-                            </button>
-                        </div>
-
-                        <!-- Procurement Table -->
-                        <div id="panel-procurement" class="mt-4">
-                            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                                <div class="overflow-x-auto">
-                                    <table class="w-full min-w-[800px] text-sm text-left">
-                                    <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
-                                        <tr>
-                                            <th class="px-6 py-3">ID</th>
-                                            <th class="px-6 py-3">Supplier</th>
-                                            <th class="px-6 py-3">Asset</th>
-                                            <th class="px-6 py-3 min-w-[180px]">Amount</th>
-                                            <th class="px-6 py-3">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="procurement-tbody" class="divide-y divide-gray-100">
-                                        <!-- Populated by JS -->
-                                    </tbody>
-                                </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Sales Table -->
-                        <div id="panel-sales" class="mt-4 hidden">
-                            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                                <div class="overflow-x-auto">
-                                    <table class="w-full min-w-[800px] text-sm text-left">
-                                    <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
-                                        <tr>
-                                            <th class="px-6 py-3">ID</th>
-                                            <th class="px-6 py-3">Customer</th>
-                                            <th class="px-6 py-3">Asset</th>
-                                            <th class="px-6 py-3 min-w-[180px]">Amount</th>
-                                            <th class="px-6 py-3">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="sales-tbody" class="divide-y divide-gray-100">
-                                        <!-- Populated by JS -->
-                                    </tbody>
-                                </table>
-                                </div>
+                    <!-- Procurement Table -->
+                    <div id="panel-procurement" class="mt-4">
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full min-w-[800px] text-sm text-left">
+                                <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
+                                    <tr>
+                                        <th class="px-6 py-3">ID</th>
+                                        <th class="px-6 py-3">Supplier</th>
+                                        <th class="px-6 py-3">Asset</th>
+                                        <th class="px-6 py-3 min-w-[180px]">Amount</th>
+                                        <th class="px-6 py-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="procurement-tbody" class="divide-y divide-gray-100">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </main>
 
-    <!-- Upload Documents Modal -->
+                <!-- Upload Documents Modal -->
     <div id="upload-docs-modal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeUploadDocsModal()"></div>
@@ -257,7 +199,23 @@
             document.getElementById('upload-docs-modal').classList.add('hidden');
             const drawer = document.getElementById('activity-details-drawer');
             if (!drawer.classList.contains('hidden') && currentUploadActivityId) {
-                openActivityDetails(currentUploadActivityId);
+                // Add uploaded docs to the activity's data and timeline
+                const data = activitiesData[currentUploadActivityId];
+                if (data) {
+                    const docList = document.getElementById('upload-docs-list');
+                    const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
+                    // Find any newly added doc items
+                    docList.querySelectorAll('.text-gray-700').forEach(span => {
+                        const fileName = span.textContent;
+                        if (!data.documents.find(d => d.name === fileName)) {
+                            data.documents.push({ name: fileName, uploadedBy: 'you', uploadedAt: now });
+                            data.timeline.push({ time: now, type: 'doc', from: 'you', docName: fileName });
+                        }
+                    });
+                    // Refresh the modal content
+                    document.getElementById('detail-documents-repo').innerHTML = renderDocumentRepository(data.documents);
+                    document.getElementById('drawer-panel-timeline').innerHTML = renderTimeline(data.timeline);
+                }
             }
         }
 
@@ -275,6 +233,9 @@
                         <svg class="w-4 h-4 text-everypay-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         <span class="text-gray-700 truncate">${file.name}</span>
                     </div>
+                    <button type="button" onclick="this.parentElement.remove()" class="text-gray-400 hover:text-red-500 ml-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 `;
                 docList.appendChild(item);
             }
@@ -435,33 +396,11 @@
             }
         };
 
-        // --- Tab Switching ---
-        function switchActivityTab(tab) {
-            const procTab = document.getElementById('tab-procurement');
-            const salesTab = document.getElementById('tab-sales');
-            const procPanel = document.getElementById('panel-procurement');
-            const salesPanel = document.getElementById('panel-sales');
-
-            if (tab === 'procurement') {
-                procTab.className = 'pb-3 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600';
-                salesTab.className = 'pb-3 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
-                procPanel.classList.remove('hidden');
-                salesPanel.classList.add('hidden');
-            } else {
-                salesTab.className = 'pb-3 px-1 text-sm font-medium border-b-2 border-green-600 text-green-600';
-                procTab.className = 'pb-3 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
-                salesPanel.classList.remove('hidden');
-                procPanel.classList.add('hidden');
-            }
-        }
-
         // --- Dynamic Table Rendering ---
         function renderActivityTables() {
             const procurementTbody = document.getElementById('procurement-tbody');
-            const salesTbody = document.getElementById('sales-tbody');
 
             procurementTbody.innerHTML = '';
-            salesTbody.innerHTML = '';
 
             Object.values(activitiesData).forEach(data => {
                 const paidReceived = data.type === 'Procurement' ? data.paid : data.received;
@@ -516,37 +455,13 @@
                     </tr>
                 `;
 
-                if (data.type === 'Procurement') {
-                    procurementTbody.innerHTML += row;
-                } else {
-                    salesTbody.innerHTML += row;
-                }
+                procurementTbody.innerHTML += row;
             });
         }
 
         // --- Activity Details Drawer Logic ---
 
-        // Drawer tab switching
-        function switchDrawerTab(tab) {
-            const tabTimeline = document.getElementById('drawer-tab-timeline');
-            const tabDocs = document.getElementById('drawer-tab-docs');
-            const panelTimeline = document.getElementById('drawer-panel-timeline');
-            const panelDocs = document.getElementById('drawer-panel-docs');
-
-            if (tab === 'timeline') {
-                tabTimeline.className = 'pb-2 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600';
-                tabDocs.className = 'pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
-                panelTimeline.classList.remove('hidden');
-                panelDocs.classList.add('hidden');
-            } else {
-                tabDocs.className = 'pb-2 px-1 text-sm font-medium border-b-2 border-green-600 text-green-600';
-                tabTimeline.className = 'pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
-                panelDocs.classList.remove('hidden');
-                panelTimeline.classList.add('hidden');
-            }
-        }
-
-        // Render timeline events
+        // Render timeline events        // Render timeline events
         function renderTimeline(timeline) {
             if (!timeline || timeline.length === 0) {
                 return '<p class="text-sm text-gray-400 text-center py-4">No activity yet</p>';
@@ -651,7 +566,6 @@
             document.getElementById('detail-counterparty').textContent = data.counterparty;
             document.getElementById('detail-amount').textContent = data.expected;
             document.getElementById('detail-asset').textContent = data.asset;
-            document.getElementById('detail-network').textContent = data.asset.split('-')[1] + ' network';
             document.getElementById('detail-description').textContent = data.description;
 
             // Render Timeline
@@ -665,13 +579,16 @@
 
             // Accept/Reject actions - show only when status is 'proposed' and proposed by counterparty
             const actionsDiv = document.getElementById('detail-actions');
-            const footer = document.getElementById('detail-footer-actions');
+            const postSection = actionsDiv.parentElement.querySelector('.flex.items-start.gap-3, .flex.items-start');
             if (data.status === 'proposed' && data.proposedBy === 'counterparty') {
                 actionsDiv.classList.remove('hidden');
-                footer.classList.add('hidden');
+                // Hide the post update section for proposed-by-counterparty (only accept/reject applies)
+                const textarea = document.getElementById('timeline-message-input');
+                if (textarea) textarea.closest('.flex.items-start.gap-3')?.classList.add('hidden');
             } else {
                 actionsDiv.classList.add('hidden');
-                footer.classList.remove('hidden');
+                const textarea = document.getElementById('timeline-message-input');
+                if (textarea) textarea.closest('.flex.items-start.gap-3')?.classList.remove('hidden');
             }
 
             document.getElementById('activity-details-drawer').classList.remove('hidden');
@@ -704,6 +621,23 @@
                 closeActivityDetails();
                 renderActivityTables();
             }
+        }
+
+        function postTimelineMessage() {
+            const input = document.getElementById('timeline-message-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const activityId = document.getElementById('detail-id').textContent;
+            const data = activitiesData[activityId];
+            if (!data) return;
+
+            const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
+            data.timeline.push({ time: now, type: 'message', from: 'you', content: text });
+            input.value = '';
+
+            // Re-render timeline
+            document.getElementById('drawer-panel-timeline').innerHTML = renderTimeline(data.timeline);
         }
 
         function openUploadFromDrawer() {
