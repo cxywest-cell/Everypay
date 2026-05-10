@@ -64,19 +64,29 @@
                         <p class="text-sm text-gray-600 leading-relaxed" id="detail-description"></p>
                     </div>
 
-                    <!-- Documents -->
+                    <!-- Sub-Tabs: Documents / Timeline -->
                     <div>
-                        <label class="block text-xs font-medium text-gray-500 mb-2">Documents</label>
-                        <ul class="space-y-1.5" id="detail-documents-repo">
-                            <!-- Populated by JS -->
-                        </ul>
-                    </div>
+                        <div class="flex border-b border-gray-200">
+                            <button id="detail-tab-docs" onclick="switchDetailTab('docs')" class="flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600">
+                                Documents
+                            </button>
+                            <button id="detail-tab-timeline" onclick="switchDetailTab('timeline')" class="flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                Timeline &amp; Updates
+                            </button>
+                        </div>
 
-                    <!-- Timeline / Updates -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-500 mb-2">Timeline &amp; Updates</label>
-                        <div class="space-y-3 max-h-60 overflow-y-auto pr-1" id="drawer-panel-timeline">
-                            <!-- Populated by JS -->
+                        <!-- Documents Panel -->
+                        <div id="detail-panel-docs" class="py-4">
+                            <ul class="space-y-1.5" id="detail-documents-repo">
+                                <!-- Populated by JS -->
+                            </ul>
+                        </div>
+
+                        <!-- Timeline Panel -->
+                        <div id="detail-panel-timeline" class="py-4 hidden">
+                            <div class="space-y-3 max-h-60 overflow-y-auto pr-1" id="drawer-panel-timeline">
+                                <!-- Populated by JS -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -634,6 +644,8 @@
             // Render Document Repository
             document.getElementById('detail-documents-repo').innerHTML = renderDocumentRepository(data.documents);
 
+            // Default to Documents tab
+            switchDetailTab('docs');
 
             // Accept/Reject actions - show only when status is 'proposed' and proposed by counterparty
             const actionsDiv = document.getElementById('detail-actions');
@@ -650,6 +662,26 @@
             }
 
             document.getElementById('activity-details-drawer').classList.remove('hidden');
+        }
+
+        // --- Detail Sub-Tabs ---
+        function switchDetailTab(tab) {
+            const docsTab = document.getElementById('detail-tab-docs');
+            const timelineTab = document.getElementById('detail-tab-timeline');
+            const docsPanel = document.getElementById('detail-panel-docs');
+            const timelinePanel = document.getElementById('detail-panel-timeline');
+
+            if (tab === 'docs') {
+                docsTab.className = 'flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600';
+                timelineTab.className = 'flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                docsPanel.classList.remove('hidden');
+                timelinePanel.classList.add('hidden');
+            } else {
+                timelineTab.className = 'flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600';
+                docsTab.className = 'flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                timelinePanel.classList.remove('hidden');
+                docsPanel.classList.add('hidden');
+            }
         }
 
         function closeActivityDetails() {
@@ -694,8 +726,9 @@
             data.timeline.push({ time: now, type: 'message', from: 'you', content: text });
             input.value = '';
 
-            // Re-render timeline
+            // Re-render timeline and switch to timeline tab
             document.getElementById('drawer-panel-timeline').innerHTML = renderTimeline(data.timeline);
+            switchDetailTab('timeline');
         }
 
         function openUploadFromDrawer() {
