@@ -128,6 +128,112 @@
         </div>
     </div>
 
+    <!-- Activity Details Modal -->
+    <div id="activity-details-drawer" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeActivityDetails()" aria-hidden="true"></div>
+
+            <div class="relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+                <!-- Header -->
+                <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-start justify-between flex-shrink-0">
+                    <div>
+                        <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">Activity Details</h2>
+                        <p class="text-sm text-gray-500 mt-0.5" id="detail-id">BA-2025-001</p>
+                    </div>
+                    <button type="button" onclick="closeActivityDetails()" class="rounded-md text-gray-400 hover:text-gray-500 focus:outline-none">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Scrollable Content -->
+                <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+                    <!-- Status Badges -->
+                    <div class="flex flex-wrap gap-2">
+                        <span id="detail-type" class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Procurement</span>
+                        <span id="detail-agreement" class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset">Unpaid</span>
+                    </div>
+
+                    <!-- Core Info -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500">Counterparty</label>
+                            <div class="mt-1 text-sm font-medium text-gray-900" id="detail-counterparty">Acme Supplies Ltd.</div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500">Asset</label>
+                            <div class="mt-1 text-sm font-medium text-gray-900" id="detail-asset">USDT-TRON</div>
+                        </div>
+                    </div>
+
+                    <!-- Financials -->
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Total Amount</label>
+                        <div class="text-2xl font-bold text-gray-900" id="detail-amount">12,500.00</div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Description</label>
+                        <p class="text-sm text-gray-600 leading-relaxed" id="detail-description"></p>
+                    </div>
+
+                    <!-- Sub-Tabs: Documents / Timeline -->
+                    <div>
+                        <div class="flex border-b border-gray-200">
+                            <button id="detail-tab-docs" onclick="switchDetailTab('docs')" class="flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600">
+                                Documents
+                            </button>
+                            <button id="detail-tab-timeline" onclick="switchDetailTab('timeline')" class="flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                Timeline &amp; Updates
+                            </button>
+                        </div>
+
+                        <!-- Documents Panel -->
+                        <div id="detail-panel-docs" class="py-4">
+                            <ul class="space-y-1.5" id="detail-documents-repo">
+                            </ul>
+                            <div id="upload-docs-list" class="mt-3 space-y-1 max-h-48 overflow-y-auto"></div>
+                        </div>
+
+                        <!-- Timeline Panel -->
+                        <div id="detail-panel-timeline" class="py-4 hidden">
+                            <div class="space-y-3 max-h-60 overflow-y-auto pr-1" id="drawer-panel-timeline">
+                            </div>
+                            <!-- Post Update -->
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <textarea id="timeline-message-input" rows="2" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-everypay-500 focus:outline-none focus:ring-1 focus:ring-everypay-500 resize-none" placeholder="Type a note or update..."></textarea>
+                                <div class="mt-2 flex items-center gap-2">
+                                    <button type="button" onclick="openUploadFromDrawer()" class="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                        Attach doc
+                                    </button>
+                                    <button type="button" onclick="postTimelineMessage()" class="ml-auto rounded-md bg-everypay-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-everypay-500">
+                                        Post Update
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer: Accept/Reject -->
+                <div class="border-t border-gray-200 px-6 py-4 flex-shrink-0 hidden" id="detail-actions-wrapper">
+                    <div id="detail-actions" class="flex gap-3">
+                        <button type="button" onclick="acceptActivity()" class="flex-1 justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
+                            Accept Activity
+                        </button>
+                        <button type="button" onclick="rejectActivity()" class="flex-1 justify-center rounded-md bg-white border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50">
+                            Reject
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <main class="flex-1 flex h-screen overflow-hidden">
         <!-- Sidebar -->
         <aside id="ep-sidebar" class="w-64 bg-white border-r border-gray-200 flex flex-col z-10">
@@ -163,7 +269,7 @@
                             <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
                                 <tr>
                                     <th class="px-4 py-3">Order ID</th>
-                                    <th class="px-4 py-3">Activity</th>
+                                    <th class="px-4 py-3">BZ Activity</th>
                                     <th class="px-4 py-3">Tx ID</th>
                                     <th class="px-4 py-3">To</th>
                                     <th class="px-4 py-3">Asset (Network)</th>
@@ -176,7 +282,7 @@
                                 <tr class="hover:bg-orange-50/50">
                                     <td class="px-4 py-3 font-mono text-gray-600">ORD-2025-1001</td>
                                     <td class="px-4 py-3">
-                                        <a href="console-activities.html?open=BA-2025-001" class="font-mono text-sm font-medium text-everypay-600 hover:text-everypay-700 hover:underline">BA-2025-001</a>
+                                        <span class="font-mono text-sm font-medium text-everypay-600 hover:text-everypay-700 hover:underline cursor-pointer" onclick="openActivityDetails('BA-2025-001')">BA-2025-001</span>
                                     </td>
                                     <td class="px-4 py-3 font-mono text-xs text-gray-500 cursor-pointer hover:text-everypay-600" onclick="copyToClipboard('0x7a3fb8c2d1e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9e2d1', this)" title="Click to copy">0x7a3f...e2d1</td>
 
@@ -234,7 +340,7 @@
                         <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
                             <tr>
                                 <th class="px-4 py-3">Order ID</th>
-                                <th class="px-4 py-3">Activity</th>
+                                <th class="px-4 py-3">BZ Activity</th>
                                 <th class="px-4 py-3">Tx ID</th>
                                 <th class="px-4 py-3">To</th>
                                 <th class="px-4 py-3">Asset (Network)</th>
@@ -249,7 +355,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3 font-mono text-gray-600">ORD-2025-1003</td>
                                 <td class="px-4 py-3">
-                                    <a href="console-activities.html?open=BA-2025-003" class="font-mono text-sm font-medium text-everypay-600 hover:text-everypay-700 hover:underline">BA-2025-003</a>
+                                    <span class="font-mono text-sm font-medium text-everypay-600 hover:text-everypay-700 hover:underline cursor-pointer" onclick="openActivityDetails('BA-2025-003')">BA-2025-003</span>
                                 </td>
                                 <td class="px-4 py-3 font-mono text-xs text-gray-500 cursor-pointer hover:text-everypay-600" onclick="copyToClipboard('0x8b4c5d6e7f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9f3a2', this)" title="Click to copy">0x8b4c...f3a2</td>
 
@@ -294,7 +400,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3 font-mono text-gray-600">ORD-2025-1001</td>
                                 <td class="px-4 py-3">
-                                    <a href="console-activities.html?open=BA-2025-001" class="font-mono text-sm font-medium text-everypay-600 hover:text-everypay-700 hover:underline">BA-2025-001</a>
+                                    <span class="font-mono text-sm font-medium text-everypay-600 hover:text-everypay-700 hover:underline cursor-pointer" onclick="openActivityDetails('BA-2025-001')">BA-2025-001</span>
                                 </td>
                                 <td class="px-4 py-3 font-mono text-xs text-gray-500 cursor-pointer hover:text-everypay-600" onclick="copyToClipboard('0x6c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9b1e4', this)" title="Click to copy">0x6c2d...b1e4</td>
 
@@ -336,7 +442,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3 font-mono text-gray-600">ORD-2025-1004</td>
                                 <td class="px-4 py-3">
-                                    <a href="console-activities.html?open=BA-2025-004" class="font-mono text-sm font-medium text-everypay-600 hover:text-everypay-700 hover:underline">BA-2025-004</a>
+                                    <span class="font-mono text-sm font-medium text-everypay-600 hover:text-everypay-700 hover:underline cursor-pointer" onclick="openActivityDetails('BA-2025-004')">BA-2025-004</span>
                                 </td>
                                 <td class="px-4 py-3 font-mono text-xs text-gray-500 cursor-pointer hover:text-everypay-600" onclick="copyToClipboard('0x9d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9a7f3', this)" title="Click to copy">0x9d5e...a7f3</td>
 
@@ -381,7 +487,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3 font-mono text-gray-600">ORD-2025-1002</td>
                                 <td class="px-4 py-3">
-                                    <a href="console-activities.html?open=BA-2025-003" class="font-mono text-sm font-medium text-everypay-600 hover:text-everypay-700 hover:underline">BA-2025-003</a>
+                                    <span class="font-mono text-sm font-medium text-everypay-600 hover:text-everypay-700 hover:underline cursor-pointer" onclick="openActivityDetails('BA-2025-003')">BA-2025-003</span>
                                 </td>
                                 <td class="px-4 py-3 font-mono text-xs text-gray-500 cursor-pointer hover:text-everypay-600" onclick="copyToClipboard('0x1a6f7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9c4b8', this)" title="Click to copy">0x1a6f...c4b8</td>
 
@@ -419,7 +525,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3 font-mono text-gray-600">ORD-2025-1000</td>
                                 <td class="px-4 py-3">
-                                    <a href="console-activities.html?open=BA-2025-001" class="font-mono text-sm font-medium text-everypay-600 hover:text-everypay-700 hover:underline">BA-2025-001</a>
+                                    <span class="font-mono text-sm font-medium text-everypay-600 hover:text-everypay-700 hover:underline cursor-pointer" onclick="openActivityDetails('BA-2025-001')">BA-2025-001</span>
                                 </td>
                                 <td class="px-4 py-3 font-mono text-xs text-gray-500 cursor-pointer hover:text-everypay-600" onclick="copyToClipboard('0x3e8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9d9c2', this)" title="Click to copy">0x3e8b...d9c2</td>
 
@@ -582,6 +688,171 @@
                  btn.innerHTML = originalText;
              }, 1500);
         }
+        // --- Activity Details Modal ---
+        const paymentsActivityData = {
+            'BA-2025-001': { type: 'procurement', counterparty: 'Acme Supplies Ltd.', asset: 'USDT-TRON', amount: '12,500.00', description: 'Supplier Agreement Q1 — Raw materials procurement with milestone-based payment schedule.', status: 'accepted', proposedBy: 'counterparty' },
+            'BA-2025-002': { type: 'sales', counterparty: 'Global Trade Partners', asset: 'USDT-TRON', amount: '28,000.00', description: 'Export Sale Batch #42 — Finished goods shipment.', status: 'unpaid', proposedBy: 'self' },
+            'BA-2025-003': { type: 'procurement', counterparty: 'TechSource Inc.', asset: 'USDT-Ethereum', amount: '15,000.00', description: 'Hardware Equipment — Server racks and networking gear.', status: 'accepted', proposedBy: 'self' },
+            'BA-2025-004': { type: 'procurement', counterparty: 'FinSecure Bank', asset: 'USDC-Ethereum', amount: '45,000.00', description: 'Institutional Purchase — Security appliances.', status: 'proposed', proposedBy: 'counterparty' }
+        };
+
+        let currentDetailActivityId = '';
+        let pendingDocsForCurrentActivity = [];
+        let activityDocuments = {};
+        let activityTimelineEntries = {};
+
+        function openActivityDetails(id) {
+            const data = paymentsActivityData[id];
+            if (!data) return;
+
+            currentDetailActivityId = id;
+            document.getElementById('detail-id').textContent = id;
+            document.getElementById('detail-type').textContent = data.type.charAt(0).toUpperCase() + data.type.slice(1);
+            document.getElementById('detail-counterparty').textContent = data.counterparty;
+            document.getElementById('detail-asset').textContent = data.asset;
+            document.getElementById('detail-amount').textContent = data.amount;
+            document.getElementById('detail-description').textContent = data.description;
+
+            // Status badge
+            const statusEl = document.getElementById('detail-agreement');
+            const statusMap = { 'proposed': 'Proposed', 'accepted': 'Accepted', 'unpaid': 'Unpaid', 'partially_paid': 'Partially Paid', 'paid': 'Paid', 'overpaid': 'Overpaid', 'rejected': 'Rejected' };
+            const colorMap = { 'proposed': 'bg-yellow-50 text-yellow-700 ring-yellow-600/20', 'accepted': 'bg-blue-50 text-blue-700 ring-blue-600/20', 'unpaid': 'bg-red-50 text-red-700 ring-red-600/20', 'partially_paid': 'bg-orange-50 text-orange-700 ring-orange-600/20', 'paid': 'bg-green-50 text-green-700 ring-green-600/20', 'overpaid': 'bg-purple-50 text-purple-700 ring-purple-600/20', 'rejected': 'bg-gray-100 text-gray-700 ring-gray-500/20' };
+            statusEl.textContent = statusMap[data.status] || data.status;
+            statusEl.className = 'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ' + (colorMap[data.status] || '');
+
+            // Accept/Reject buttons visibility
+            const actionsWrapper = document.getElementById('detail-actions-wrapper');
+            if (data.status === 'proposed' && data.proposedBy === 'counterparty') {
+                actionsWrapper.classList.remove('hidden');
+            } else {
+                actionsWrapper.classList.add('hidden');
+            }
+
+            // Init documents and timeline
+            if (!activityDocuments[id]) activityDocuments[id] = [];
+            if (!activityTimelineEntries[id]) activityTimelineEntries[id] = [];
+            pendingDocsForCurrentActivity = [];
+            document.getElementById('upload-docs-list').innerHTML = '';
+
+            // Default to docs tab
+            switchDetailTab('docs');
+            renderDetailDocuments();
+            renderDetailTimeline();
+
+            document.getElementById('activity-details-drawer').classList.remove('hidden');
+        }
+
+        function closeActivityDetails() {
+            document.getElementById('activity-details-drawer').classList.add('hidden');
+        }
+
+        function switchDetailTab(tab) {
+            const docsTab = document.getElementById('detail-tab-docs');
+            const timelineTab = document.getElementById('detail-tab-timeline');
+            const docsPanel = document.getElementById('detail-panel-docs');
+            const timelinePanel = document.getElementById('detail-panel-timeline');
+
+            if (tab === 'docs') {
+                docsTab.className = 'flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600';
+                timelineTab.className = 'flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                docsPanel.classList.remove('hidden');
+                timelinePanel.classList.add('hidden');
+            } else {
+                timelineTab.className = 'flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-everypay-600 text-everypay-600';
+                docsTab.className = 'flex-1 pb-2 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                timelinePanel.classList.remove('hidden');
+                docsPanel.classList.add('hidden');
+            }
+        }
+
+        function renderDetailDocuments() {
+            const repo = document.getElementById('detail-documents-repo');
+            const docs = activityDocuments[currentDetailActivityId] || [];
+            const pending = pendingDocsForCurrentActivity || [];
+            if (docs.length === 0 && pending.length === 0) {
+                repo.innerHTML = '<li class="text-sm text-gray-400 italic py-2">No documents uploaded yet.</li>';
+                return;
+            }
+            let html = '';
+            docs.forEach(function(d) {
+                html += '<li class="flex items-center justify-between text-sm"><span class="text-gray-700">' + d + '</span><svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></li>';
+            });
+            pending.forEach(function(d) {
+                html += '<li class="flex items-center justify-between text-sm"><span class="text-gray-700">' + d + ' <span class="text-xs text-orange-500">(pending)</span></span><svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></li>';
+            });
+            repo.innerHTML = html;
+        }
+
+        function renderDetailTimeline() {
+            const container = document.getElementById('drawer-panel-timeline');
+            const entries = activityTimelineEntries[currentDetailActivityId] || [];
+            if (entries.length === 0) {
+                container.innerHTML = '<div class="text-sm text-gray-400 italic py-2 text-center">No timeline entries yet.</div>';
+                return;
+            }
+            let html = '';
+            entries.forEach(function(e) {
+                html += '<div class="flex gap-3"><div class="flex-shrink-0 w-20 text-xs text-gray-400 pt-0.5 text-right">' + e.time + '</div><div class="flex-1"><div class="text-sm text-gray-800">' + e.message + '</div></div></div>';
+            });
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function postTimelineMessage() {
+            const input = document.getElementById('timeline-message-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+            if (!activityTimelineEntries[currentDetailActivityId]) activityTimelineEntries[currentDetailActivityId] = [];
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            activityTimelineEntries[currentDetailActivityId].push({ message: msg, time: time });
+            input.value = '';
+            renderDetailTimeline();
+        }
+
+        function openUploadFromDrawer() {
+            document.getElementById('upload-docs-input').click();
+        }
+
+        function uploadActivityDocs(event) {
+            const files = event.target.files;
+            if (!files.length) return;
+            for (var i = 0; i < files.length; i++) {
+                pendingDocsForCurrentActivity.push(files[i].name);
+            }
+            renderUploadDocsList();
+            event.target.value = '';
+        }
+
+        function renderUploadDocsList() {
+            var list = document.getElementById('upload-docs-list');
+            if (!list) { list = document.createElement('div'); list.id = 'upload-docs-list'; list.className = 'mt-3 space-y-1 max-h-48 overflow-y-auto'; document.getElementById('activity-details-drawer').querySelector('.flex-1').appendChild(list); }
+            var html = '';
+            pendingDocsForCurrentActivity.forEach(function(name, i) {
+                html += '<div class="flex items-center justify-between text-xs bg-gray-50 px-2 py-1 rounded"><span>' + name + '</span><button onclick="removePendingDoc(' + i + ')" class="text-red-400 hover:text-red-600 ml-2">&times;</button></div>';
+            });
+            list.innerHTML = html;
+        }
+
+        function removePendingDoc(i) {
+            pendingDocsForCurrentActivity.splice(i, 1);
+            renderUploadDocsList();
+        }
+
+        function acceptActivity() {
+            if (paymentsActivityData[currentDetailActivityId]) {
+                paymentsActivityData[currentDetailActivityId].status = 'accepted';
+                closeActivityDetails();
+            }
+        }
+
+        function rejectActivity() {
+            if (paymentsActivityData[currentDetailActivityId]) {
+                paymentsActivityData[currentDetailActivityId].status = 'rejected';
+                closeActivityDetails();
+            }
+        }
+
         // Copy to clipboard helper
         function copyToClipboard(text, el) {
             navigator.clipboard.writeText(text).then(function() {
@@ -596,5 +867,8 @@
         }
     </script>
     <script src="assets/layout.js"></script>
+
+    <!-- Upload Documents Modal (hidden, used by detail drawer) -->
+    <input type="file" id="upload-docs-input" class="hidden" multiple onchange="uploadActivityDocs(event)" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
 </body>
 </html>
