@@ -244,7 +244,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Settlement Option</label>
                             <div class="grid grid-cols-2 gap-3">
                                 <label id="payment-fiat-label" class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer has-[:checked]:border-everypay-500 has-[:checked]:bg-everypay-50 transition-colors">
                                     <input type="radio" name="new-activity-payment" value="fiat" class="text-everypay-600 focus:ring-everypay-500" onchange="togglePaymentFields()">
