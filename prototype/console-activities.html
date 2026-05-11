@@ -44,7 +44,7 @@
 
                     <!-- Step Indicator -->
                     <div class="px-6 py-4 border-b border-gray-100">
-                        <div class="flex items-center justify-between max-w-xs mx-auto">
+                        <div class="flex items-center justify-between max-w-md mx-auto">
                             <div id="of-step-1-indicator" class="flex items-center gap-2">
                                 <div class="w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold">1</div>
                                 <span class="text-xs font-medium text-slate-700">Select</span>
@@ -53,6 +53,11 @@
                             <div id="of-step-2-indicator" class="flex items-center gap-2">
                                 <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</div>
                                 <span class="text-xs font-medium text-gray-400">Quote</span>
+                            </div>
+                            <div class="w-12 h-0.5 bg-gray-200"></div>
+                            <div id="of-step-3-indicator" class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">3</div>
+                                <span class="text-xs font-medium text-gray-400">Summary</span>
                             </div>
                         </div>
                     </div>
@@ -150,15 +155,61 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                                 <span>Re-quote</span>
                             </button>
-                            <button onclick="submitOffRamp()" class="flex-1 py-3 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
-                                <span>Create Transfer</span>
+                            <button onclick="goToOffRampStep3()" class="flex-1 py-3 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                                <span>Review Summary</span>
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                             </button>
                         </div>
                     </div>
-                </div>
 
-                <!-- Normal Modal Content (hidden when off-ramp flow is active) -->
+                    <!-- Step 3: Summary -->
+                    <div id="of-step-3" class="hidden p-6 space-y-5">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                                <span class="text-sm font-bold text-green-700">Ready to Create Transfer</span>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-800">Transfer Summary</h3>
+                            <p class="text-sm text-gray-500">Review the details below before confirming the off-ramp transfer.</p>
+                        </div>
+
+                        <!-- Transfer Summary -->
+                        <div class="bg-gray-50 rounded-lg p-4 space-y-2">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-500">Source</span>
+                                <span class="font-medium text-slate-700 font-mono" id="of-summary-source">—</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Network</span>
+                                <span class="font-medium text-slate-700" id="of-summary-network">—</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Recipient Bank</span>
+                                <span class="font-medium text-slate-700" id="of-summary-bank">—</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Fee (0.5%)</span>
+                                <span class="font-medium text-slate-700 font-mono" id="of-summary-fee">—</span>
+                            </div>
+                            <div class="flex justify-between text-sm pt-2 border-t border-gray-200">
+                                <span class="text-gray-500">You Will Receive</span>
+                                <span class="font-bold text-green-700 font-mono" id="of-summary-receive">—</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button onclick="backToOffRampStep2()" class="px-6 py-3 border border-gray-300 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-colors">
+                                Back
+                            </button>
+                            <button onclick="confirmOffRamp()" class="flex-1 py-3 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span>Confirm</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 <div id="offramp-modal-content" class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
                     <!-- Status Badges -->
                     <div class="flex flex-wrap gap-2">
@@ -1324,6 +1375,8 @@
             if (ofQuoteTimer) { clearInterval(ofQuoteTimer); ofQuoteTimer = null; }
             document.getElementById('offramp-flow').classList.add('hidden');
             document.getElementById('offramp-modal-content').classList.remove('hidden');
+            // Reset to step 1 for next open
+            showOffRampStep(1);
             // Restore footer if needed
             if (ofCurrentActivity && ofCurrentActivity.type === 'Sales' && ofCurrentActivity.paymentMethod === 'crypto') {
                 // Re-show the off-ramp button in financials
@@ -1343,31 +1396,40 @@
         function showOffRampStep(step) {
             const s1 = document.getElementById('of-step-1');
             const s2 = document.getElementById('of-step-2');
+            const s3 = document.getElementById('of-step-3');
             const ind1 = document.getElementById('of-step-1-indicator');
             const ind2 = document.getElementById('of-step-2-indicator');
+            const ind3 = document.getElementById('of-step-3-indicator');
+            const labels = ['Select', 'Quote', 'Summary'];
 
-            if (step === 1) {
-                s1.classList.remove('hidden');
-                s2.classList.add('hidden');
-                // Step 1 active
-                ind1.querySelector('div').className = 'w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold';
-                ind1.querySelector('div').textContent = '1';
-                ind1.querySelector('span').className = 'text-xs font-medium text-slate-700';
-                // Step 2 inactive
-                ind2.querySelector('div').className = 'w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold';
-                ind2.querySelector('div').textContent = '2';
-                ind2.querySelector('span').className = 'text-xs font-medium text-gray-400';
-            } else {
-                s1.classList.add('hidden');
-                s2.classList.remove('hidden');
-                // Step 1 done
-                ind1.querySelector('div').className = 'w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold';
-                ind1.querySelector('div').innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
-                ind1.querySelector('span').className = 'text-xs font-medium text-green-600';
-                // Step 2 active
-                ind2.querySelector('div').className = 'w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold';
-                ind2.querySelector('div').textContent = '2';
-                ind2.querySelector('span').className = 'text-xs font-medium text-slate-700';
+            // Hide all panels first
+            s1.classList.add('hidden');
+            s2.classList.add('hidden');
+            s3.classList.add('hidden');
+
+            // Show current panel
+            document.getElementById('of-step-' + step).classList.remove('hidden');
+
+            for (let i = 1; i <= 3; i++) {
+                const ind = document.getElementById('of-step-' + i + '-indicator');
+                const circle = ind.querySelector('div');
+                const label = ind.querySelector('span');
+                if (i < step) {
+                    circle.className = 'w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold';
+                    circle.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                    label.className = 'text-xs font-medium text-green-600';
+                    label.textContent = labels[i - 1];
+                } else if (i === step) {
+                    circle.className = 'w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold';
+                    circle.textContent = i;
+                    label.className = 'text-xs font-medium text-slate-700';
+                    label.textContent = labels[i - 1];
+                } else {
+                    circle.className = 'w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold';
+                    circle.textContent = i;
+                    label.className = 'text-xs font-medium text-gray-400';
+                    label.textContent = labels[i - 1];
+                }
             }
         }
 
@@ -1381,6 +1443,51 @@
         function backToOffRampStep1() {
             if (ofQuoteTimer) { clearInterval(ofQuoteTimer); ofQuoteTimer = null; }
             showOffRampStep(1);
+        }
+
+        function backToOffRampStep2() {
+            showOffRampStep(2);
+        }
+
+        function goToOffRampStep3() {
+            const crypto = document.getElementById('of-crypto-select').value;
+            const fiat = document.getElementById('of-fiat-select').value;
+            const amount = parseFloat(document.getElementById('of-amount-input').value) || 0;
+            const bankSelect = document.getElementById('of-bank-select');
+            const bankName = bankSelect.options[bankSelect.selectedIndex]?.text || '—';
+
+            const asset = ofAssetConfig[crypto];
+            const fc = ofFiatConfig[fiat];
+            const grossAmount = amount * fc.rate;
+            const fee = grossAmount * 0.005;
+            const netAmount = grossAmount - fee;
+
+            document.getElementById('of-summary-source').textContent = amount.toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' ' + (asset?.symbol || crypto);
+            document.getElementById('of-summary-network').textContent = asset?.network || '—';
+            document.getElementById('of-summary-bank').textContent = bankName;
+            document.getElementById('of-summary-fee').textContent = (fc.symbol || '') + fee.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('of-summary-receive').textContent = (fc.symbol || '') + netAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            showOffRampStep(3);
+        }
+
+        function confirmOffRamp() {
+            const activityId = document.getElementById('detail-id').textContent;
+            const amount = parseFloat(document.getElementById('of-amount-input').value) || 0;
+            const crypto = document.getElementById('of-crypto-select').value;
+            const cryptoSymbol = ofAssetConfig[crypto]?.symbol || crypto;
+
+            const current = offRampAmounts.get(activityId) || 0;
+            offRampAmounts.set(activityId, current + amount);
+
+            const data = activitiesData[activityId];
+            if (data) {
+                const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
+                data.timeline.push({ time: now, type: 'status', from: 'system', content: 'Off-ramped ' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + cryptoSymbol });
+            }
+
+            cancelOffRampFlow();
+            openActivityDetails(activityId);
         }
 
         function computeOffRampQuote() {
@@ -1442,37 +1549,13 @@
             computeOffRampQuote();
             startOffRampCountdown();
 
-            // Restore original rate after 2s (simulate market return) — optional, for demo feel
+            // Restore original rate after 5s (simulate market return)
             const originalRate = fc.rate;
             setTimeout(() => {
                 if (ofFiatConfig[fiat] && Math.abs(ofFiatConfig[fiat].rate - originalRate) < 0.01) {
                     ofFiatConfig[fiat].rate = originalRate;
                 }
             }, 5000);
-        }
-
-        function submitOffRamp() {
-            // Record the off-ramped amount for this activity (crypto amount, not fiat)
-            const activityId = document.getElementById('detail-id').textContent;
-            const amount = parseFloat(document.getElementById('of-amount-input').value) || 0;
-            const crypto = document.getElementById('of-crypto-select').value;
-            const cryptoSymbol = ofAssetConfig[crypto]?.symbol || crypto;
-
-            // Track cumulative off-ramped crypto amount
-            const current = offRampAmounts.get(activityId) || 0;
-            offRampAmounts.set(activityId, current + amount);
-
-            // Add timeline entry
-            const data = activitiesData[activityId];
-            if (data) {
-                const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
-                data.timeline.push({ time: now, type: 'status', from: 'system', content: 'Off-ramped ' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + cryptoSymbol });
-            }
-
-            alert('Off-Ramp transfer created:\\n' + amount + ' ' + cryptoSymbol + ' → Fiat\\n\\nBackend integration to be implemented.');
-            cancelOffRampFlow();
-            // Re-render details to show updated off-ramped amount
-            openActivityDetails(activityId);
         }
 
         // Wire up off-ramp event listeners

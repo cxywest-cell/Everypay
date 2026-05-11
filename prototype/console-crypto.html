@@ -746,7 +746,7 @@
                                     <div class="flex-1 h-0.5 bg-gray-200 mx-3"></div>
                                     <div id="flow-step-3" class="flex items-center gap-2">
                                         <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">3</div>
-                                        <span class="text-xs font-medium text-gray-400 hidden sm:inline">Confirm</span>
+                                        <span class="text-xs font-medium text-gray-400 hidden sm:inline">Summary</span>
                                     </div>
                                 </div>
                             </div>
@@ -890,7 +890,7 @@
                                 </div>
                             </div>
 
-                            <!-- Step 3: Confirm Withdrawal (crypto-specific: deposit address + auto-processing) -->
+                            <!-- Step 3: Summary (crypto-specific: deposit address + auto-processing) -->
                             <div id="transfer-panel" class="hidden p-6 space-y-5">
                                 <div>
                                     <div class="flex items-center gap-2 mb-2">
@@ -899,7 +899,7 @@
                                         </div>
                                         <span class="text-sm font-bold text-green-700">Ready to Withdraw</span>
                                     </div>
-                                    <h3 class="text-base font-bold text-slate-800">Confirm Withdrawal Details</h3>
+                                    <h3 class="text-base font-bold text-slate-800">Withdrawal Summary</h3>
                                     <p class="text-sm text-gray-500">Review the details below. OSN will automatically process the on-chain transfer and fiat settlement.</p>
                                 </div>
 
@@ -969,7 +969,7 @@
 
                                 <button onclick="confirmWithdraw()" class="w-full py-3 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    <span>Confirm & Start Withdrawal</span>
+                                    <span>Confirm</span>
                                 </button>
                             </div>
                         </div>
@@ -1570,10 +1570,16 @@
         function cancelFlow() {
             document.getElementById('offramp-modal').classList.add('hidden');
             if (quoteExpiryTimer) clearTimeout(quoteExpiryTimer);
+            // Reset to step 1 for next open
+            currentFlowStep = 1;
+            updateFlowSteps(1);
+            document.getElementById('quote-panel').classList.remove('hidden');
+            document.getElementById('quote-step-panel').classList.add('hidden');
+            document.getElementById('transfer-panel').classList.add('hidden');
         }
 
         function updateFlowSteps(step) {
-            const labels = ['Select', 'Quote', 'Confirm'];
+            const labels = ['Select', 'Quote', 'Summary'];
             for (let i = 1; i <= 3; i++) {
                 const stepEl = document.getElementById('flow-step-' + i);
                 const circle = stepEl.querySelector('div');
