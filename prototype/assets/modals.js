@@ -258,6 +258,26 @@
                         </div>
 
                         <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer has-[:checked]:border-everypay-500 has-[:checked]:bg-everypay-50 transition-colors">
+                                    <input type="radio" name="new-activity-payment" value="fiat" class="text-everypay-600 focus:ring-everypay-500" checked>
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-800">Fiat</span>
+                                        <span class="text-xs text-gray-500 block">Bank transfer</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer has-[:checked]:border-everypay-500 has-[:checked]:bg-everypay-50 transition-colors">
+                                    <input type="radio" name="new-activity-payment" value="crypto" class="text-everypay-600 focus:ring-everypay-500">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-800">Crypto</span>
+                                        <span class="text-xs text-gray-500 block">On-chain transfer</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
                             <label class="block text-sm font-medium text-gray-700">Description</label>
                             <textarea id="new-activity-desc" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm" placeholder="e.g. Q3 Supply Order"></textarea>
                         </div>

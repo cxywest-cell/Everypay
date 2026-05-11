@@ -41,7 +41,7 @@
                     </div>
 
                     <!-- Core Info -->
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-3 gap-4">
                         <div>
                             <label class="block text-xs font-medium text-gray-500">Counterparty</label>
                             <div class="mt-1 text-sm font-medium text-gray-900" id="detail-counterparty">Acme Supplies Ltd.</div>
@@ -49,6 +49,13 @@
                         <div>
                             <label class="block text-xs font-medium text-gray-500">Asset</label>
                             <div class="mt-1 text-sm font-medium text-gray-900 flex items-center gap-1" id="detail-asset"><span>USDT</span><span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">TRC20</span></div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500">Payment</label>
+                            <div class="mt-1 text-sm font-medium text-gray-900 flex items-center gap-1.5" id="detail-payment">
+                                <span id="detail-payment-icon"></span>
+                                <span id="detail-payment-label"></span>
+                            </div>
                         </div>
                     </div>
 
@@ -164,6 +171,7 @@
                                         <th class="px-6 py-3">Supplier</th>
                                         <th class="px-6 py-3">Asset</th>
                                         <th class="px-6 py-3 min-w-[180px]">Amount</th>
+                                        <th class="px-6 py-3">Payment</th>
                                         <th class="px-6 py-3">Status</th>
                                         <th class="px-6 py-3 w-8"></th>
                                     </tr>
@@ -187,6 +195,7 @@
                                         <th class="px-6 py-3">Customer</th>
                                         <th class="px-6 py-3">Asset</th>
                                         <th class="px-6 py-3 min-w-[180px]">Amount</th>
+                                        <th class="px-6 py-3">Payment</th>
                                         <th class="px-6 py-3">Status</th>
                                         <th class="px-6 py-3 w-8"></th>
                                     </tr>
@@ -309,10 +318,25 @@
             const originalText = btn.innerHTML;
             btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Creating...';
 
+            const paymentMethod = document.querySelector('input[name="new-activity-payment"]:checked')?.value || 'fiat';
+            const partner = document.getElementById('new-activity-partner').value;
+            const asset = document.getElementById('new-activity-asset').value;
+            const amount = document.getElementById('new-activity-amount').value || '0';
+            const desc = document.getElementById('new-activity-desc').value || '';
+
+            const id = 'BA-2025-' + String(Object.keys(activitiesData).length + 1).padStart(3, '0');
+            activitiesData[id] = {
+                id, type: 'Procurement', status: 'proposed', proposedBy: 'you',
+                counterparty: partner, asset: asset.replace('(', '').replace(')', ''),
+                paymentMethod, amount, expected: amount, paid: '0.00', description: desc,
+                documents: [], timeline: [{ time: new Date().toLocaleString(), type: 'status', from: 'you', content: 'Activity proposed' }]
+            };
+
             setTimeout(() => {
                 btn.innerHTML = originalText;
                 closeNewActivityModal();
-            }, 1000);
+                renderActivityTables();
+            }, 800);
         }
 
         // --- Activity Data ---
@@ -325,6 +349,7 @@
                 proposedBy: 'you',
                 counterparty: 'Acme Supplies Ltd.',
                 asset: 'USDT TRC20',
+                paymentMethod: 'crypto',
                 amount: '12,500.00',
                 expected: '12,500.00',
                 paid: '7,500.00',
@@ -352,6 +377,7 @@
                 proposedBy: 'counterparty',
                 counterparty: 'Global Trade Partners',
                 asset: 'BTC Bitcoin',
+                paymentMethod: 'crypto',
                 amount: '0.50',
                 expected: '45,000.00',
                 received: '0.00',
@@ -373,6 +399,7 @@
                 proposedBy: 'you',
                 counterparty: 'TechSource Inc.',
                 asset: 'USDC ERC20',
+                paymentMethod: 'crypto',
                 amount: '8,950.00',
                 expected: '8,950.00',
                 paid: '8,950.00',
@@ -401,6 +428,7 @@
                 proposedBy: 'you',
                 counterparty: 'FastLogistics Co.',
                 asset: 'USDT TRC20',
+                paymentMethod: 'crypto',
                 amount: '2,500.00',
                 expected: '2,500.00',
                 paid: '0.00',
@@ -421,6 +449,7 @@
                 proposedBy: 'you',
                 counterparty: 'Office Depot Inc.',
                 asset: 'USDC ERC20',
+                paymentMethod: 'crypto',
                 amount: '5,000.00',
                 expected: '5,000.00',
                 paid: '1,250.00',
@@ -519,6 +548,11 @@
                                     <div class="${barColor} h-1.5 rounded-full" style="width: ${pctStr}%"></div>
                                 </div>
                             </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            ${data.paymentMethod === 'fiat' 
+                                ? '<span class="inline-flex items-center gap-1 text-xs font-medium text-gray-600"><svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>Fiat</span>'
+                                : '<span class="inline-flex items-center gap-1 text-xs font-medium text-gray-600"><svg class="w-3.5 h-3.5 text-everypay-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>Crypto</span>'}
                         </td>
                         ${statusCell}
                         <td class="px-4 py-4">
@@ -644,6 +678,17 @@
             const [token, network] = data.asset.split(' ');
             document.getElementById('detail-asset').innerHTML = token + ' <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded ml-1">' + network + '</span>';
             document.getElementById('detail-description').textContent = data.description;
+
+            // Payment method
+            const pmIcon = document.getElementById('detail-payment-icon');
+            const pmLabel = document.getElementById('detail-payment-label');
+            if (data.paymentMethod === 'fiat') {
+                pmIcon.innerHTML = '<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>';
+                pmLabel.textContent = 'Fiat';
+            } else {
+                pmIcon.innerHTML = '<svg class="w-4 h-4 text-everypay-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>';
+                pmLabel.textContent = 'Crypto';
+            }
 
             // Render Timeline
             document.getElementById('drawer-panel-timeline').innerHTML = renderTimeline(data.timeline);
