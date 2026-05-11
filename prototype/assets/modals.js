@@ -274,7 +274,7 @@
                             </div>
                             <div>
                                 <label id="amount-label" class="block text-sm font-medium text-gray-700">Amount</label>
-                                <input type="number" id="new-activity-amount" class="focus:ring-everypay-500 focus:border-everypay-500 block w-full px-3 sm:text-sm border-gray-300 rounded-md" placeholder="0.00">
+                                <input type="number" id="new-activity-amount" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm" placeholder="0.00">
                             </div>
                         </div>
 
