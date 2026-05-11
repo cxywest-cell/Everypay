@@ -1139,8 +1139,13 @@
                     salesActions.innerHTML = '<button type="button" onclick="openOffRampFlow()" class="w-32 justify-center rounded-md bg-everypay-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-everypay-500"><svg class="w-4 h-4 inline mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>Off-Ramp</button>';
                     salesActions.classList.remove('hidden');
                 } else if (data.paymentMethod === 'fiat' && received < expected) {
-                    salesActions.innerHTML = '<div class="relative group inline-flex"><button type="button" class="w-44 justify-center rounded-md bg-amber-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-400"><svg class="w-4 h-4 inline mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>Stop Auto Off-Ramp</button><div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 invisible group-hover:visible bg-gray-800 text-white text-xs rounded-lg px-3 py-2 shadow-lg leading-relaxed pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">You will no longer receive fiat payments. All remaining balance will be paid in crypto — you can withdraw directly or off-ramp manually anytime.</div></div>';
-                    salesActions.classList.remove('hidden');
+                    if (suspendedAutoOffRamp.has(data.id)) {
+                        salesActions.innerHTML = '<span class="inline-flex items-center gap-1.5 text-sm font-medium text-amber-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>Auto Off-Ramp Suspended</span>';
+                        salesActions.classList.remove('hidden');
+                    } else {
+                        salesActions.innerHTML = '<button type="button" onclick="stopAutoOffRamp(\'' + data.id + '\')" class="w-44 justify-center rounded-md bg-amber-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-400"><svg class="w-4 h-4 inline mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>Stop Auto Off-Ramp</button>';
+                        salesActions.classList.remove('hidden');
+                    }
                 } else {
                     salesActions.classList.add('hidden');
                 }
@@ -1249,6 +1254,18 @@
         // Auto-select first bank and set target fiat
         let ofQuoteTimer = null;
         let ofCurrentActivity = null;
+
+        // Track activities where user suspended auto off-ramp
+        const suspendedAutoOffRamp = new Set();
+
+        function stopAutoOffRamp(activityId) {
+            suspendedAutoOffRamp.add(activityId);
+            // Re-render the action area to show status
+            if (ofCurrentActivity && ofCurrentActivity.id === activityId) {
+                const salesActions = document.getElementById('detail-sales-actions');
+                salesActions.innerHTML = '<span class="inline-flex items-center gap-1.5 text-sm font-medium text-amber-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>Auto Off-Ramp Suspended</span>';
+            }
+        }
 
         function openOffRampFlow() {
             // Hide normal modal content, show off-ramp flow
