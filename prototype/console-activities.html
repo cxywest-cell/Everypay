@@ -1278,7 +1278,7 @@
         const suspendedAutoOffRamp = new Set();
         // Track off-ramped amounts per activity (crypto Sales only)
         const offRampAmounts = new Map();
-        let ofQuoteTimer = null;
+
         function stopAutoOffRamp(activityId) {
             suspendedAutoOffRamp.add(activityId);
             const salesActions = document.getElementById('detail-sales-actions');
