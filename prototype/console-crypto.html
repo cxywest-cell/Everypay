@@ -748,7 +748,53 @@
                             <div id="quote-panel" class="p-6">
                                 <div class="mb-6">
                                     <h3 class="text-lg font-bold text-slate-800 mb-1">Get Exchange Quote</h3>
-                                    <p class="text-sm text-gray-500">Select your stablecoin and target fiat. Quote is valid for 30 seconds.</p>
+                                    <p class="text-sm text-gray-500">Link a sales activity or upload docs. Quote is valid for 30 seconds.</p>
+                                </div>
+
+                                <!-- Sales Activity Link -->
+                                <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <label class="block text-sm font-bold text-green-800 mb-2">
+                                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                                        Linked Sales Activity (optional)
+                                    </label>
+                                    <select id="offramp-sales-activity" onchange="onOffRampActivityChange()" class="w-full px-3 py-2.5 border border-green-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none bg-white">
+                                        <option value="">-- No activity linked (upload docs required) --</option>
+                                    </select>
+                                    <div id="offramp-activity-info" class="hidden mt-3 bg-white rounded-lg p-3 border border-green-100">
+                                        <div class="grid grid-cols-3 gap-3 text-xs">
+                                            <div>
+                                                <span class="text-gray-400 block">Received</span>
+                                                <span class="font-mono font-bold text-green-700" id="offramp-act-received">—</span>
+                                            </div>
+                                            <div>
+                                                <span class="text-gray-400 block">Already Off-Ramped</span>
+                                                <span class="font-mono font-bold text-amber-600" id="offramp-act-offramped">—</span>
+                                            </div>
+                                            <div>
+                                                <span class="text-gray-400 block">Available</span>
+                                                <span class="font-mono font-bold text-slate-800" id="offramp-act-available">—</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Document Upload (shown when no activity linked) -->
+                                <div id="offramp-doc-upload" class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                    <label class="block text-sm font-bold text-blue-800 mb-2">
+                                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                        Supporting Documents
+                                    </label>
+                                    <p class="text-xs text-blue-600 mb-2">Upload contract/invoice to justify this off-ramp transfer.</p>
+                                    <div id="offramp-doc-files" class="space-y-2"></div>
+                                    <label class="mt-2 inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg cursor-pointer transition-colors">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                        Add Document
+                                        <input type="file" id="offramp-file-input" class="hidden" accept=".pdf,.jpg,.png" onchange="handleOffRampDocUpload(event)">
+                                    </label>
+                                    <div id="offramp-doc-status" class="hidden mt-2 text-xs font-medium text-green-700">
+                                        <svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        Document uploaded
+                                    </div>
                                 </div>
 
                                 <!-- Recipient Bank Selection -->
@@ -832,6 +878,10 @@
                                         <span class="text-gray-500">Transfer ID</span>
                                         <span class="font-medium text-slate-700 font-mono" id="transfer-id">TXF-20250506-001</span>
                                     </div>
+                                    <div class="hidden">
+                                        <span class="text-gray-500">Source</span>
+                                        <span class="font-medium text-slate-700 text-xs" id="transfer-linked-activity">—</span>
+                                    </div>
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-500">You Send</span>
                                         <span class="font-medium text-slate-700 font-mono" id="transfer-amount">50,000 USDT</span>
@@ -911,6 +961,12 @@
                 select.value = assetMap[assetKey];
             }
             loadRecipientBanks();
+            populateOffRampActivities();
+            offrampUploadedDocs = [];
+            document.getElementById('offramp-doc-files').innerHTML = '';
+            document.getElementById('offramp-doc-status').classList.add('hidden');
+            document.getElementById('offramp-doc-upload').classList.remove('hidden');
+            document.getElementById('offramp-activity-info').classList.add('hidden');
             panel.classList.remove('hidden');
             if (typeof showQuote === 'function') showQuote();
             panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -942,6 +998,139 @@
                     sel.appendChild(opt);
                 });
             } catch (e) { /* ignore parse errors */ }
+        }
+
+        // ============ SALES ACTIVITIES FOR OFF-RAMP LINKING ============
+        const salesActivitiesData = {
+            'BA-2025-002': { id: 'BA-2025-002', description: 'Export Sale Batch #42', counterparty: 'Global Trade Partners', received: 45000, asset: 'USDT', assetKey: 'usdt-trc', network: 'TRC20', status: 'Completed' },
+            'BA-2025-004': { id: 'BA-2025-004', description: 'Institutional Purchase', counterparty: 'FinSecure Bank', received: 12000, asset: 'USDC', assetKey: 'usdc-eth', network: 'ERC20', status: 'Completed' },
+            'SA-2025-005': { id: 'SA-2025-005', description: 'Enterprise License Deal', counterparty: 'TechCorp Global', received: 78500, asset: 'USDT', assetKey: 'usdt-eth', network: 'ERC20', status: 'Completed' },
+            'SA-2025-006': { id: 'SA-2025-006', description: 'Cross-border Trade Settlement', counterparty: 'Pacific Imports Ltd.', received: 32000, asset: 'USDC', assetKey: 'usdc-sol', network: 'SPL', status: 'Completed' }
+        };
+
+        // Track off-ramp amounts per activity (persisted via localStorage to sync with console-activities.html)
+        function getOffRampedAmount(activityId) {
+            try {
+                const raw = localStorage.getItem('everypay-offramp-amounts');
+                if (!raw) return 0;
+                const data = JSON.parse(raw);
+                return data[activityId] || 0;
+            } catch (e) { return 0; }
+        }
+
+        function recordOffRampAmount(activityId, amount) {
+            try {
+                const raw = localStorage.getItem('everypay-offramp-amounts');
+                const data = raw ? JSON.parse(raw) : {};
+                data[activityId] = (data[activityId] || 0) + amount;
+                localStorage.setItem('everypay-offramp-amounts', JSON.stringify(data));
+            } catch (e) { /* ignore */ }
+        }
+
+        // Track uploaded documents per off-ramp session
+        let offrampUploadedDocs = [];
+
+        function populateOffRampActivities() {
+            const select = document.getElementById('offramp-sales-activity');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- No activity linked (upload docs required) --</option>';
+
+            Object.keys(salesActivitiesData).forEach(id => {
+                const act = salesActivitiesData[id];
+                const available = act.received - getOffRampedAmount(id);
+                if (available > 0) {
+                    const opt = document.createElement('option');
+                    opt.value = id;
+                    opt.textContent = `${id} — ${act.description} (${act.counterparty})`;
+                    opt.dataset.available = available;
+                    opt.dataset.asset = act.assetKey;
+                    opt.textContent += ` [Available: ${available.toLocaleString()} ${act.asset}]`;
+                    select.appendChild(opt);
+                }
+            });
+        }
+
+        function onOffRampActivityChange() {
+            const select = document.getElementById('offramp-sales-activity');
+            const activityId = select.value;
+            const infoPanel = document.getElementById('offramp-activity-info');
+            const docUpload = document.getElementById('offramp-doc-upload');
+
+            if (activityId) {
+                // Activity selected — auto-fill amount, hide doc upload
+                const act = salesActivitiesData[activityId];
+                const offRamped = getOffRampedAmount(activityId);
+                const available = act.received - offRamped;
+
+                document.getElementById('offramp-act-received').textContent = act.received.toLocaleString() + ' ' + act.asset;
+                document.getElementById('offramp-act-offramped').textContent = offRamped.toLocaleString() + ' ' + act.asset;
+                document.getElementById('offramp-act-available').textContent = available.toLocaleString() + ' ' + act.asset;
+                infoPanel.classList.remove('hidden');
+
+                // Auto-select the matching crypto asset
+                document.getElementById('crypto-asset').value = act.assetKey;
+                document.getElementById('crypto-amount').value = available;
+
+                // Hide doc upload (not needed when linked to activity)
+                docUpload.classList.add('hidden');
+
+                updateQuote();
+            } else {
+                // No activity — show doc upload, reset amount
+                infoPanel.classList.add('hidden');
+                docUpload.classList.remove('hidden');
+                document.getElementById('crypto-amount').value = '0';
+                offrampUploadedDocs = [];
+                document.getElementById('offramp-doc-files').innerHTML = '';
+                document.getElementById('offramp-doc-status').classList.add('hidden');
+                updateQuote();
+            }
+        }
+
+        function handleOffRampDocUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate file type
+            const allowed = ['application/pdf', 'image/jpeg', 'image/png'];
+            if (!allowed.includes(file.type)) {
+                alert('Please upload a PDF, JPG, or PNG file.');
+                return;
+            }
+
+            // Add to uploaded docs list
+            offrampUploadedDocs.push({ name: file.name, size: file.size, type: file.type });
+
+            // Render file list
+            const container = document.getElementById('offramp-doc-files');
+            container.innerHTML = offrampUploadedDocs.map((doc, i) => `
+                <div class="flex items-center justify-between bg-white rounded px-3 py-2 border border-blue-100">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span class="text-xs font-medium text-slate-700">${doc.name}</span>
+                        <span class="text-xs text-gray-400">${(doc.size / 1024).toFixed(1)} KB</span>
+                    </div>
+                    <button onclick="removeOffRampDoc(${i})" class="text-red-400 hover:text-red-600">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            `).join('');
+
+            // Show status
+            document.getElementById('offramp-doc-status').classList.remove('hidden');
+
+            // Reset file input so same file can be re-uploaded
+            event.target.value = '';
+        }
+
+        function removeOffRampDoc(index) {
+            offrampUploadedDocs.splice(index, 1);
+            if (offrampUploadedDocs.length === 0) {
+                document.getElementById('offramp-doc-files').innerHTML = '';
+                document.getElementById('offramp-doc-status').classList.add('hidden');
+            } else {
+                handleOffRampDocUpload({ target: { files: [] } }); // re-render
+            }
         }
 
         function closeOffRampFlow() {
@@ -1338,6 +1527,12 @@
             document.getElementById('track-panel').classList.add('hidden');
             resetQuote();
             loadRecipientBanks();
+            populateOffRampActivities();
+            offrampUploadedDocs = [];
+            document.getElementById('offramp-doc-files').innerHTML = '';
+            document.getElementById('offramp-doc-status').classList.add('hidden');
+            document.getElementById('offramp-doc-upload').classList.remove('hidden');
+            document.getElementById('offramp-activity-info').classList.add('hidden');
             updateQuote();
         }
 
@@ -1462,10 +1657,29 @@
                 return;
             }
 
+            // Validate: if no activity linked, require doc upload
+            const linkedActivity = document.getElementById('offramp-sales-activity').value;
+            if (!linkedActivity && offrampUploadedDocs.length === 0) {
+                alert('No sales activity linked — please upload a supporting document (contract/invoice) before proceeding.');
+                return;
+            }
+
             const cryptoAmount = parseFloat(document.getElementById('crypto-amount').value);
             if (!cryptoAmount || cryptoAmount < 100) {
                 alert('Minimum transfer amount is 100.');
                 return;
+            }
+
+            // If linked to activity, validate amount doesn't exceed available
+            if (linkedActivity) {
+                const act = salesActivitiesData[linkedActivity];
+                if (act) {
+                    const available = act.received - getOffRampedAmount(linkedActivity);
+                    if (cryptoAmount > available + 0.01) {
+                        alert('Amount exceeds available balance for this activity. Available: ' + available.toLocaleString() + ' ' + act.asset);
+                        return;
+                    }
+                }
             }
 
             // Move to step 2 (withdrawal confirmation)
@@ -1486,12 +1700,27 @@
             const fiatAmountStr = document.getElementById('fiat-amount').value;
             const feeStr = document.getElementById('quote-fee').textContent;
 
+            // Store linked activity on transfer panel for recording on confirm
+            document.getElementById('transfer-panel').dataset.linkedActivity = linkedActivity || '';
+            document.getElementById('transfer-panel').dataset.cryptoAmount = cryptoAmount;
+
             document.getElementById('transfer-amount').textContent = cryptoAmount.toLocaleString() + ' ' + asset.symbol;
             document.getElementById('transfer-asset').textContent = asset.symbol + ' — ' + asset.network;
             document.getElementById('transfer-receive').textContent = fiatAmountStr;
             document.getElementById('transfer-recipient').textContent = bankLabels[currentBank] + ' (' + currentFiat + ')';
             document.getElementById('transfer-fee').textContent = feeStr;
             document.getElementById('transfer-rate').textContent = document.getElementById('quote-rate').textContent;
+
+            // Show linked activity info in step 2 if applicable
+            const activitySummary = document.getElementById('transfer-linked-activity');
+            if (linkedActivity) {
+                const act = salesActivitiesData[linkedActivity];
+                activitySummary.textContent = `Linked: ${linkedActivity} — ${act.description}`;
+                activitySummary.parentElement.classList.remove('hidden');
+            } else {
+                activitySummary.textContent = `Documents: ${offrampUploadedDocs.map(d => d.name).join(', ')}`;
+                activitySummary.parentElement.classList.remove('hidden');
+            }
 
             // Populate deposit address
             document.getElementById('deposit-address').textContent = asset.depositAddress;
@@ -1528,20 +1757,29 @@
             const receive = document.getElementById('transfer-receive').textContent;
             const recipient = document.getElementById('transfer-recipient').textContent;
 
+            // Record off-ramp amount if linked to a sales activity
+            const linkedActivity = document.getElementById('transfer-panel').dataset.linkedActivity || '';
+            const cryptoAmount = parseFloat(document.getElementById('transfer-panel').dataset.cryptoAmount || '0');
+            if (linkedActivity && cryptoAmount > 0) {
+                recordOffRampAmount(linkedActivity, cryptoAmount);
+            }
+
             // Add pending entry to Off-Ramp History
-            addOffRampToHistory(transferId, amount, asset, receive, recipient);
+            addOffRampToHistory(transferId, amount, asset, receive, recipient, linkedActivity);
 
             // Close modal
             closeOffRampFlow();
         }
 
         // --- Add Off-Ramp record to history table ---
-        function addOffRampToHistory(transferId, amount, asset, receive, recipient) {
+        function addOffRampToHistory(transferId, amount, asset, receive, recipient, linkedActivity) {
             const tbody = document.getElementById('offramp-history-body');
             if (!tbody) return;
 
             const now = new Date();
             const timeStr = now.toLocaleString('en-GB', { timeZone: 'Asia/Hong_Kong', hour12: false });
+
+            const sourceLabel = linkedActivity || '—';
 
             const row = document.createElement('tr');
             row.className = 'border-b border-gray-100 hover:bg-gray-50 transition-colors';
@@ -1552,7 +1790,7 @@
                 <td class="px-6 py-4 text-right font-mono">${amount}</td>
                 <td class="px-6 py-4 text-right font-mono font-medium text-green-700">${receive}</td>
                 <td class="px-6 py-4 text-gray-500">${recipient}</td>
-                <td class="px-6 py-4 font-mono text-xs text-gray-500">—</td>
+                <td class="px-6 py-4 font-mono text-xs ${linkedActivity ? 'text-green-600' : 'text-gray-500'}">${sourceLabel}</td>
                 <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">Processing</span></td>
             `;
             tbody.insertBefore(row, tbody.firstChild);
