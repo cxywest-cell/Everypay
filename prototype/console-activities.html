@@ -208,7 +208,7 @@
                                 <svg class="w-3.5 h-3.5 text-everypay-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                                 Off-Ramped
                             </span>
-                            <span class="font-medium text-everypay-600" id="detail-offramped-amount">—</span>
+                            <span class="font-medium text-everypay-600" id="detail-offramped-amount">0.00 USDT</span>
                         </div>
                     </div>
 
@@ -1145,14 +1145,11 @@
                 const expected = parseFloat((data.expected || '0.00').replace(/,/g, ''));
                 const received = parseFloat((data.received || '0.00').replace(/,/g, ''));
                 if (data.paymentMethod === 'crypto' && received > 0) {
-                    // Show off-ramped amount if any
-                    const offrampAmt = offRampAmounts.get(data.id);
-                    if (offrampAmt && offrampAmt > 0) {
-                        document.getElementById('detail-offramped-amount').textContent = '$' + offrampAmt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                        offrampedRow.classList.remove('hidden');
-                    } else {
-                        offrampedRow.classList.add('hidden');
-                    }
+                    // Always show off-ramped row for crypto Sales
+                    const offrampCrypto = offRampAmounts.get(data.id) || 0;
+                    const assetSymbol = data.asset.split(' ')[0];
+                    document.getElementById('detail-offramped-amount').textContent = offrampCrypto.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + assetSymbol;
+                    offrampedRow.classList.remove('hidden');
                     salesActions.innerHTML = '<button type="button" onclick="openOffRampFlow()" class="w-32 justify-center rounded-md bg-everypay-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-everypay-500"><svg class="w-4 h-4 inline mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>Off-Ramp</button>';
                     salesActions.classList.remove('hidden');
                 } else if (data.paymentMethod === 'fiat' && received < expected) {
@@ -1455,26 +1452,24 @@
         }
 
         function submitOffRamp() {
-            // Record the off-ramped amount for this activity
+            // Record the off-ramped amount for this activity (crypto amount, not fiat)
             const activityId = document.getElementById('detail-id').textContent;
             const amount = parseFloat(document.getElementById('of-amount-input').value) || 0;
-            const fiat = document.getElementById('of-fiat-select').value;
-            const fc = ofFiatConfig[fiat];
-            const grossUsd = amount * fc.rate;
+            const crypto = document.getElementById('of-crypto-select').value;
+            const cryptoSymbol = ofAssetConfig[crypto]?.symbol || crypto;
 
-            // Track cumulative off-ramped amount
+            // Track cumulative off-ramped crypto amount
             const current = offRampAmounts.get(activityId) || 0;
-            offRampAmounts.set(activityId, current + grossUsd);
+            offRampAmounts.set(activityId, current + amount);
 
-            // Update the activity's received amount to reflect off-ramp
+            // Add timeline entry
             const data = activitiesData[activityId];
             if (data) {
                 const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
-                const offRampFiatSymbol = fc.symbol;
-                data.timeline.push({ time: now, type: 'status', from: 'system', content: 'Off-ramped ' + amount + ' ' + ofAssetConfig[document.getElementById('of-crypto-select').value].symbol + ' → ' + offRampFiatSymbol + grossUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) });
+                data.timeline.push({ time: now, type: 'status', from: 'system', content: 'Off-ramped ' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + cryptoSymbol });
             }
 
-            alert('Off-Ramp transfer created:\n' + amount + ' ' + ofAssetConfig[document.getElementById('of-crypto-select').value].symbol + ' → ' + offRampFiatSymbol + grossUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\n\nBackend integration to be implemented.');
+            alert('Off-Ramp transfer created:\\n' + amount + ' ' + cryptoSymbol + ' → Fiat\\n\\nBackend integration to be implemented.');
             cancelOffRampFlow();
             // Re-render details to show updated off-ramped amount
             openActivityDetails(activityId);
