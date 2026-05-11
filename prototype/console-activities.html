@@ -616,6 +616,51 @@
                     { time: '2025-04-28 11:00', type: 'doc', from: 'counterparty', docName: 'wire_receipt_jp.pdf' },
                     { time: '2025-04-29 10:00', type: 'status', from: 'you', content: 'Funds received — overpaid by ¥275,000. Credit note issued.' }
                 ]
+            },
+            'BA-2025-011': {
+                id: 'BA-2025-011',
+                type: 'Procurement',
+                status: 'proposed',
+                proposedBy: 'counterparty',
+                counterparty: 'RawMat Industries',
+                asset: 'USDT TRC20',
+                paymentMethod: 'crypto',
+                amount: '42,000.00',
+                expected: '42,000.00',
+                paid: '0.00',
+                description: 'Bulk raw material supply — Q3 production cycle. Counterparty-proposed terms for review.',
+                documents: [
+                    { name: 'supply_agreement.pdf', type: 'contract', uploadedBy: 'counterparty', uploadedAt: '2025-05-12 09:00' },
+                    { name: 'material_specs.pdf', type: 'invoice', uploadedBy: 'counterparty', uploadedAt: '2025-05-12 09:10' }
+                ],
+                timeline: [
+                    { time: '2025-05-12 09:00', type: 'status', from: 'counterparty', content: 'Activity proposed' },
+                    { time: '2025-05-12 09:00', type: 'doc', from: 'counterparty', docName: 'supply_agreement.pdf' },
+                    { time: '2025-05-12 09:10', type: 'doc', from: 'counterparty', docName: 'material_specs.pdf' },
+                    { time: '2025-05-12 10:00', type: 'message', from: 'counterparty', content: 'Please review and confirm terms. Delivery within 14 days of acceptance.' }
+                ]
+            },
+            'BA-2025-012': {
+                id: 'BA-2025-012',
+                type: 'Procurement',
+                status: 'proposed',
+                proposedBy: 'counterparty',
+                counterparty: 'EuroSteel AG',
+                asset: 'EUR',
+                paymentMethod: 'fiat',
+                amount: '67,500.00',
+                expected: '67,500.00',
+                paid: '0.00',
+                description: 'Steel sheet procurement — custom dimensions. Pending approval for wire transfer.',
+                documents: [
+                    { name: 'quote_eurosteel.pdf', type: 'po', uploadedBy: 'counterparty', uploadedAt: '2025-05-14 11:00' },
+                    { name: 'quality_cert.pdf', type: 'policy', uploadedBy: 'counterparty', uploadedAt: '2025-05-14 11:05' }
+                ],
+                timeline: [
+                    { time: '2025-05-14 11:00', type: 'status', from: 'counterparty', content: 'Activity proposed' },
+                    { time: '2025-05-14 11:00', type: 'doc', from: 'counterparty', docName: 'quote_eurosteel.pdf' },
+                    { time: '2025-05-14 11:05', type: 'doc', from: 'counterparty', docName: 'quality_cert.pdf' }
+                ]
             }
         };
 
