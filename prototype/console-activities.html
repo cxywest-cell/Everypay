@@ -491,6 +491,129 @@
                     { time: '2025-04-02 11:00', type: 'doc', from: 'you', docName: 'partial_receipt.pdf' },
                     { time: '2025-04-02 14:00', type: 'message', from: 'counterparty', content: 'Acknowledged. Awaiting balance of 3,750.00.' }
                 ]
+            },
+            'BA-2025-006': {
+                id: 'BA-2025-006',
+                type: 'Sales',
+                status: 'paid',
+                proposedBy: 'you',
+                counterparty: 'London Import Ltd.',
+                asset: 'GBP',
+                paymentMethod: 'fiat',
+                amount: '35,000.00',
+                expected: '35,000.00',
+                received: '35,000.00',
+                description: 'Export of textile products to UK market.',
+                documents: [
+                    { name: 'commercial_invoice_uk.pdf', type: 'invoice', uploadedBy: 'you', uploadedAt: '2025-04-15 10:00' },
+                    { name: 'bill_of_lading_uk.pdf', type: 'shipping', uploadedBy: 'you', uploadedAt: '2025-04-15 10:30' },
+                    { name: 'swift_confirmation.pdf', type: 'receipt', uploadedBy: 'counterparty', uploadedAt: '2025-04-22 09:00' }
+                ],
+                timeline: [
+                    { time: '2025-04-15 10:00', type: 'status', from: 'you', content: 'Activity proposed' },
+                    { time: '2025-04-15 10:00', type: 'doc', from: 'you', docName: 'commercial_invoice_uk.pdf' },
+                    { time: '2025-04-15 10:30', type: 'doc', from: 'you', docName: 'bill_of_lading_uk.pdf' },
+                    { time: '2025-04-16 11:00', type: 'status', from: 'counterparty', content: 'Accepted' },
+                    { time: '2025-04-22 09:00', type: 'status', from: 'counterparty', content: 'Wire transfer confirmed — £35,000.00 via SWIFT' },
+                    { time: '2025-04-22 09:00', type: 'doc', from: 'counterparty', docName: 'swift_confirmation.pdf' },
+                    { time: '2025-04-22 14:00', type: 'status', from: 'you', content: 'Funds received. Settlement complete.' }
+                ]
+            },
+            'BA-2025-007': {
+                id: 'BA-2025-007',
+                type: 'Procurement',
+                status: 'partially_paid',
+                proposedBy: 'you',
+                counterparty: 'EuroTech GmbH',
+                asset: 'EUR',
+                paymentMethod: 'fiat',
+                amount: '28,500.00',
+                expected: '28,500.00',
+                paid: '14,250.00',
+                description: 'Industrial machinery parts — 50% upfront, 50% on delivery.',
+                documents: [
+                    { name: 'purchase_order_de.pdf', type: 'po', uploadedBy: 'you', uploadedAt: '2025-05-01 08:00' },
+                    { name: 'proforma_invoice.pdf', type: 'invoice', uploadedBy: 'counterparty', uploadedAt: '2025-05-02 10:00' },
+                    { name: 'wire_receipt_1.pdf', type: 'receipt', uploadedBy: 'you', uploadedAt: '2025-05-05 14:00' }
+                ],
+                timeline: [
+                    { time: '2025-05-01 08:00', type: 'status', from: 'you', content: 'Activity proposed' },
+                    { time: '2025-05-01 08:00', type: 'doc', from: 'you', docName: 'purchase_order_de.pdf' },
+                    { time: '2025-05-02 10:00', type: 'status', from: 'counterparty', content: 'Accepted — 50/50 payment terms confirmed' },
+                    { time: '2025-05-02 10:00', type: 'doc', from: 'counterparty', docName: 'proforma_invoice.pdf' },
+                    { time: '2025-05-05 14:00', type: 'status', from: 'you', content: 'First installment sent — €14,250.00 via SEPA' },
+                    { time: '2025-05-05 14:00', type: 'doc', from: 'you', docName: 'wire_receipt_1.pdf' },
+                    { time: '2025-05-06 09:00', type: 'message', from: 'counterparty', content: 'Payment received. Production started. Balance due on delivery.' }
+                ]
+            },
+            'BA-2025-008': {
+                id: 'BA-2025-008',
+                type: 'Sales',
+                status: 'proposed',
+                proposedBy: 'counterparty',
+                counterparty: 'NYC Distribution Corp.',
+                asset: 'USD',
+                paymentMethod: 'fiat',
+                amount: '52,800.00',
+                expected: '52,800.00',
+                received: '0.00',
+                description: 'Consumer electronics batch — Q2 seasonal order.',
+                documents: [
+                    { name: 'purchase_order_us.pdf', type: 'po', uploadedBy: 'counterparty', uploadedAt: '2025-05-08 15:00' },
+                    { name: 'product_catalog.pdf', type: 'invoice', uploadedBy: 'counterparty', uploadedAt: '2025-05-08 15:05' }
+                ],
+                timeline: [
+                    { time: '2025-05-08 15:00', type: 'status', from: 'counterparty', content: 'Activity proposed' },
+                    { time: '2025-05-08 15:00', type: 'doc', from: 'counterparty', docName: 'purchase_order_us.pdf' },
+                    { time: '2025-05-08 15:05', type: 'doc', from: 'counterparty', docName: 'product_catalog.pdf' }
+                ]
+            },
+            'BA-2025-009': {
+                id: 'BA-2025-009',
+                type: 'Procurement',
+                status: 'unpaid',
+                proposedBy: 'you',
+                counterparty: 'Shanghai Logistics Group',
+                asset: 'CNY',
+                paymentMethod: 'fiat',
+                amount: '180,000.00',
+                expected: '180,000.00',
+                paid: '0.00',
+                description: 'Domestic freight forwarding — monthly settlement.',
+                documents: [
+                    { name: 'freight_invoice_cn.pdf', type: 'invoice', uploadedBy: 'counterparty', uploadedAt: '2025-05-10 09:00' }
+                ],
+                timeline: [
+                    { time: '2025-05-08 10:00', type: 'status', from: 'you', content: 'Activity proposed' },
+                    { time: '2025-05-08 14:00', type: 'status', from: 'counterparty', content: 'Accepted' },
+                    { time: '2025-05-10 09:00', type: 'doc', from: 'counterparty', docName: 'freight_invoice_cn.pdf' },
+                    { time: '2025-05-10 09:30', type: 'message', from: 'counterparty', content: 'Invoice issued. Payment due within 7 business days.' }
+                ]
+            },
+            'BA-2025-010': {
+                id: 'BA-2025-010',
+                type: 'Sales',
+                status: 'overpaid',
+                proposedBy: 'you',
+                counterparty: 'Tokyo Trading Co.',
+                asset: 'JPY',
+                paymentMethod: 'fiat',
+                amount: '5,500,000.00',
+                expected: '5,500,000.00',
+                received: '5,775,000.00',
+                description: 'Precision instruments export — exchange rate adjustment included.',
+                documents: [
+                    { name: 'sales_invoice_jp.pdf', type: 'invoice', uploadedBy: 'you', uploadedAt: '2025-04-20 10:00' },
+                    { name: 'wire_receipt_jp.pdf', type: 'receipt', uploadedBy: 'counterparty', uploadedAt: '2025-04-28 11:00' }
+                ],
+                timeline: [
+                    { time: '2025-04-20 10:00', type: 'status', from: 'you', content: 'Activity proposed' },
+                    { time: '2025-04-20 10:00', type: 'doc', from: 'you', docName: 'sales_invoice_jp.pdf' },
+                    { time: '2025-04-21 09:00', type: 'status', from: 'counterparty', content: 'Accepted' },
+                    { time: '2025-04-28 11:00', type: 'status', from: 'counterparty', content: 'Wire sent — ¥5,775,000 (includes 5% FX buffer)' },
+                    { time: '2025-04-28 11:00', type: 'doc', from: 'counterparty', docName: 'wire_receipt_jp.pdf' },
+                    { time: '2025-04-29 10:00', type: 'status', from: 'you', content: 'Funds received — overpaid by ¥275,000. Credit note issued.' }
+                ]
             }
         };
 
@@ -512,6 +635,12 @@
                 salesPanel.classList.remove('hidden');
                 procPanel.classList.add('hidden');
             }
+        }
+
+        // --- Currency Sign Helper ---
+        function getCurrencySign(currency) {
+            const signs = { 'USD': '$', 'EUR': '€', 'GBP': '£', 'CNY': '¥', 'JPY': '¥' };
+            return signs[currency] || '';
         }
 
         // --- Dynamic Table Rendering ---
@@ -547,6 +676,8 @@
                     </td>
                 `;
 
+                const sign = data.paymentMethod === 'fiat' ? getCurrencySign(data.asset) : '';
+
                 const row = `
                     <tr class="hover:bg-gray-50 cursor-pointer" onclick="openActivityDetails('${data.id}')">
                         <td class="px-6 py-4 font-mono text-xs text-gray-500">${data.id}</td>
@@ -568,11 +699,11 @@
                             <div class="flex flex-col gap-1">
                                 <div class="flex items-baseline justify-between">
                                     <span class="text-[10px] text-gray-400">Expected</span>
-                                    <span class="font-medium text-slate-800">${data.expected}</span>
+                                    <span class="font-medium text-slate-800">${sign}${data.expected}</span>
                                 </div>
                                 <div class="flex items-baseline justify-between">
                                     <span class="text-[10px] text-gray-400">${paidLabel}</span>
-                                    <span class="font-medium ${paid > 0 ? 'text-green-600' : 'text-gray-400'}">${paidReceived}</span>
+                                    <span class="font-medium ${paid > 0 ? 'text-green-600' : 'text-gray-400'}">${sign}${paidReceived}</span>
                                 </div>
                                 <div class="w-full bg-gray-100 rounded-full h-1.5">
                                     <div class="${barColor} h-1.5 rounded-full" style="width: ${pctStr}%"></div>
@@ -699,7 +830,8 @@
             statusBadge.className = 'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ' + (statusColors[data.status] || 'bg-gray-50 text-gray-700 ring-gray-500/10');
 
             document.getElementById('detail-counterparty').textContent = data.counterparty;
-            document.getElementById('detail-amount').textContent = data.expected;
+            const sign = data.paymentMethod === 'fiat' ? getCurrencySign(data.asset) : '';
+            document.getElementById('detail-amount').textContent = sign + data.expected;
             const parts = data.asset.split(' ');
             const token = parts[0];
             const network = parts[1];
