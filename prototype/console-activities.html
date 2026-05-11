@@ -32,8 +32,127 @@
                     </button>
                 </div>
 
-                <!-- Scrollable Content -->
-                <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+                <!-- Off-Ramp Flow (replaces normal content when active) -->
+                <div id="offramp-flow" class="hidden flex-1 overflow-y-auto flex flex-col">
+                    <!-- Flow Header -->
+                    <div class="bg-everypay-50 px-6 py-4 border-b border-everypay-100 flex justify-between items-center">
+                        <h2 class="text-base font-bold text-everypay-800">Off-Ramp Settlement</h2>
+                        <button onclick="cancelOffRampFlow()" class="text-everypay-400 hover:text-everypay-600 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Step Indicator -->
+                    <div class="px-6 py-4 border-b border-gray-100">
+                        <div class="flex items-center justify-between max-w-xs mx-auto">
+                            <div id="of-step-1-indicator" class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold">1</div>
+                                <span class="text-xs font-medium text-slate-700">Select</span>
+                            </div>
+                            <div class="w-12 h-0.5 bg-gray-200"></div>
+                            <div id="of-step-2-indicator" class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</div>
+                                <span class="text-xs font-medium text-gray-400">Quote</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Select Crypto & Fiat -->
+                    <div id="of-step-1" class="p-6 space-y-5">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-1">Select Settlement</h3>
+                            <p class="text-sm text-gray-500">Choose the stablecoin to convert and your target fiat currency.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Source Crypto</label>
+                            <select id="of-crypto-select" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                <option value="usdt-eth">USDT — Ethereum (ERC-20)</option>
+                                <option value="usdc-eth">USDC — Ethereum (ERC-20)</option>
+                                <option value="usdt-sol">USDT — Solana (SPL)</option>
+                                <option value="usdc-sol">USDC — Solana (SPL)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Target Fiat</label>
+                            <select id="of-fiat-select" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                <option value="HKD">HKD — Hong Kong Dollar</option>
+                                <option value="USD">USD — US Dollar</option>
+                                <option value="EUR">EUR — Euro</option>
+                                <option value="SGD">SGD — Singapore Dollar</option>
+                                <option value="GBP">GBP — British Pound</option>
+                                <option value="CNY">CNY — Chinese Yuan</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Amount to Off-Ramp</label>
+                            <div class="relative">
+                                <input type="number" id="of-amount-input" value="0" step="100" min="100" class="w-full px-3 py-2.5 pr-20 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none font-mono">
+                                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold" id="of-amount-symbol">USDT</span>
+                            </div>
+                        </div>
+
+                        <button onclick="goToOffRampStep2()" class="w-full py-3 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                            <span>Get Quote</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Step 2: Quote Details -->
+                    <div id="of-step-2" class="hidden p-6 space-y-5">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-1">Exchange Quote</h3>
+                            <p class="text-sm text-gray-500">Review the quote below. Quote expires in 60 seconds.</p>
+                        </div>
+
+                        <!-- Quote Summary -->
+                        <div class="bg-gray-50 rounded-lg p-4 space-y-2">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-500">Exchange Rate</span>
+                                <span class="font-medium text-slate-700 font-mono" id="of-quote-rate">1 USDT = 7.825 HKD</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Network</span>
+                                <span class="font-medium text-slate-700" id="of-quote-network">Ethereum (ERC-20)</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Fee (incl. network + processing)</span>
+                                <span class="font-medium text-slate-700 font-mono" id="of-quote-fee">HK$195.63</span>
+                            </div>
+                            <div class="flex justify-between text-sm pt-2 border-t border-gray-200">
+                                <span class="text-gray-500">Quote Expires</span>
+                                <span class="font-medium font-mono" id="of-quote-timer-label">
+                                    <span id="of-quote-countdown" class="text-amber-600">01:00</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- You Receive -->
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                            <div class="text-xs font-medium text-green-600 uppercase tracking-wider">You Will Receive</div>
+                            <div class="text-2xl font-bold text-green-800 font-mono mt-1" id="of-quote-receive">HK$391,054.38</div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button onclick="backToOffRampStep1()" class="px-6 py-3 border border-gray-300 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-colors">
+                                Back
+                            </button>
+                            <button onclick="requoteOffRamp()" class="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                <span>Re-quote</span>
+                            </button>
+                            <button onclick="submitOffRamp()" class="flex-1 py-3 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                                <span>Create Transfer</span>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Normal Modal Content (hidden when off-ramp flow is active) -->
+                <div id="offramp-modal-content" class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
                     <!-- Status Badges -->
                     <div class="flex flex-wrap gap-2">
                         <span id="detail-type" class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Procurement</span>
@@ -1010,7 +1129,7 @@
                 const expected = parseFloat((data.expected || '0.00').replace(/,/g, ''));
                 const received = parseFloat((data.received || '0.00').replace(/,/g, ''));
                 if (data.paymentMethod === 'crypto' && received > 0) {
-                    salesActions.innerHTML = '<button type="button" class="w-32 justify-center rounded-md bg-everypay-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-everypay-500"><svg class="w-4 h-4 inline mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>Off-Ramp</button>';
+                    salesActions.innerHTML = '<button type="button" onclick="openOffRampFlow()" class="w-32 justify-center rounded-md bg-everypay-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-everypay-500"><svg class="w-4 h-4 inline mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>Off-Ramp</button>';
                     salesActions.classList.remove('hidden');
                 } else if (data.paymentMethod === 'fiat' && received < expected) {
                     salesActions.innerHTML = '<div class="relative group inline-flex"><button type="button" class="w-44 justify-center rounded-md bg-amber-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-400"><svg class="w-4 h-4 inline mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>Stop Auto Off-Ramp</button><div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 invisible group-hover:visible bg-gray-800 text-white text-xs rounded-lg px-3 py-2 shadow-lg leading-relaxed pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">You will no longer receive fiat payments. All remaining balance will be paid in crypto — you can withdraw directly or off-ramp manually anytime.</div></div>';
@@ -1048,6 +1167,212 @@
         function closeActivityDetails() {
             document.getElementById('activity-details-drawer').classList.add('hidden');
         }
+
+        // --- Off-Ramp Flow ---
+        const ofAssetConfig = {
+            'usdt-eth': { symbol: 'USDT', network: 'Ethereum (ERC-20)', rateBase: 1.0 },
+            'usdc-eth': { symbol: 'USDC', network: 'Ethereum (ERC-20)', rateBase: 1.0 },
+            'usdt-sol': { symbol: 'USDT', network: 'Solana (SPL)', rateBase: 1.0 },
+            'usdc-sol': { symbol: 'USDC', network: 'Solana (SPL)', rateBase: 1.0 }
+        };
+
+        const ofFiatConfig = {
+            'HKD': { symbol: 'HK$', rate: 7.825, decimals: 2 },
+            'USD': { symbol: '$', rate: 1.0, decimals: 2 },
+            'EUR': { symbol: '€', rate: 0.92, decimals: 2 },
+            'SGD': { symbol: 'S$', rate: 1.35, decimals: 2 },
+            'GBP': { symbol: '£', rate: 0.79, decimals: 2 },
+            'CNY': { symbol: '¥', rate: 7.24, decimals: 2 }
+        };
+
+        let ofQuoteTimer = null;
+        let ofCurrentActivity = null;
+
+        function openOffRampFlow() {
+            // Hide normal modal content, show off-ramp flow
+            document.getElementById('offramp-modal-content').classList.add('hidden');
+            document.getElementById('detail-actions-wrapper').classList.add('hidden');
+            const flow = document.getElementById('offramp-flow');
+            flow.classList.remove('hidden');
+
+            // Save current activity context
+            const activityId = document.getElementById('detail-id').textContent;
+            ofCurrentActivity = activitiesData[activityId] || null;
+
+            // Default amount = crypto received
+            if (ofCurrentActivity && ofCurrentActivity.received) {
+                const received = parseFloat(ofCurrentActivity.received.replace(/,/g, ''));
+                document.getElementById('of-amount-input').value = received || 50000;
+            } else {
+                document.getElementById('of-amount-input').value = 50000;
+            }
+
+            // Auto-select crypto based on activity's asset
+            if (ofCurrentActivity && ofCurrentActivity.asset) {
+                const asset = ofCurrentActivity.asset.split(' ')[0].toUpperCase(); // e.g., "USDT" from "USDT (TRC20)"
+                const cryptoSelect = document.getElementById('of-crypto-select');
+                for (const opt of cryptoSelect.options) {
+                    if (opt.value.startsWith(asset.toLowerCase())) {
+                        opt.selected = true;
+                        break;
+                    }
+                }
+            }
+
+            // Update amount symbol
+            updateOfAmountSymbol();
+
+            // Show step 1
+            showOffRampStep(1);
+        }
+
+        function cancelOffRampFlow() {
+            if (ofQuoteTimer) { clearInterval(ofQuoteTimer); ofQuoteTimer = null; }
+            document.getElementById('offramp-flow').classList.add('hidden');
+            document.getElementById('offramp-modal-content').classList.remove('hidden');
+            // Restore footer if needed
+            if (ofCurrentActivity && ofCurrentActivity.type === 'Sales' && ofCurrentActivity.paymentMethod === 'crypto') {
+                // Re-show the off-ramp button in financials
+                const salesActions = document.getElementById('detail-sales-actions');
+                if (parseFloat((ofCurrentActivity.received || '0').replace(/,/g, '')) > 0) {
+                    salesActions.classList.remove('hidden');
+                }
+            }
+        }
+
+        function updateOfAmountSymbol() {
+            const crypto = document.getElementById('of-crypto-select').value;
+            const symbol = ofAssetConfig[crypto]?.symbol || 'USDT';
+            document.getElementById('of-amount-symbol').textContent = symbol;
+        }
+
+        function showOffRampStep(step) {
+            const s1 = document.getElementById('of-step-1');
+            const s2 = document.getElementById('of-step-2');
+            const ind1 = document.getElementById('of-step-1-indicator');
+            const ind2 = document.getElementById('of-step-2-indicator');
+
+            if (step === 1) {
+                s1.classList.remove('hidden');
+                s2.classList.add('hidden');
+                // Step 1 active
+                ind1.querySelector('div').className = 'w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold';
+                ind1.querySelector('div').textContent = '1';
+                ind1.querySelector('span').className = 'text-xs font-medium text-slate-700';
+                // Step 2 inactive
+                ind2.querySelector('div').className = 'w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold';
+                ind2.querySelector('div').textContent = '2';
+                ind2.querySelector('span').className = 'text-xs font-medium text-gray-400';
+            } else {
+                s1.classList.add('hidden');
+                s2.classList.remove('hidden');
+                // Step 1 done
+                ind1.querySelector('div').className = 'w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold';
+                ind1.querySelector('div').innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                ind1.querySelector('span').className = 'text-xs font-medium text-green-600';
+                // Step 2 active
+                ind2.querySelector('div').className = 'w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold';
+                ind2.querySelector('div').textContent = '2';
+                ind2.querySelector('span').className = 'text-xs font-medium text-slate-700';
+            }
+        }
+
+        function goToOffRampStep2() {
+            updateOfAmountSymbol();
+            computeOffRampQuote();
+            showOffRampStep(2);
+            startOffRampCountdown();
+        }
+
+        function backToOffRampStep1() {
+            if (ofQuoteTimer) { clearInterval(ofQuoteTimer); ofQuoteTimer = null; }
+            showOffRampStep(1);
+        }
+
+        function computeOffRampQuote() {
+            const crypto = document.getElementById('of-crypto-select').value;
+            const fiat = document.getElementById('of-fiat-select').value;
+            const amount = parseFloat(document.getElementById('of-amount-input').value) || 0;
+
+            const asset = ofAssetConfig[crypto];
+            const fc = ofFiatConfig[fiat];
+
+            const grossAmount = amount * fc.rate;
+            const fee = grossAmount * 0.005; // 0.5% fee
+            const netAmount = grossAmount - fee;
+
+            document.getElementById('of-quote-rate').textContent = '1 ' + asset.symbol + ' = ' + fc.rate.toFixed(fc.decimals) + ' ' + fiat;
+            document.getElementById('of-quote-network').textContent = asset.network;
+            document.getElementById('of-quote-fee').textContent = fc.symbol + fee.toLocaleString('en-US', { minimumFractionDigits: fc.decimals, maximumFractionDigits: fc.decimals });
+            document.getElementById('of-quote-receive').textContent = fc.symbol + netAmount.toLocaleString('en-US', { minimumFractionDigits: fc.decimals, maximumFractionDigits: fc.decimals });
+        }
+
+        function startOffRampCountdown() {
+            if (ofQuoteTimer) clearInterval(ofQuoteTimer);
+            let seconds = 60;
+            const countdownEl = document.getElementById('of-quote-countdown');
+
+            function updateDisplay() {
+                const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
+                const ss = String(seconds % 60).padStart(2, '0');
+                countdownEl.textContent = mm + ':' + ss;
+
+                if (seconds <= 10) {
+                    countdownEl.className = 'text-red-600';
+                } else {
+                    countdownEl.className = 'text-amber-600';
+                }
+            }
+
+            updateDisplay();
+            ofQuoteTimer = setInterval(() => {
+                seconds--;
+                if (seconds <= 0) {
+                    clearInterval(ofQuoteTimer);
+                    countdownEl.textContent = 'EXPIRED';
+                    countdownEl.className = 'text-red-600 font-bold';
+                    return;
+                }
+                updateDisplay();
+            }, 1000);
+        }
+
+        function requoteOffRamp() {
+            // Simulate slight rate fluctuation
+            const fiat = document.getElementById('of-fiat-select').value;
+            const fc = ofFiatConfig[fiat];
+            // Random ±0.3% fluctuation
+            const fluctuation = 1 + (Math.random() - 0.5) * 0.006;
+            ofFiatConfig[fiat].rate = parseFloat((fc.rate * fluctuation).toFixed(4));
+
+            computeOffRampQuote();
+            startOffRampCountdown();
+
+            // Restore original rate after 2s (simulate market return) — optional, for demo feel
+            const originalRate = fc.rate;
+            setTimeout(() => {
+                if (ofFiatConfig[fiat] && Math.abs(ofFiatConfig[fiat].rate - originalRate) < 0.01) {
+                    ofFiatConfig[fiat].rate = originalRate;
+                }
+            }, 5000);
+        }
+
+        function submitOffRamp() {
+            // Placeholder — backend integration deferred
+            const amount = document.getElementById('of-amount-input').value;
+            const crypto = document.getElementById('of-crypto-select').value;
+            const fiat = document.getElementById('of-fiat-select').value;
+            alert('Off-Ramp transfer created:\n' + amount + ' ' + ofAssetConfig[crypto].symbol + ' → ' + ofFiatConfig[fiat].symbol + fiat + '\n\nBackend integration to be implemented.');
+            cancelOffRampFlow();
+        }
+
+        // Update amount symbol when crypto changes
+        document.addEventListener('DOMContentLoaded', function() {
+            const cryptoSelect = document.getElementById('of-crypto-select');
+            if (cryptoSelect) {
+                cryptoSelect.addEventListener('change', updateOfAmountSymbol);
+            }
+        });
 
         function acceptActivity() {
             const activityId = document.getElementById('detail-id').textContent;
