@@ -12,60 +12,7 @@
 
 <body class="bg-gray-50 flex flex-col h-screen overflow-hidden">
     <main class="flex-1 flex h-screen overflow-hidden">
-        <!-- Add Bank Modal (Off-Ramp) -->
-    <div id="of-add-bank-modal" class="hidden fixed inset-0 z-[70] overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen px-4">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75" onclick="closeAddBankModal()"></div>
-            <div class="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold text-slate-800">Add Recipient Bank Account</h3>
-                    <button onclick="closeAddBankModal()" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                </div>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Bank Name</label>
-                        <input type="text" id="of-new-bank-name" placeholder="e.g., HSBC Hong Kong" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Account Number</label>
-                            <input type="text" id="of-new-bank-account" placeholder="e.g., 801-123456-001" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">SWIFT / BIC</label>
-                            <input type="text" id="of-new-bank-swift" placeholder="e.g., HSBCHKHHHKH" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Account Holder</label>
-                        <input type="text" id="of-new-bank-holder" value="Acme Trading Corp Ltd." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Currency</label>
-                        <select id="of-new-bank-currency" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
-                            <option value="HKD">HKD</option>
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                            <option value="SGD">SGD</option>
-                            <option value="GBP">GBP</option>
-                            <option value="CNY">CNY</option>
-                        </select>
-                    </div>
-                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
-                        <strong>Note:</strong> New bank accounts require OSN compliance review (1-2 business days) before they can receive off-ramp transfers.
-                    </div>
-                </div>
-                <div class="mt-6 flex gap-3">
-                    <button onclick="submitNewBank()" class="flex-1 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors">Submit for Review</button>
-                    <button onclick="closeAddBankModal()" class="px-4 py-2.5 border border-gray-300 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Activity Details Modal (centered) -->
+        <!-- Activity Details Modal (centered) -->
     <div id="activity-details-drawer" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-center justify-center min-h-screen px-4">
             <!-- Background overlay -->
@@ -119,15 +66,9 @@
 
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">Recipient Bank Account</label>
-                            <div class="flex gap-2">
-                                <select id="of-bank-select" class="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
-                                    <option value="">Select a bank account...</option>
-                                </select>
-                                <button onclick="openAddBankModal()" class="px-3 py-2.5 border border-everypay-300 text-everypay-600 text-sm font-medium rounded-lg hover:bg-everypay-50 transition-colors whitespace-nowrap">
-                                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                                    Add
-                                </button>
-                            </div>
+                            <select id="of-bank-select" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                <option value="">Select a bank account...</option>
+                            </select>
                         </div>
 
                         <div>
@@ -570,6 +511,60 @@
         // --- Activity Data ---
         // Single status: proposed, accepted, unpaid, partially_paid, paid, overpaid, rejected
         const activitiesData = {
+            'BA-2025-014': {
+                id: 'BA-2025-014',
+                type: 'Sales',
+                status: 'partially_paid',
+                proposedBy: 'you',
+                counterparty: 'Seoul Electronics Ltd.',
+                asset: 'GBP',
+                paymentMethod: 'fiat',
+                amount: '82,000.00',
+                expected: '82,000.00',
+                received: '30,000.00',
+                description: 'Consumer goods export — 30k received via wire, remaining 52k pending. Seller wants option to switch balance to crypto.',
+                documents: [
+                    { name: 'sales_contract_kr.pdf', type: 'contract', uploadedBy: 'you', uploadedAt: '2025-04-10 09:00' },
+                    { name: 'shipping_docs.pdf', type: 'shipping', uploadedBy: 'you', uploadedAt: '2025-04-18 11:00' },
+                    { name: 'wire_receipt_1.pdf', type: 'receipt', uploadedBy: 'counterparty', uploadedAt: '2025-04-22 14:00' }
+                ],
+                timeline: [
+                    { time: '2025-04-10 09:00', type: 'status', from: 'you', content: 'Activity proposed' },
+                    { time: '2025-04-10 09:00', type: 'doc', from: 'you', docName: 'sales_contract_kr.pdf' },
+                    { time: '2025-04-11 10:00', type: 'status', from: 'counterparty', content: 'Accepted' },
+                    { time: '2025-04-18 11:00', type: 'doc', from: 'you', docName: 'shipping_docs.pdf' },
+                    { time: '2025-04-22 14:00', type: 'status', from: 'counterparty', content: 'First installment sent — £30,000.00 via SWIFT' },
+                    { time: '2025-04-22 14:00', type: 'doc', from: 'counterparty', docName: 'wire_receipt_1.pdf' },
+                    { time: '2025-04-23 09:00', type: 'message', from: 'counterparty', content: 'Balance of £52,000 due within 30 days.' }
+                ]
+            },
+            'BA-2025-013': {
+                id: 'BA-2025-013',
+                type: 'Sales',
+                status: 'paid',
+                proposedBy: 'you',
+                counterparty: 'Blockchain Ventures LLC',
+                asset: 'USDT TRC20',
+                paymentMethod: 'crypto',
+                amount: '95,000.00',
+                expected: '95,000.00',
+                received: '95,000.00',
+                description: 'Smart contract development services — full payment received on-chain.',
+                documents: [
+                    { name: 'service_agreement.pdf', type: 'contract', uploadedBy: 'you', uploadedAt: '2025-03-01 10:00' },
+                    { name: 'delivery_report.pdf', type: 'invoice', uploadedBy: 'you', uploadedAt: '2025-03-15 14:00' },
+                    { name: 'tx_receipt.pdf', type: 'receipt', uploadedBy: 'counterparty', uploadedAt: '2025-03-16 09:00' }
+                ],
+                timeline: [
+                    { time: '2025-03-01 10:00', type: 'status', from: 'you', content: 'Activity proposed' },
+                    { time: '2025-03-01 10:00', type: 'doc', from: 'you', docName: 'service_agreement.pdf' },
+                    { time: '2025-03-02 11:00', type: 'status', from: 'counterparty', content: 'Accepted' },
+                    { time: '2025-03-15 14:00', type: 'doc', from: 'you', docName: 'delivery_report.pdf' },
+                    { time: '2025-03-16 09:00', type: 'status', from: 'counterparty', content: 'Full payment sent — 95,000.00 USDT TRC20' },
+                    { time: '2025-03-16 09:00', type: 'doc', from: 'counterparty', docName: 'tx_receipt.pdf' },
+                    { time: '2025-03-16 10:00', type: 'status', from: 'you', content: 'Funds confirmed on-chain. Settlement complete.' }
+                ]
+            },
             'BA-2025-001': {
                 id: 'BA-2025-001',
                 type: 'Procurement',
@@ -861,60 +856,6 @@
                     { time: '2025-05-14 11:00', type: 'status', from: 'counterparty', content: 'Activity proposed' },
                     { time: '2025-05-14 11:00', type: 'doc', from: 'counterparty', docName: 'quote_eurosteel.pdf' },
                     { time: '2025-05-14 11:05', type: 'doc', from: 'counterparty', docName: 'quality_cert.pdf' }
-                ]
-            },
-            'BA-2025-013': {
-                id: 'BA-2025-013',
-                type: 'Sales',
-                status: 'paid',
-                proposedBy: 'you',
-                counterparty: 'Blockchain Ventures LLC',
-                asset: 'USDT TRC20',
-                paymentMethod: 'crypto',
-                amount: '95,000.00',
-                expected: '95,000.00',
-                received: '95,000.00',
-                description: 'Smart contract development services — full payment received on-chain.',
-                documents: [
-                    { name: 'service_agreement.pdf', type: 'contract', uploadedBy: 'you', uploadedAt: '2025-03-01 10:00' },
-                    { name: 'delivery_report.pdf', type: 'invoice', uploadedBy: 'you', uploadedAt: '2025-03-15 14:00' },
-                    { name: 'tx_receipt.pdf', type: 'receipt', uploadedBy: 'counterparty', uploadedAt: '2025-03-16 09:00' }
-                ],
-                timeline: [
-                    { time: '2025-03-01 10:00', type: 'status', from: 'you', content: 'Activity proposed' },
-                    { time: '2025-03-01 10:00', type: 'doc', from: 'you', docName: 'service_agreement.pdf' },
-                    { time: '2025-03-02 11:00', type: 'status', from: 'counterparty', content: 'Accepted' },
-                    { time: '2025-03-15 14:00', type: 'doc', from: 'you', docName: 'delivery_report.pdf' },
-                    { time: '2025-03-16 09:00', type: 'status', from: 'counterparty', content: 'Full payment sent — 95,000.00 USDT TRC20' },
-                    { time: '2025-03-16 09:00', type: 'doc', from: 'counterparty', docName: 'tx_receipt.pdf' },
-                    { time: '2025-03-16 10:00', type: 'status', from: 'you', content: 'Funds confirmed on-chain. Settlement complete.' }
-                ]
-            },
-            'BA-2025-014': {
-                id: 'BA-2025-014',
-                type: 'Sales',
-                status: 'partially_paid',
-                proposedBy: 'you',
-                counterparty: 'Seoul Electronics Ltd.',
-                asset: 'GBP',
-                paymentMethod: 'fiat',
-                amount: '82,000.00',
-                expected: '82,000.00',
-                received: '30,000.00',
-                description: 'Consumer goods export — 30k received via wire, remaining 52k pending. Seller wants option to switch balance to crypto.',
-                documents: [
-                    { name: 'sales_contract_kr.pdf', type: 'contract', uploadedBy: 'you', uploadedAt: '2025-04-10 09:00' },
-                    { name: 'shipping_docs.pdf', type: 'shipping', uploadedBy: 'you', uploadedAt: '2025-04-18 11:00' },
-                    { name: 'wire_receipt_1.pdf', type: 'receipt', uploadedBy: 'counterparty', uploadedAt: '2025-04-22 14:00' }
-                ],
-                timeline: [
-                    { time: '2025-04-10 09:00', type: 'status', from: 'you', content: 'Activity proposed' },
-                    { time: '2025-04-10 09:00', type: 'doc', from: 'you', docName: 'sales_contract_kr.pdf' },
-                    { time: '2025-04-11 10:00', type: 'status', from: 'counterparty', content: 'Accepted' },
-                    { time: '2025-04-18 11:00', type: 'doc', from: 'you', docName: 'shipping_docs.pdf' },
-                    { time: '2025-04-22 14:00', type: 'status', from: 'counterparty', content: 'First installment sent — £30,000.00 via SWIFT' },
-                    { time: '2025-04-22 14:00', type: 'doc', from: 'counterparty', docName: 'wire_receipt_1.pdf' },
-                    { time: '2025-04-23 09:00', type: 'message', from: 'counterparty', content: 'Balance of £52,000 due within 30 days.' }
                 ]
             }
         };
@@ -1305,36 +1246,7 @@
             }
         }
 
-        function openAddBankModal() {
-            document.getElementById('of-add-bank-modal').classList.remove('hidden');
-        }
-
-        function closeAddBankModal() {
-            document.getElementById('of-add-bank-modal').classList.add('hidden');
-        }
-
-        function submitNewBank() {
-            const name = document.getElementById('of-new-bank-name').value.trim();
-            const account = document.getElementById('of-new-bank-account').value.trim();
-            const swift = document.getElementById('of-new-bank-swift').value.trim();
-            const holder = document.getElementById('of-new-bank-holder').value.trim();
-            const currency = document.getElementById('of-new-bank-currency').value;
-
-            if (!name || !account || !swift || !holder) {
-                alert('Please fill in all fields.');
-                return;
-            }
-
-            const newId = Math.max(...ofBankAccounts.map(b => b.id), 0) + 1;
-            ofBankAccounts.push({ id: newId, name, account, swift, holder, currency });
-            populateBankAccounts();
-            closeAddBankModal();
-
-            // Auto-select the newly added bank
-            const select = document.getElementById('of-bank-select');
-            if (select) select.value = newId;
-        }
-
+        // Auto-select first bank and set target fiat
         let ofQuoteTimer = null;
         let ofCurrentActivity = null;
 
