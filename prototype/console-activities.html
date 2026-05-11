@@ -314,10 +314,10 @@
                 { value: 'BTC (Bitcoin)', label: 'BTC' }
             ];
             const fiatOptions = [
-                { value: 'USD', label: 'USD' },
-                { value: 'EUR', label: 'EUR' },
-                { value: 'CNY', label: 'CNY' },
-                { value: 'GBP', label: 'GBP' }
+                { value: 'USD', label: '$ USD' },
+                { value: 'EUR', label: '€ EUR' },
+                { value: 'GBP', label: '£ GBP' },
+                { value: 'CNY', label: '¥ CNY' }
             ];
 
             const options = method === 'crypto' ? cryptoOptions : fiatOptions;
@@ -686,6 +686,7 @@
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-1">
+                                ${data.paymentMethod === 'fiat' ? '<span class="text-slate-400 text-sm">' + getCurrencySign(data.asset) + '</span>' : ''}
                                 <span class="font-medium text-slate-700">${data.asset.split(' ')[0]}</span>
                                 ${data.asset.split(' ')[1] ? '<span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">' + data.asset.split(' ')[1] + '</span>' : ''}
                             </div>
@@ -835,7 +836,7 @@
             const parts = data.asset.split(' ');
             const token = parts[0];
             const network = parts[1];
-            document.getElementById('detail-asset').innerHTML = token + (network ? ' <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded ml-1">' + network + '</span>' : '');
+            document.getElementById('detail-asset').innerHTML = (data.paymentMethod === 'fiat' ? sign : '') + token + (network ? ' <span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded ml-1">' + network + '</span>' : '');
             document.getElementById('detail-description').textContent = data.description;
 
             // Payment method
