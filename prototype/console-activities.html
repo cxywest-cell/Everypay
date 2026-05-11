@@ -62,6 +62,13 @@
                     <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                         <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Total Amount</label>
                         <div class="text-2xl font-bold text-gray-900" id="detail-amount">12,500.00</div>
+                        <div class="mt-2 flex items-center justify-between text-sm">
+                            <span class="text-gray-400" id="detail-paid-label">Paid</span>
+                            <span class="font-medium" id="detail-paid-amount">7,500.00</span>
+                        </div>
+                        <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
+                            <div id="detail-progress-bar" class="bg-everypay-500 h-2 rounded-full" style="width: 60%"></div>
+                        </div>
                     </div>
 
                     <!-- Description -->
@@ -941,6 +948,26 @@
             document.getElementById('detail-counterparty').textContent = data.counterparty;
             const sign = data.paymentMethod === 'fiat' ? getCurrencySign(data.asset) : '';
             document.getElementById('detail-amount').textContent = sign + data.expected;
+
+            // Paid / Received section
+            const paidLabel = document.getElementById('detail-paid-label');
+            const paidAmount = document.getElementById('detail-paid-amount');
+            const progressBar = document.getElementById('detail-progress-bar');
+            if (data.type === 'Procurement') {
+                paidLabel.textContent = 'Paid';
+                paidAmount.textContent = sign + data.paid;
+            } else {
+                paidLabel.textContent = 'Received';
+                paidAmount.textContent = sign + (data.received || '0.00');
+            }
+            const expected = parseFloat(data.expected.replace(/,/g, ''));
+            const settled = data.type === 'Procurement'
+                ? parseFloat(data.paid.replace(/,/g, ''))
+                : parseFloat((data.received || '0.00').replace(/,/g, ''));
+            const pct = expected > 0 ? Math.round(settled / expected * 100) : 0;
+            const barColor = pct === 0 ? 'bg-gray-300' : pct >= 100 ? 'bg-green-500' : 'bg-everypay-500';
+            progressBar.className = barColor + ' h-2 rounded-full';
+            progressBar.style.width = pct + '%';
             const parts = data.asset.split(' ');
             const token = parts[0];
             const network = parts[1];
