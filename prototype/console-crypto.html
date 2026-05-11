@@ -723,36 +723,43 @@
                         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeOffRampFlow()"></div>
                         <!-- Modal Content -->
                         <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto z-10">
-                            <!-- Flow Step Indicators -->
-                            <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                                <div class="flex items-center justify-center flex-1">
-                                    <div class="flex items-center w-full max-w-xs">
-                                        <div id="flow-step-1" class="flex items-center gap-2">
-                                            <div class="w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold">1</div>
-                                            <span class="text-xs font-medium text-slate-700 hidden sm:inline">Quote</span>
-                                        </div>
-                                        <div class="w-8 sm:w-12 h-0.5 bg-gray-200 mx-1"></div>
-                                        <div id="flow-step-2" class="flex items-center gap-2">
-                                            <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</div>
-                                            <span class="text-xs font-medium text-gray-400 hidden sm:inline">Withdraw</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Close button -->
-                                <button onclick="closeOffRampFlow()" class="ml-4 p-1 rounded-lg hover:bg-gray-200 transition-colors text-gray-400 hover:text-gray-600">
+                            <!-- Flow Header -->
+                            <div class="bg-everypay-50 px-6 py-4 border-b border-everypay-100 flex justify-between items-center">
+                                <h2 class="text-base font-bold text-everypay-800">Off-Ramp Settlement</h2>
+                                <button onclick="closeOffRampFlow()" class="text-everypay-400 hover:text-everypay-600 transition-colors">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                 </button>
                             </div>
 
-                            <!-- Step 1: Quote -->
-                            <div id="quote-panel" class="p-6">
-                                <div class="mb-6">
-                                    <h3 class="text-lg font-bold text-slate-800 mb-1">Get Exchange Quote</h3>
-                                    <p class="text-sm text-gray-500">Link a sales activity or upload docs. Quote is valid for 30 seconds.</p>
+                            <!-- Step Indicator -->
+                            <div class="px-6 py-4 border-b border-gray-100">
+                                <div class="flex items-center justify-between max-w-xs mx-auto">
+                                    <div id="flow-step-1" class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold">1</div>
+                                        <span class="text-xs font-medium text-slate-700 hidden sm:inline">Select</span>
+                                    </div>
+                                    <div class="flex-1 h-0.5 bg-gray-200 mx-3"></div>
+                                    <div id="flow-step-2" class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">2</div>
+                                        <span class="text-xs font-medium text-gray-400 hidden sm:inline">Quote</span>
+                                    </div>
+                                    <div class="flex-1 h-0.5 bg-gray-200 mx-3"></div>
+                                    <div id="flow-step-3" class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">3</div>
+                                        <span class="text-xs font-medium text-gray-400 hidden sm:inline">Confirm</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 1: Select Settlement -->
+                            <div id="quote-panel" class="p-6 space-y-5">
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-800">Select Settlement</h3>
+                                    <p class="text-sm text-gray-500">Choose your bank, crypto asset, and target fiat.</p>
                                 </div>
 
-                                <!-- Sales Activity Link -->
-                                <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+                                <!-- Sales Activity Link (crypto-specific) -->
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
                                     <label class="block text-sm font-bold text-green-800 mb-2">
                                         <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                                         Linked Sales Activity (optional)
@@ -762,24 +769,15 @@
                                     </select>
                                     <div id="offramp-activity-info" class="hidden mt-3 bg-white rounded-lg p-3 border border-green-100">
                                         <div class="grid grid-cols-3 gap-3 text-xs">
-                                            <div>
-                                                <span class="text-gray-400 block">Received</span>
-                                                <span class="font-mono font-bold text-green-700" id="offramp-act-received">—</span>
-                                            </div>
-                                            <div>
-                                                <span class="text-gray-400 block">Already Off-Ramped</span>
-                                                <span class="font-mono font-bold text-amber-600" id="offramp-act-offramped">—</span>
-                                            </div>
-                                            <div>
-                                                <span class="text-gray-400 block">Available</span>
-                                                <span class="font-mono font-bold text-slate-800" id="offramp-act-available">—</span>
-                                            </div>
+                                            <div><span class="text-gray-400 block">Received</span><span class="font-mono font-bold text-green-700" id="offramp-act-received">—</span></div>
+                                            <div><span class="text-gray-400 block">Already Off-Ramped</span><span class="font-mono font-bold text-amber-600" id="offramp-act-offramped">—</span></div>
+                                            <div><span class="text-gray-400 block">Available</span><span class="font-mono font-bold text-slate-800" id="offramp-act-available">—</span></div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Document Upload (shown when no activity linked) -->
-                                <div id="offramp-doc-upload" class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <!-- Document Upload (crypto-specific, shown when no activity linked) -->
+                                <div id="offramp-doc-upload" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                                     <label class="block text-sm font-bold text-blue-800 mb-2">
                                         <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                         Supporting Documents
@@ -797,55 +795,75 @@
                                     </div>
                                 </div>
 
-                                <!-- Recipient Bank Selection -->
-                                <div class="mb-6">
+                                <!-- Recipient Bank Account -->
+                                <div>
                                     <label class="block text-sm font-bold text-gray-700 mb-2">Recipient Bank Account</label>
                                     <select id="recipient-bank" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
                                         <option value="">Select a bank account...</option>
                                     </select>
                                 </div>
 
-                                <!-- Asset Selection (Multi-stablecoin) -->
-                                <div class="grid grid-cols-2 gap-4 mb-6">
-                                    <div>
-                                        <label class="block text-sm font-bold text-gray-700 mb-2">You Send</label>
-                                        <select id="crypto-asset" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none mb-2" onchange="updateQuote()">
-                                            <option value="">Select an asset</option>
-                                            <option value="usdt-eth">USDT — Ethereum (ERC-20)</option>
-                                            <option value="usdc-eth">USDC — Ethereum (ERC-20)</option>
-                                            <option value="usdt-trc">USDT — TRON (TRC-20)</option>
-                                            <option value="usdc-sol">USDC — Solana (SPL)</option>
-                                        </select>
-                                        <div class="relative">
-                                            <input type="number" id="crypto-amount" value="0" step="100" min="0" class="w-full px-3 py-2.5 pr-16 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none font-mono" oninput="updateQuote()">
-                                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold" id="crypto-symbol">USDT</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-bold text-gray-700 mb-2">You Receive (Fiat)</label>
-                                        <div class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500 mb-2" id="fiat-currency-display">
-                                            Select a recipient bank
-                                        </div>
-                                        <div class="relative">
-                                            <input type="text" id="fiat-amount" value="391,250.00" readonly class="w-full px-3 py-2.5 pr-16 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700 font-mono">
-                                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold" id="fiat-symbol">—</span>
-                                        </div>
+                                <!-- Source Crypto -->
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Source Crypto</label>
+                                    <select id="crypto-asset" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none" onchange="updateQuote()">
+                                        <option value="">Select an asset</option>
+                                        <option value="usdt-eth">USDT — Ethereum (ERC-20)</option>
+                                        <option value="usdc-eth">USDC — Ethereum (ERC-20)</option>
+                                        <option value="usdt-trc">USDT — TRON (TRC-20)</option>
+                                        <option value="usdc-sol">USDC — Solana (SPL)</option>
+                                    </select>
+                                </div>
+
+                                <!-- Target Fiat -->
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Target Fiat</label>
+                                    <div class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500" id="fiat-currency-display">Select a recipient bank</div>
+                                </div>
+
+                                <!-- Amount -->
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Amount to Off-Ramp</label>
+                                    <div class="relative">
+                                        <input type="number" id="crypto-amount" value="0" step="100" min="0" class="w-full px-3 py-2.5 pr-16 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none font-mono" oninput="updateQuote()">
+                                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold" id="crypto-symbol">—</span>
                                     </div>
                                 </div>
 
-                                <!-- Quote Details -->
-                                <div class="bg-gray-50 rounded-lg p-4 mb-6 space-y-2">
+                                <!-- Calculated Receive (read-only) -->
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">You Will Receive (Fiat)</label>
+                                    <div class="relative">
+                                        <input type="text" id="fiat-amount" value="—" readonly class="w-full px-3 py-2.5 pr-16 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700 font-mono">
+                                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-bold" id="fiat-symbol">—</span>
+                                    </div>
+                                </div>
+
+                                <button onclick="goToQuoteStep()" class="w-full py-3 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg flex items-center justify-center gap-2">
+                                    <span>Get Quote</span>
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                </button>
+                            </div>
+
+                            <!-- Step 2: Exchange Quote -->
+                            <div id="quote-step-panel" class="hidden p-6 space-y-5">
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-800">Exchange Quote</h3>
+                                    <p class="text-sm text-gray-500">Quote is valid for 30 seconds.</p>
+                                </div>
+
+                                <div class="bg-gray-50 rounded-lg p-4 space-y-2">
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-500">Exchange Rate</span>
-                                        <span class="font-medium text-slate-700 font-mono" id="quote-rate">1 USDT = 7.825 HKD</span>
+                                        <span class="font-medium text-slate-700 font-mono" id="quote-rate">—</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-500">Network</span>
-                                        <span class="font-medium text-slate-700" id="quote-network">Ethereum (ERC-20)</span>
+                                        <span class="font-medium text-slate-700" id="quote-network">—</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-500">Fee (incl. network + processing)</span>
-                                        <span class="font-medium text-slate-700 font-mono" id="quote-fee">HK$195.63</span>
+                                        <span class="font-medium text-slate-700 font-mono" id="quote-fee">—</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-500">Quote Expires</span>
@@ -853,34 +871,43 @@
                                     </div>
                                 </div>
 
-                                <button onclick="submitTransfer()" id="quote-submit-btn" class="w-full py-3 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg flex items-center justify-center gap-2">
-                                    <span>Create Transfer</span>
-                                    <svg class="w-5 h-5 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                                </button>
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <span class="text-sm font-bold text-green-800">You Will Receive</span>
+                                    <div class="text-2xl font-bold text-green-700 font-mono mt-1" id="quote-receive-amount">—</div>
+                                </div>
+
+                                <div class="flex gap-3">
+                                    <button onclick="goBackFromQuote()" class="flex-1 py-3 border border-gray-300 text-gray-700 font-bold rounded-xl transition-all hover:bg-gray-50">
+                                        Back
+                                    </button>
+                                    <button onclick="reQuote()" class="flex-1 py-3 border border-everypay-300 text-everypay-700 font-bold rounded-xl transition-all hover:bg-everypay-50">
+                                        Re-quote
+                                    </button>
+                                    <button onclick="submitTransfer()" class="flex-[2] py-3 bg-everypay-600 hover:bg-everypay-700 text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg flex items-center justify-center gap-2">
+                                        <span>Create Transfer</span>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                    </button>
+                                </div>
                             </div>
 
-                            <!-- Step 2: Withdraw (auto-processed, no TX input needed) -->
-                            <div id="transfer-panel" class="hidden p-6">
-                                <div class="mb-6">
+                            <!-- Step 3: Confirm Withdrawal (crypto-specific: deposit address + auto-processing) -->
+                            <div id="transfer-panel" class="hidden p-6 space-y-5">
+                                <div>
                                     <div class="flex items-center gap-2 mb-2">
                                         <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
                                             <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                         </div>
                                         <span class="text-sm font-bold text-green-700">Ready to Withdraw</span>
                                     </div>
-                                    <h3 class="text-lg font-bold text-slate-800 mb-1">Confirm Withdrawal Details</h3>
+                                    <h3 class="text-base font-bold text-slate-800">Confirm Withdrawal Details</h3>
                                     <p class="text-sm text-gray-500">Review the details below. OSN will automatically process the on-chain transfer and fiat settlement.</p>
                                 </div>
 
                                 <!-- Withdrawal Summary -->
-                                <div class="bg-gray-50 rounded-lg p-4 mb-6 space-y-2">
+                                <div class="bg-gray-50 rounded-lg p-4 space-y-2">
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-500">Transfer ID</span>
                                         <span class="font-medium text-slate-700 font-mono" id="transfer-id">TXF-20250506-001</span>
-                                    </div>
-                                    <div class="hidden">
-                                        <span class="text-gray-500">Source</span>
-                                        <span class="font-medium text-slate-700 text-xs" id="transfer-linked-activity">—</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-500">You Send</span>
@@ -906,10 +933,14 @@
                                         <span class="text-gray-500">Fee (incl. network + processing)</span>
                                         <span class="font-medium text-slate-700 font-mono" id="transfer-fee">HK$195.63</span>
                                     </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Source</span>
+                                        <span class="font-medium text-slate-700 text-xs" id="transfer-linked-activity">—</span>
+                                    </div>
                                 </div>
 
-                                <!-- Deposit Address -->
-                                <div class="bg-slate-900 rounded-lg p-4 mb-6">
+                                <!-- Deposit Address (crypto-specific) -->
+                                <div class="bg-slate-900 rounded-lg p-4">
                                     <div class="flex items-center justify-between mb-2">
                                         <span class="text-sm font-bold text-white">Deposit Address</span>
                                         <span class="text-xs font-medium text-gray-400" id="deposit-network">Ethereum (ERC-20)</span>
@@ -925,8 +956,8 @@
                                     <p class="text-xs text-gray-400 mt-2">This will be set to the withdrawal destination address for <span id="deposit-asset-label" class="text-amber-400">USDT</span> on <span id="deposit-chain-label" class="text-amber-400">Ethereum (ERC-20)</span>.</p>
                                 </div>
 
-                                <!-- Auto-processing notice -->
-                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                                <!-- Auto-processing notice (crypto-specific) -->
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                                     <div class="flex items-start gap-3">
                                         <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                         <div class="text-sm text-blue-700">
@@ -1523,8 +1554,8 @@
             currentFlowStep = 1;
             updateFlowSteps(1);
             document.getElementById('quote-panel').classList.remove('hidden');
+            document.getElementById('quote-step-panel').classList.add('hidden');
             document.getElementById('transfer-panel').classList.add('hidden');
-            document.getElementById('track-panel').classList.add('hidden');
             resetQuote();
             loadRecipientBanks();
             populateOffRampActivities();
@@ -1542,6 +1573,7 @@
         }
 
         function updateFlowSteps(step) {
+            const labels = ['Select', 'Quote', 'Confirm'];
             for (let i = 1; i <= 3; i++) {
                 const stepEl = document.getElementById('flow-step-' + i);
                 const circle = stepEl.querySelector('div');
@@ -1550,19 +1582,22 @@
                     circle.className = 'w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold';
                     circle.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
                     label.className = 'text-xs font-medium text-green-600 hidden sm:inline';
+                    label.textContent = labels[i - 1];
                 } else if (i === step) {
                     circle.className = 'w-7 h-7 rounded-full bg-everypay-600 text-white flex items-center justify-center text-xs font-bold';
                     circle.textContent = i;
                     label.className = 'text-xs font-medium text-slate-700 hidden sm:inline';
+                    label.textContent = labels[i - 1];
                 } else {
                     circle.className = 'w-7 h-7 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold';
                     circle.textContent = i;
                     label.className = 'text-xs font-medium text-gray-400 hidden sm:inline';
+                    label.textContent = labels[i - 1];
                 }
             }
         }
 
-        // --- Quote ---
+        // --- Quote helpers ---
         function getBankCurrency(bankValue) {
             if (!bankValue) return '';
             const raw = localStorage.getItem('everypay-bank-info');
@@ -1587,47 +1622,32 @@
             if (!currentAsset) {
                 document.getElementById('crypto-symbol').textContent = '';
                 document.getElementById('fiat-amount').value = '—';
-                document.getElementById('quote-rate').textContent = 'Select an asset';
-                document.getElementById('quote-network').textContent = '—';
-                document.getElementById('quote-fee').textContent = '—';
                 document.getElementById('fiat-currency-display').textContent = '—';
                 document.getElementById('fiat-symbol').textContent = '—';
                 return;
             }
 
-            // Derive fiat currency from the selected bank account
             currentFiat = getBankCurrency(currentBank);
             const fiat = currentFiat ? fiatConfig[currentFiat] : null;
-
             const asset = assetConfig[currentAsset];
 
-            // Update labels
             document.getElementById('crypto-symbol').textContent = asset.symbol;
             document.getElementById('fiat-currency-display').textContent = currentFiat || '—';
             document.getElementById('fiat-currency-display').className = currentFiat
-                ? 'w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700 font-bold mb-2'
-                : 'w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500 mb-2';
+                ? 'w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-700 font-bold'
+                : 'w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500';
             document.getElementById('fiat-symbol').textContent = fiat ? fiat.symbol : '—';
 
             if (!fiat || !currentBank) {
-                // No bank selected or unsupported currency — show placeholder
                 document.getElementById('fiat-amount').value = '—';
-                document.getElementById('quote-rate').textContent = currentBank ? 'Unsupported currency: ' + currentFiat : 'Select a recipient bank';
-                document.getElementById('quote-network').textContent = asset.network;
-                document.getElementById('quote-fee').textContent = '—';
                 return;
             }
 
-            // Calculate
             const fiatAmount = cryptoAmount * fiat.rate;
             const fee = fiatAmount * 0.005;
             const netAmount = fiatAmount - fee;
 
             document.getElementById('fiat-amount').value = netAmount.toLocaleString('en-US', { minimumFractionDigits: fiat.decimals, maximumFractionDigits: fiat.decimals });
-            document.getElementById('quote-rate').textContent = '1 ' + asset.symbol + ' = ' + fiat.rate.toFixed(fiat.decimals) + ' ' + currentFiat;
-            document.getElementById('quote-network').textContent = asset.network;
-            document.getElementById('quote-fee').textContent = fiat.prefix + fee.toLocaleString('en-US', { minimumFractionDigits: fiat.decimals, maximumFractionDigits: fiat.decimals });
-            document.getElementById('quote-gas').textContent = asset.gas;
         }
 
         function resetQuote() {
@@ -1650,10 +1670,19 @@
             }, 1000);
         }
 
-        // --- Submit Transfer (go to Step 2: Confirm Withdrawal) ---
-        function submitTransfer() {
+        // --- Go to Quote Step (Step 1 → Step 2) ---
+        function goToQuoteStep() {
             if (!currentBank) {
                 alert('Please select a recipient bank account.');
+                return;
+            }
+            if (!currentAsset) {
+                alert('Please select a crypto asset.');
+                return;
+            }
+            const cryptoAmount = parseFloat(document.getElementById('crypto-amount').value);
+            if (!cryptoAmount || cryptoAmount < 100) {
+                alert('Minimum transfer amount is 100.');
                 return;
             }
 
@@ -1661,12 +1690,6 @@
             const linkedActivity = document.getElementById('offramp-sales-activity').value;
             if (!linkedActivity && offrampUploadedDocs.length === 0) {
                 alert('No sales activity linked — please upload a supporting document (contract/invoice) before proceeding.');
-                return;
-            }
-
-            const cryptoAmount = parseFloat(document.getElementById('crypto-amount').value);
-            if (!cryptoAmount || cryptoAmount < 100) {
-                alert('Minimum transfer amount is 100.');
                 return;
             }
 
@@ -1682,10 +1705,64 @@
                 }
             }
 
-            // Move to step 2 (withdrawal confirmation)
+            // Show quote in Step 2
+            const asset = assetConfig[currentAsset];
+            const fiatAmountStr = document.getElementById('fiat-amount').value;
+            const feeStr = document.getElementById('quote-fee').textContent;
+
+            document.getElementById('quote-rate').textContent = '1 ' + asset.symbol + ' = ' + fiatConfig[currentFiat].rate.toFixed(fiatConfig[currentFiat].decimals) + ' ' + currentFiat;
+            document.getElementById('quote-network').textContent = asset.network;
+            document.getElementById('quote-fee').textContent = feeStr;
+            document.getElementById('quote-receive-amount').textContent = fiatAmountStr;
+
+            // Move to Step 2
             document.getElementById('quote-panel').classList.add('hidden');
-            document.getElementById('transfer-panel').classList.remove('hidden');
+            document.getElementById('quote-step-panel').classList.remove('hidden');
+            document.getElementById('transfer-panel').classList.add('hidden');
+            currentFlowStep = 2;
             updateFlowSteps(2);
+
+            // Start 30s timer
+            startQuoteTimer();
+        }
+
+        // --- Go Back from Quote (Step 2 → Step 1) ---
+        function goBackFromQuote() {
+            if (quoteExpiryTimer) clearTimeout(quoteExpiryTimer);
+            document.getElementById('quote-panel').classList.remove('hidden');
+            document.getElementById('quote-step-panel').classList.add('hidden');
+            currentFlowStep = 1;
+            updateFlowSteps(1);
+        }
+
+        // --- Re-quote (refresh timer in Step 2) ---
+        function reQuote() {
+            if (quoteExpiryTimer) clearTimeout(quoteExpiryTimer);
+            // Recalculate
+            updateQuote();
+            const asset = assetConfig[currentAsset];
+            const fiatAmountStr = document.getElementById('fiat-amount').value;
+            const feeStr = document.getElementById('quote-fee').textContent;
+            document.getElementById('quote-rate').textContent = '1 ' + asset.symbol + ' = ' + fiatConfig[currentFiat].rate.toFixed(fiatConfig[currentFiat].decimals) + ' ' + currentFiat;
+            document.getElementById('quote-network').textContent = asset.network;
+            document.getElementById('quote-fee').textContent = feeStr;
+            document.getElementById('quote-receive-amount').textContent = fiatAmountStr;
+            startQuoteTimer();
+        }
+
+        // --- Submit Transfer (Step 2 → Step 3: Confirm Withdrawal) ---
+        function submitTransfer() {
+            const linkedActivity = document.getElementById('offramp-sales-activity').value;
+            const cryptoAmount = parseFloat(document.getElementById('crypto-amount').value);
+
+            // Move to step 3 (withdrawal confirmation)
+            document.getElementById('quote-panel').classList.add('hidden');
+            document.getElementById('quote-step-panel').classList.add('hidden');
+            document.getElementById('transfer-panel').classList.remove('hidden');
+            currentFlowStep = 3;
+            updateFlowSteps(3);
+
+            if (quoteExpiryTimer) clearTimeout(quoteExpiryTimer);
 
             // Generate transfer ID
             transferCounter++;
@@ -1711,15 +1788,13 @@
             document.getElementById('transfer-fee').textContent = feeStr;
             document.getElementById('transfer-rate').textContent = document.getElementById('quote-rate').textContent;
 
-            // Show linked activity info in step 2 if applicable
+            // Show linked activity info in step 3
             const activitySummary = document.getElementById('transfer-linked-activity');
             if (linkedActivity) {
                 const act = salesActivitiesData[linkedActivity];
                 activitySummary.textContent = `Linked: ${linkedActivity} — ${act.description}`;
-                activitySummary.parentElement.classList.remove('hidden');
             } else {
                 activitySummary.textContent = `Documents: ${offrampUploadedDocs.map(d => d.name).join(', ')}`;
-                activitySummary.parentElement.classList.remove('hidden');
             }
 
             // Populate deposit address
