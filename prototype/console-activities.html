@@ -303,6 +303,38 @@
                 typeSelect.value = 'procurement';
                 typeSelect.disabled = true;
             }
+            // Reset to crypto default
+            togglePaymentFields();
+        }
+
+        function togglePaymentFields() {
+            const method = document.querySelector('input[name="new-activity-payment"]:checked')?.value || 'crypto';
+            const assetSelect = document.getElementById('new-activity-asset');
+            const assetLabel = document.getElementById('asset-label');
+            const amountLabel = document.getElementById('amount-label');
+
+            const cryptoOptions = [
+                { value: 'USDT (TRC20)', label: 'USDT (TRC20)' },
+                { value: 'USDC (ERC20)', label: 'USDC (ERC20)' },
+                { value: 'BTC (Bitcoin)', label: 'BTC (Bitcoin)' }
+            ];
+            const fiatOptions = [
+                { value: 'USD (Bank Wire)', label: 'USD (Bank Wire)' },
+                { value: 'EUR (SEPA)', label: 'EUR (SEPA)' },
+                { value: 'CNY (CNAPS)', label: 'CNY (CNAPS)' },
+                { value: 'GBP (Faster Payments)', label: 'GBP (Faster Payments)' }
+            ];
+
+            const options = method === 'crypto' ? cryptoOptions : fiatOptions;
+            assetSelect.innerHTML = options.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+
+            if (method === 'crypto') {
+                assetLabel.textContent = 'Asset (Network)';
+                amountLabel.textContent = 'Amount (Crypto)';
+            } else {
+                assetLabel.textContent = 'Currency (Channel)';
+                amountLabel.textContent = 'Amount';
+            }
         }
 
         function closeNewActivityModal() {

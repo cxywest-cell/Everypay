@@ -242,38 +242,39 @@
                                 <option value="Global Trade Partners">Global Trade Partners</option>
                             </select>
                         </div>
-                         <div class="grid grid-cols-2 gap-4">
-                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Asset (Network)</label>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label id="payment-fiat-label" class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer has-[:checked]:border-everypay-500 has-[:checked]:bg-everypay-50 transition-colors">
+                                    <input type="radio" name="new-activity-payment" value="fiat" class="text-everypay-600 focus:ring-everypay-500" onchange="togglePaymentFields()">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-800">Fiat</span>
+                                        <span class="text-xs text-gray-500 block">Bank transfer</span>
+                                    </div>
+                                </label>
+                                <label id="payment-crypto-label" class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer has-[:checked]:border-everypay-500 has-[:checked]:bg-everypay-50 transition-colors">
+                                    <input type="radio" name="new-activity-payment" value="crypto" class="text-everypay-600 focus:ring-everypay-500" checked onchange="togglePaymentFields()">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-800">Crypto</span>
+                                        <span class="text-xs text-gray-500 block">On-chain transfer</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label id="asset-label" class="block text-sm font-medium text-gray-700">Asset (Network)</label>
                                 <select id="new-activity-asset" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm">
                                     <option value="USDT (TRC20)">USDT (TRC20)</option>
                                     <option value="USDC (ERC20)">USDC (ERC20)</option>
                                     <option value="BTC (Bitcoin)">BTC (Bitcoin)</option>
                                 </select>
                             </div>
-                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Amount</label>
+                            <div>
+                                <label id="amount-label" class="block text-sm font-medium text-gray-700">Amount</label>
                                 <input type="number" id="new-activity-amount" class="focus:ring-everypay-500 focus:border-everypay-500 block w-full px-3 sm:text-sm border-gray-300 rounded-md" placeholder="0.00">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
-                            <div class="grid grid-cols-2 gap-3">
-                                <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer has-[:checked]:border-everypay-500 has-[:checked]:bg-everypay-50 transition-colors">
-                                    <input type="radio" name="new-activity-payment" value="fiat" class="text-everypay-600 focus:ring-everypay-500" checked>
-                                    <div>
-                                        <span class="text-sm font-medium text-gray-800">Fiat</span>
-                                        <span class="text-xs text-gray-500 block">Bank transfer</span>
-                                    </div>
-                                </label>
-                                <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer has-[:checked]:border-everypay-500 has-[:checked]:bg-everypay-50 transition-colors">
-                                    <input type="radio" name="new-activity-payment" value="crypto" class="text-everypay-600 focus:ring-everypay-500">
-                                    <div>
-                                        <span class="text-sm font-medium text-gray-800">Crypto</span>
-                                        <span class="text-xs text-gray-500 block">On-chain transfer</span>
-                                    </div>
-                                </label>
                             </div>
                         </div>
 
