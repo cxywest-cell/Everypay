@@ -12,7 +12,60 @@
 
 <body class="bg-gray-50 flex flex-col h-screen overflow-hidden">
     <main class="flex-1 flex h-screen overflow-hidden">
-        <!-- Activity Details Modal (centered) -->
+        <!-- Add Bank Modal (Off-Ramp) -->
+    <div id="of-add-bank-modal" class="hidden fixed inset-0 z-[70] overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75" onclick="closeAddBankModal()"></div>
+            <div class="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold text-slate-800">Add Recipient Bank Account</h3>
+                    <button onclick="closeAddBankModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Bank Name</label>
+                        <input type="text" id="of-new-bank-name" placeholder="e.g., HSBC Hong Kong" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Account Number</label>
+                            <input type="text" id="of-new-bank-account" placeholder="e.g., 801-123456-001" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">SWIFT / BIC</label>
+                            <input type="text" id="of-new-bank-swift" placeholder="e.g., HSBCHKHHHKH" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Account Holder</label>
+                        <input type="text" id="of-new-bank-holder" value="Acme Trading Corp Ltd." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Currency</label>
+                        <select id="of-new-bank-currency" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                            <option value="HKD">HKD</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="SGD">SGD</option>
+                            <option value="GBP">GBP</option>
+                            <option value="CNY">CNY</option>
+                        </select>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
+                        <strong>Note:</strong> New bank accounts require OSN compliance review (1-2 business days) before they can receive off-ramp transfers.
+                    </div>
+                </div>
+                <div class="mt-6 flex gap-3">
+                    <button onclick="submitNewBank()" class="flex-1 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors">Submit for Review</button>
+                    <button onclick="closeAddBankModal()" class="px-4 py-2.5 border border-gray-300 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Details Modal (centered) -->
     <div id="activity-details-drawer" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-center justify-center min-h-screen px-4">
             <!-- Background overlay -->
@@ -61,7 +114,20 @@
                     <div id="of-step-1" class="p-6 space-y-5">
                         <div>
                             <h3 class="text-lg font-bold text-slate-800 mb-1">Select Settlement</h3>
-                            <p class="text-sm text-gray-500">Choose the stablecoin to convert and your target fiat currency.</p>
+                            <p class="text-sm text-gray-500">Choose your recipient bank, the stablecoin to convert, and the target fiat currency.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Recipient Bank Account</label>
+                            <div class="flex gap-2">
+                                <select id="of-bank-select" class="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-everypay-500 outline-none">
+                                    <option value="">Select a bank account...</option>
+                                </select>
+                                <button onclick="openAddBankModal()" class="px-3 py-2.5 border border-everypay-300 text-everypay-600 text-sm font-medium rounded-lg hover:bg-everypay-50 transition-colors whitespace-nowrap">
+                                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                    Add
+                                </button>
+                            </div>
                         </div>
 
                         <div>
@@ -1185,6 +1251,90 @@
             'CNY': { symbol: '¥', rate: 7.24, decimals: 2 }
         };
 
+        // Recipient bank accounts (mock data)
+        let ofBankAccounts = [
+            { id: 1, name: 'HSBC Hong Kong', account: '801-123456-001', swift: 'HSBCHKHHHKH', holder: 'Acme Trading Corp Ltd.', currency: 'HKD' },
+            { id: 2, name: 'Bank of China', account: '100-789012-002', swift: 'BKCHHKHH', holder: 'Acme Trading Corp Ltd.', currency: 'CNY' },
+            { id: 3, name: 'Standard Chartered', account: 'SC-456789-003', swift: 'SCBLSG22', holder: 'Acme Trading Corp Ltd.', currency: 'USD' }
+        ];
+
+        function populateBankAccounts() {
+            const select = document.getElementById('of-bank-select');
+            if (!select) return;
+            // Clear existing options except the placeholder
+            select.innerHTML = '<option value="">Select a bank account...</option>';
+            ofBankAccounts.forEach(bank => {
+                const opt = document.createElement('option');
+                opt.value = bank.id;
+                opt.textContent = bank.name + ' (' + bank.currency + ' — ' + bank.account + ')';
+                opt.dataset.currency = bank.currency;
+                select.appendChild(opt);
+            });
+            // Auto-select first bank
+            if (ofBankAccounts.length > 0) {
+                select.selectedIndex = 1;
+                // Auto-set target fiat based on bank currency
+                const bankCurrency = ofBankAccounts[0].currency;
+                const fiatSelect = document.getElementById('of-fiat-select');
+                if (fiatSelect) {
+                    for (const opt of fiatSelect.options) {
+                        if (opt.value === bankCurrency) {
+                            opt.selected = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Listen for bank selection change to auto-set target fiat
+        function onBankSelectChange() {
+            const select = document.getElementById('of-bank-select');
+            if (!select || !select.value) return;
+            const bank = ofBankAccounts.find(b => b.id == select.value);
+            if (bank) {
+                const fiatSelect = document.getElementById('of-fiat-select');
+                if (fiatSelect) {
+                    for (const opt of fiatSelect.options) {
+                        if (opt.value === bank.currency) {
+                            opt.selected = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        function openAddBankModal() {
+            document.getElementById('of-add-bank-modal').classList.remove('hidden');
+        }
+
+        function closeAddBankModal() {
+            document.getElementById('of-add-bank-modal').classList.add('hidden');
+        }
+
+        function submitNewBank() {
+            const name = document.getElementById('of-new-bank-name').value.trim();
+            const account = document.getElementById('of-new-bank-account').value.trim();
+            const swift = document.getElementById('of-new-bank-swift').value.trim();
+            const holder = document.getElementById('of-new-bank-holder').value.trim();
+            const currency = document.getElementById('of-new-bank-currency').value;
+
+            if (!name || !account || !swift || !holder) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            const newId = Math.max(...ofBankAccounts.map(b => b.id), 0) + 1;
+            ofBankAccounts.push({ id: newId, name, account, swift, holder, currency });
+            populateBankAccounts();
+            closeAddBankModal();
+
+            // Auto-select the newly added bank
+            const select = document.getElementById('of-bank-select');
+            if (select) select.value = newId;
+        }
+
         let ofQuoteTimer = null;
         let ofCurrentActivity = null;
 
@@ -1366,11 +1516,18 @@
             cancelOffRampFlow();
         }
 
-        // Update amount symbol when crypto changes
+        // Wire up off-ramp event listeners
         document.addEventListener('DOMContentLoaded', function() {
+            populateBankAccounts();
+
             const cryptoSelect = document.getElementById('of-crypto-select');
             if (cryptoSelect) {
                 cryptoSelect.addEventListener('change', updateOfAmountSymbol);
+            }
+
+            const bankSelect = document.getElementById('of-bank-select');
+            if (bankSelect) {
+                bankSelect.addEventListener('change', onBankSelectChange);
             }
         });
 
