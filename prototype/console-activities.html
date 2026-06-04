@@ -498,8 +498,34 @@
             if (typeSelect) {
                 typeSelect.disabled = false;
             }
+            resetCustomCounterpartyFields();
             // Reset to crypto default
             togglePaymentFields();
+        }
+
+        function enableCustomCounterparty() {
+            const select = document.getElementById('new-activity-partner');
+            if (select) select.value = '__custom__';
+            toggleCustomCounterparty();
+        }
+
+        function toggleCustomCounterparty() {
+            const select = document.getElementById('new-activity-partner');
+            const fields = document.getElementById('new-activity-counterparty-custom-fields');
+            const entityInput = document.getElementById('new-activity-counterparty-custom');
+            if (!select || !fields || !entityInput) return;
+            const isCustom = select.value === '__custom__';
+            fields.classList.toggle('hidden', !isCustom);
+            if (isCustom) entityInput.focus();
+        }
+
+        function resetCustomCounterpartyFields() {
+            const fields = document.getElementById('new-activity-counterparty-custom-fields');
+            const entityInput = document.getElementById('new-activity-counterparty-custom');
+            const emailInput = document.getElementById('new-activity-counterparty-email');
+            if (fields) fields.classList.add('hidden');
+            if (entityInput) entityInput.value = '';
+            if (emailInput) emailInput.value = '';
         }
 
         function togglePaymentFields() {
@@ -532,6 +558,9 @@
             if (docList) docList.innerHTML = '';
             const docInput = document.getElementById('activity-documents-input');
             if (docInput) docInput.value = '';
+            resetCustomCounterpartyFields();
+            const partnerSelect = document.getElementById('new-activity-partner');
+            if (partnerSelect) partnerSelect.value = 'Acme Supplies Ltd.';
         }
 
         function createNewActivity() {
@@ -543,7 +572,18 @@
             const activityType = document.getElementById('new-activity-type').value;
             const typeLabel = activityType === 'sales' ? 'Sales' : 'Procurement';
             const paymentMethod = document.querySelector('input[name="new-activity-payment"]:checked')?.value || 'fiat';
-            const partner = document.getElementById('new-activity-partner').value;
+            const partnerSelect = document.getElementById('new-activity-partner');
+            const customCounterparty = document.getElementById('new-activity-counterparty-custom');
+            const customCounterpartyEmail = document.getElementById('new-activity-counterparty-email');
+            const isCustomCounterparty = partnerSelect.value === '__custom__';
+            const partner = isCustomCounterparty ? customCounterparty.value.trim() : partnerSelect.value;
+            const partnerEmail = isCustomCounterparty ? customCounterpartyEmail.value.trim() : '';
+            if (isCustomCounterparty && (!partner || !partnerEmail)) {
+                alert('Please enter both entity name and contact email for the unknown counterparty.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                return;
+            }
             const asset = document.getElementById('new-activity-asset').value;
             const amount = document.getElementById('new-activity-amount').value || '0';
             const desc = document.getElementById('new-activity-desc').value || '';
@@ -551,7 +591,8 @@
             const id = 'BA-2025-' + String(Object.keys(activitiesData).length + 1).padStart(3, '0');
             activitiesData[id] = {
                 id, type: typeLabel, status: 'proposed', proposedBy: 'you',
-                counterparty: partner, asset: asset.replace('(', '').replace(')', ''),
+                counterparty: partner, counterpartyEmail: partnerEmail, isUnknownCounterparty: isCustomCounterparty,
+                asset: asset.replace('(', '').replace(')', ''),
                 paymentMethod, amount, expected: amount, paid: '0.00', description: desc,
                 documents: [], timeline: [{ time: new Date().toLocaleString(), type: 'status', from: 'you', content: 'Activity proposed' }]
             };

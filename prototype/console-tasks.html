@@ -37,21 +37,20 @@
                 <!-- Task Queues -->
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
                     <div class="flex items-center justify-between gap-4 mb-5">
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800">Tasks</h3>
-                            <p class="text-sm text-gray-500 mt-1">Pending approvals and completed signing tasks.</p>
+                        <div id="task-heading-pending" class="flex items-center gap-3">
+                            <h3 class="text-lg font-bold text-slate-800">Pending My Approval</h3>
+                            <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">6 Actions Required</span>
+                        </div>
+                        <div id="task-heading-completed" class="hidden">
+                            <h3 class="text-lg font-bold text-slate-800">Completed</h3>
                         </div>
                         <div class="inline-flex items-center rounded-lg bg-gray-100 p-1">
-                            <button id="tab-pending" onclick="switchTaskTab('pending')" class="px-4 py-2 rounded-md text-sm font-semibold bg-white text-everypay-700 shadow-sm">Pending <span class="ml-1 text-xs text-orange-600">6</span></button>
-                            <button id="tab-completed" onclick="switchTaskTab('completed')" class="px-4 py-2 rounded-md text-sm font-semibold text-gray-500 hover:text-gray-700">Completed <span class="ml-1 text-xs text-gray-400">5</span></button>
+                            <button id="tab-pending" onclick="switchTaskTab('pending')" class="px-4 py-2 rounded-md text-sm font-semibold bg-white text-everypay-700 shadow-sm">Pending</button>
+                            <button id="tab-completed" onclick="switchTaskTab('completed')" class="px-4 py-2 rounded-md text-sm font-semibold text-gray-500 hover:text-gray-700">Completed</button>
                         </div>
                     </div>
 
                     <div id="panel-pending">
-                        <div class="flex items-center gap-3 mb-4">
-                            <h3 class="text-lg font-bold text-slate-800">Pending My Approval</h3>
-                            <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">6 Actions Required</span>
-                        </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm text-left">
                                 <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
@@ -361,10 +360,6 @@
                     </div>
 
                     <div id="panel-completed" class="hidden">
-                        <div class="flex items-center gap-3 mb-4">
-                            <h3 class="text-lg font-bold text-slate-800">Completed</h3>
-                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">5 Completed</span>
-                        </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm text-left">
                                 <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
@@ -585,6 +580,8 @@
             const isPending = tab === 'pending';
             document.getElementById('panel-pending').classList.toggle('hidden', !isPending);
             document.getElementById('panel-completed').classList.toggle('hidden', isPending);
+            document.getElementById('task-heading-pending').classList.toggle('hidden', !isPending);
+            document.getElementById('task-heading-completed').classList.toggle('hidden', isPending);
 
             const pendingTab = document.getElementById('tab-pending');
             const completedTab = document.getElementById('tab-completed');

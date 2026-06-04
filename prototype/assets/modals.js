@@ -236,11 +236,26 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Counterparty</label>
-                            <select id="new-activity-partner" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm">
-                                <option value="Acme Supplies Ltd.">Acme Supplies Ltd.</option>
-                                <option value="TechSource Inc.">TechSource Inc.</option>
-                                <option value="Global Trade Partners">Global Trade Partners</option>
-                            </select>
+                            <div class="mt-1 flex gap-2">
+                                <select id="new-activity-partner" onchange="toggleCustomCounterparty()" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm">
+                                    <option value="Acme Supplies Ltd.">Acme Supplies Ltd.</option>
+                                    <option value="TechSource Inc.">TechSource Inc.</option>
+                                    <option value="Global Trade Partners">Global Trade Partners</option>
+                                    <option value="__custom__">Enter manually / Unknown platform counterparty</option>
+                                </select>
+                                <div class="relative group flex-shrink-0">
+                                    <button type="button" onclick="enableCustomCounterparty()" class="inline-flex h-full items-center justify-center rounded-md border border-gray-300 bg-white px-3 text-gray-500 hover:bg-gray-50 hover:text-everypay-600 focus:outline-none focus:ring-2 focus:ring-everypay-500" aria-label="Input a counterparty not in platform">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 7L9 5a3 3 0 00-4.243 4.243l2 2m10.486 1.514l2 2A3 3 0 0115 19l-2-2M8 12h8m-4-4v8"></path></svg>
+                                    </button>
+                                    <div class="pointer-events-none absolute bottom-full right-0 z-20 mb-2 hidden w-64 rounded-md bg-gray-900 px-3 py-2 text-xs leading-snug text-white shadow-lg group-hover:block">
+                                        Click to input a counterparty that is not in our platform.
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="new-activity-counterparty-custom-fields" class="hidden mt-2 grid grid-cols-1 gap-2 rounded-lg border border-dashed border-gray-300 bg-gray-50 p-3">
+                                <input type="text" id="new-activity-counterparty-custom" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm" placeholder="Entity name">
+                                <input type="email" id="new-activity-counterparty-email" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-everypay-500 focus:border-everypay-500 sm:text-sm" placeholder="Contact email">
+                            </div>
                         </div>
 
                         <div>
