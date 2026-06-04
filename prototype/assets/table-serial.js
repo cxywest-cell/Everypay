@@ -4,20 +4,35 @@
         return firstHeader && firstHeader.textContent.trim() === '#';
     }
 
-    function createSerialHeader() {
+    function normalizeClass(className, fallback, extra) {
+        const source = (className || fallback || '').split(/\s+/).filter(Boolean);
+        const filtered = source.filter((cls) => {
+            if (/^w-/.test(cls)) return false;
+            if (/^min-w-/.test(cls)) return false;
+            if (/^max-w-/.test(cls)) return false;
+            if (/^text-(left|right|center)$/.test(cls)) return false;
+            return true;
+        });
+        extra.split(/\s+/).filter(Boolean).forEach((cls) => {
+            if (!filtered.includes(cls)) filtered.push(cls);
+        });
+        return filtered.join(' ');
+    }
+
+    function createSerialHeader(referenceHeader) {
         const th = document.createElement('th');
-        th.className = 'px-4 py-4 w-12 font-medium align-top';
+        th.className = normalizeClass(referenceHeader && referenceHeader.className, 'px-4 py-4 font-medium align-top', 'w-12 text-left');
         th.textContent = '#';
         return th;
     }
 
     function serialCellHtml(index) {
-        return '<div class="flex items-center gap-2"><span class="font-medium text-gray-400">' + index + '</span></div>';
+        return '<span class="font-medium text-gray-400">' + index + '</span>';
     }
 
-    function createSerialCell(index) {
+    function createSerialCell(index, referenceCell) {
         const td = document.createElement('td');
-        td.className = 'px-4 py-4 align-top';
+        td.className = normalizeClass(referenceCell && referenceCell.className, 'px-4 py-4 align-top', 'w-12 text-left');
         td.setAttribute('data-serial-cell', 'true');
         td.innerHTML = serialCellHtml(index);
         return td;
@@ -32,7 +47,7 @@
             if (firstCell && firstCell.getAttribute('data-serial-cell') === 'true') {
                 firstCell.innerHTML = serialCellHtml(index + 1);
             } else {
-                row.insertBefore(createSerialCell(index + 1), row.firstElementChild);
+                row.insertBefore(createSerialCell(index + 1, firstCell), row.firstElementChild);
             }
         });
     }
@@ -43,8 +58,9 @@
 
         Array.from(tbody.querySelectorAll(':scope > tr')).forEach((row, index) => {
             const firstCell = row.querySelector(':scope > td:first-child');
+            const secondCell = row.querySelector(':scope > td:nth-child(2)');
             if (!firstCell) return;
-            firstCell.className = firstCell.className || 'px-4 py-4 align-top';
+            firstCell.className = normalizeClass(secondCell && secondCell.className, firstCell.className || 'px-4 py-4 align-top', 'w-12 text-left');
             firstCell.setAttribute('data-serial-cell', 'true');
             firstCell.innerHTML = serialCellHtml(index + 1);
         });
@@ -62,7 +78,8 @@
 
         const headerRow = table.querySelector('thead tr');
         if (headerRow) {
-            headerRow.insertBefore(createSerialHeader(), headerRow.firstElementChild);
+            const firstHeader = headerRow.querySelector(':scope > th:first-child');
+            headerRow.insertBefore(createSerialHeader(firstHeader), headerRow.firstElementChild);
         }
 
         table.dataset.serialized = 'true';
