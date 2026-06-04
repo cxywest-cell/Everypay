@@ -9,6 +9,19 @@
 
 (function () {
   var page = window.location.pathname.split('/').pop() || 'index.html';
+  var params = new URLSearchParams(window.location.search);
+  var isEmbedded = params.get('embed') === '1';
+  if (isEmbedded) {
+    document.documentElement.classList.add('ep-embedded');
+    document.addEventListener('DOMContentLoaded', function () {
+      var sidebar = document.getElementById('ep-sidebar');
+      if (sidebar) sidebar.remove();
+      var headerRight = document.getElementById('ep-header-right');
+      var header = headerRight ? headerRight.closest('header') : null;
+      if (header) header.remove();
+    });
+    return;
+  }
 
   var navItems = [
     { label: 'Overview', href: 'index.html', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
