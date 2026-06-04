@@ -45,10 +45,23 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        /* Status badges for off-ramp history */
+        /* Status badges for activities and off-ramp history */
+        .status-badge { display: inline-flex; align-items: center; align-self: flex-start; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; line-height: 1rem; font-weight: 500; border: 0; }
+        .status-badge::before { content: ""; display: inline-block; width: 0.375rem; height: 0.375rem; border-radius: 9999px; margin-right: 0.375rem; }
         .status-settled { background: #dcfce7; color: #166534; }
+        .status-settled::before { background: #22c55e; }
+        .status-approved { background: #ecfdf5; color: #047857; }
+        .status-approved::before { background: #10b981; }
+        .status-reviewing { background: #fffbeb; color: #b45309; }
+        .status-reviewing::before { background: #f59e0b; }
+        .status-failed, .status-rejected, .status-approver-reject, .status-counterparty-reject { background: #fef2f2; color: #b91c1c; }
+        .status-failed::before, .status-rejected::before, .status-approver-reject::before, .status-counterparty-reject::before { background: #ef4444; }
+        .status-settling { background: #eef2ff; color: #4338ca; }
+        .status-settling::before { background: #6366f1; }
         .status-pending { background: #fef3c7; color: #92400e; }
         .status-processing { background: #dbeafe; color: #1e40af; }
+        .activities-table .col-from, .activities-table .col-to { display: none; }
+        .activities-table .col-from-header, .activities-table .col-to-header { display: none; }
     </style><script>
         function highlightDocSection(targetId) {
             const el = document.getElementById(targetId);
@@ -309,83 +322,6 @@
 
                     <!-- TAB 1: Treasury Dashboard -->
                     <div id="view-treasury">
-                        <!-- Pending My Approval -->
-                        <div class="bg-white rounded-xl border border-orange-200 shadow-sm p-6 mb-6">
-                            <div class="flex items-center gap-3 mb-4">
-                                <h3 class="text-lg font-bold text-slate-800">Pending My Approval</h3>
-                                <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">1 Action Required</span>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-sm text-left">
-                                    <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
-                                        <tr>
-                                            <th class="px-4 py-3">TXID</th>
-                                            <th class="px-4 py-3">Type</th>
-                                            <th class="px-4 py-3">From</th>
-                                            <th class="px-4 py-3">To</th>
-                                            <th class="px-4 py-3">Asset (Network)</th>
-                                            <th class="px-4 py-3">Amount</th>
-                                            <th class="px-4 py-3">Approval Flow</th>
-                                            <th class="px-4 py-3 text-right">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-100">
-                                        <tr class="hover:bg-orange-50/50">
-                                            <td class="px-4 py-3 font-mono text-gray-600">0xe5...7f3a</td>
-                                            <td class="px-4 py-3"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">Withdraw</span></td>
-                                            <td class="px-4 py-3">
-                                                <div class="flex flex-col">
-                                                    <span class="text-xs font-bold text-slate-700">Acme Trading Corp</span>
-                                                    <span class="font-mono text-[10px] text-gray-500">0x483...A74</span>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-3">
-                                                <div class="flex flex-col">
-                                                    <span class="text-xs font-bold text-slate-700">OSN Network</span>
-                                                    <span class="font-mono text-[10px] text-gray-500">0x000...0000</span>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-3">
-                                                <div class="flex flex-col">
-                                                    <span class="font-medium text-slate-700">USDT</span><span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded">TRC20</span>
-                                                    <span class="text-[10px] text-gray-400 font-mono">TR7...j6t</span>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-3 text-slate-800 font-bold">8,750.00</td>
-                                            <td class="px-4 py-3">
-                                                <div class="flex items-center gap-1">
-                                                    <!-- Step 1: Approved -->
-                                                    <div class="relative group">
-                                                        <div class="w-6 h-6 rounded-full bg-green-100 border border-green-200 flex items-center justify-center text-[8px] font-bold text-green-700 ring-2 ring-green-50">JD</div>
-                                                        <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-white flex items-center justify-center">
-                                                            <svg class="w-1.5 h-1.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                                                        </div>
-                                                        <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-gray-800 text-white text-[10px] rounded whitespace-nowrap z-10 shadow-lg">Approved by John Doe</div>
-                                                    </div>
-                                                    <!-- Arrow -->
-                                                    <svg class="w-3 h-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                                                    <!-- Step 2: Pending Me -->
-                                                    <div class="relative group">
-                                                        <div class="w-6 h-6 rounded-full bg-orange-100 border-2 border-dashed border-orange-300 flex items-center justify-center text-[8px] font-bold text-orange-700 animate-pulse">Me</div>
-                                                        <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-gray-800 text-white text-[10px] rounded whitespace-nowrap z-10 shadow-lg">Pending: You</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-3 text-right">
-                                                <div class="flex items-center justify-end gap-2">
-                                                    <button class="px-3 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100 text-xs font-medium transition-colors">Reject</button>
-                                                    <button onclick="openSigningModal()" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-medium shadow-sm transition-colors flex items-center gap-1">
-                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                        Approve
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
                         <!-- Asset Allocation -->
                         <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-visible">
                             <div class="px-6 py-4 border-b border-gray-100">
@@ -576,13 +512,682 @@
                         <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mt-6">
                             <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                                 <div class="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5" id="history-toggle">
-                                    <button onclick="switchHistory('transaction')" id="toggle-transaction" class="px-4 py-1.5 text-sm font-semibold rounded-md bg-white text-slate-800 shadow-sm transition-all">Transaction History</button>
+                                    <button onclick="switchHistory('activities')" id="toggle-activities" class="px-4 py-1.5 text-sm font-semibold rounded-md bg-white text-slate-800 shadow-sm transition-all">Activities</button>
+                                    <button onclick="switchHistory('transaction')" id="toggle-transaction" class="px-4 py-1.5 text-sm font-medium rounded-md text-gray-500 hover:text-slate-700 transition-all">Transaction History</button>
                                     <button onclick="switchHistory('offramp')" id="toggle-offramp" class="px-4 py-1.5 text-sm font-medium rounded-md text-gray-500 hover:text-slate-700 transition-all">Off-Ramp History</button>
                                 </div>
                                 <button class="text-sm text-everypay-600 hover:text-everypay-700 font-medium">View All</button>
                             </div>
+                            <!-- Activities View -->
+                            <div id="view-activities-history">
+                <div id="activities-table-container" class="overflow-x-auto">
+                    <table class="activities-table w-full text-left text-sm text-gray-600">
+                        <thead class="bg-gray-50/50 border-b border-gray-100 text-xs uppercase font-semibold text-gray-500 tracking-wider">
+                            <tr>
+                                <th class="px-4 py-4 w-12 font-medium align-top">#</th>
+                                <th class="px-6 py-4 font-medium align-top">Order ID</th>
+                                <th class="px-6 py-4 font-medium align-top">Activity</th>
+                                <th class="px-6 py-4 font-medium align-top">Amount</th>
+                                <th class="px-6 py-4 font-medium align-top">Status</th>
+                                <th class="px-6 py-4 font-medium col-from-header align-top">From</th>
+                                <th class="px-6 py-4 font-medium col-to-header align-top">To</th>
+                                <th class="px-6 py-4 font-medium align-top">Created At</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50">
+                            <tr class="hover:bg-blue-50/30 transition-colors group border-b border-gray-50 last:border-0 cursor-pointer">
+                                <td class="px-4 py-4 align-top">
+                                    <div class="flex items-center gap-2">
+                                        <div class="group/tooltip relative">
+                                            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm cursor-help"></div>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tooltip:block px-2 py-1 bg-gray-900 text-white text-[10px] font-medium rounded shadow-lg whitespace-nowrap z-10">Low Risk</div>
+                                        </div>
+                                        <span class="font-medium text-gray-400">1</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="font-mono text-xs text-gray-500">ORD-83920174</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-gray-900">Receive</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex items-center gap-1 font-medium text-green-600">
+                                        +1,000
+                                        <!-- <svg class="w-3 h-3 text-blue-500 cursor-pointer hover:text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> -->
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <span class="status-badge status-settled">Settled</span>
+                                </td>
+                                <td class="px-6 py-4 col-from align-top">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-1 mb-0.5">
+                                            <div class="group/entity-tooltip relative">
+    <span class="text-xs font-bold text-indigo-600 cursor-help border-b border-dashed border-indigo-300">Liquidity Provider Ltd.</span>
+    <div class="absolute bottom-full left-0 mb-2 hidden group-hover/entity-tooltip:block w-max min-w-[200px] p-3 bg-gray-900 text-white text-xs rounded shadow-xl z-50 text-left">
+        <div class="space-y-2">
+             <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Entity Name</span>
+                <span class="font-medium text-white">Liquidity Provider Ltd.</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Host VASP</span>
+                <span class="font-medium text-white">FinSecure Bank</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Physical Address</span>
+                <span class="font-medium text-white">123 Financial Way, Singapore 123456</span>
+            </div>
+        </div>
+        <div class="absolute top-full left-4 -mt-1 w-2 h-2 bg-gray-900 transform rotate-45"></div>
+    </div>
+</div>
+<span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">Verified</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400 mb-0.5">OTC Desk #3</span>
+                                        <div class="flex items-center gap-1 font-mono text-xs text-gray-500 group/addr relative hover:text-blue-600 transition-all duration-200">
+                                            0x752d...1169
+                                            <div class="absolute bottom-full left-0 mb-1 hidden group-hover/addr:block px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg whitespace-nowrap z-20">
+                                                Click to Copy Full Address
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 col-to align-top">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-1 mb-0.5">
+                                            <div class="group/entity-tooltip relative">
+    <span class="text-xs font-bold text-indigo-600 cursor-help border-b border-dashed border-indigo-300">Cregis Global Ltd.</span>
+    <div class="absolute bottom-full left-0 mb-2 hidden group-hover/entity-tooltip:block w-max min-w-[200px] p-3 bg-gray-900 text-white text-xs rounded shadow-xl z-50 text-left">
+        <div class="space-y-2">
+             <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Entity Name</span>
+                <span class="font-medium text-white">Cregis Global Ltd.</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Host VASP</span>
+                <span class="font-medium text-white">Cregis Digital Custody</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Physical Address</span>
+                <span class="font-medium text-white">456 Tech Park, Hong Kong 654321</span>
+            </div>
+        </div>
+        <div class="absolute top-full left-4 -mt-1 w-2 h-2 bg-gray-900 transform rotate-45"></div>
+    </div>
+</div>
+<span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">Verified</span>
+                                        </div>
+                                        <span class="text-xs text-gray-900 mb-0.5">Primary</span>
+                                        <div class="flex items-center gap-1 font-mono text-xs text-gray-500 group/addr relative hover:text-blue-600 transition-all duration-200">
+                                            0xa4e7...bf17
+                                            <div class="absolute bottom-full left-0 mb-1 hidden group-hover/addr:block px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg whitespace-nowrap z-20">
+                                                Click to Copy Full Address
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-xs text-gray-400 whitespace-nowrap align-top">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono">Today, 10:24 AM</span>
+                                        <svg class="w-4 h-4 text-gray-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/30 transition-colors group border-b border-gray-50 last:border-0 cursor-pointer">
+                                <td class="px-4 py-4 align-top">
+                                    <div class="flex items-center gap-2">
+                                        <div class="group/tooltip relative">
+                                            <div class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm cursor-help"></div>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tooltip:block px-2 py-1 bg-gray-900 text-white text-[10px] font-medium rounded shadow-lg whitespace-nowrap z-10">Medium Risk</div>
+                                        </div>
+                                        <span class="font-medium text-gray-400">2</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="font-mono text-xs text-gray-500">ORD-98237412</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-gray-900">Payout</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex items-center gap-1 font-medium text-red-600">
+                                        -500
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <span class="status-badge status-reviewing">Reviewing</span>
+                                </td>
+                                <td class="px-6 py-4 col-to align-top">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-1 mb-0.5">
+                                            <div class="group/entity-tooltip relative">
+    <span class="text-xs font-bold text-indigo-600 cursor-help border-b border-dashed border-indigo-300">Cregis Global Ltd.</span>
+    <div class="absolute bottom-full left-0 mb-2 hidden group-hover/entity-tooltip:block w-max min-w-[200px] p-3 bg-gray-900 text-white text-xs rounded shadow-xl z-50 text-left">
+        <div class="space-y-2">
+             <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Entity Name</span>
+                <span class="font-medium text-white">Cregis Global Ltd.</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Host VASP</span>
+                <span class="font-medium text-white">Cregis Digital Custody</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Physical Address</span>
+                <span class="font-medium text-white">456 Tech Park, Hong Kong 654321</span>
+            </div>
+        </div>
+        <div class="absolute top-full left-4 -mt-1 w-2 h-2 bg-gray-900 transform rotate-45"></div>
+    </div>
+</div>
+<span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">Verified</span>
+                                        </div>
+                                        <span class="text-xs text-gray-900 mb-0.5">Primary</span>
+                                        <div class="flex items-center gap-1 font-mono text-xs text-gray-500 group/addr relative hover:text-blue-600 transition-all duration-200">
+                                            0x3a1b...9981
+                                            <div class="absolute bottom-full left-0 mb-1 hidden group-hover/addr:block px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg whitespace-nowrap z-20">
+                                                Click to Copy Full Address
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 col-from align-top">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-1 mb-0.5">
+                                            <div class="group/entity-tooltip relative">
+    <span class="text-xs font-bold text-indigo-600 cursor-help border-b border-dashed border-indigo-300">Global Suppliers Inc.</span>
+    <div class="absolute bottom-full left-0 mb-2 hidden group-hover/entity-tooltip:block w-max min-w-[200px] p-3 bg-gray-900 text-white text-xs rounded shadow-xl z-50 text-left">
+        <div class="space-y-2">
+             <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Entity Name</span>
+                <span class="font-medium text-white">Global Suppliers Inc.</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Host VASP</span>
+                <span class="font-medium text-white">Global Payments Corp</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Physical Address</span>
+                <span class="font-medium text-white">321 Supply Chain Blvd, New York USA 10001</span>
+            </div>
+        </div>
+        <div class="absolute top-full left-4 -mt-1 w-2 h-2 bg-gray-900 transform rotate-45"></div>
+    </div>
+</div>
+<span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">Verified</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400 mb-0.5">Supplier Wallet</span>
+                                        <div class="flex items-center gap-1 font-mono text-xs text-gray-500 group/addr relative hover:text-blue-600 transition-all duration-200">
+                                            0x88e1...2291
+                                            <div class="absolute bottom-full left-0 mb-1 hidden group-hover/addr:block px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg whitespace-nowrap z-20">
+                                                Click to Copy Full Address
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-xs text-gray-400 whitespace-nowrap align-top">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono">Today, 10:18 AM</span>
+                                        <svg class="w-4 h-4 text-gray-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/30 transition-colors group border-b border-gray-50 last:border-0 cursor-pointer">
+                                <td class="px-4 py-4 align-top">
+                                    <div class="flex items-center gap-2">
+                                        <div class="group/tooltip relative">
+                                            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm cursor-help"></div>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tooltip:block px-2 py-1 bg-gray-900 text-white text-[10px] font-medium rounded shadow-lg whitespace-nowrap z-10">Low Risk</div>
+                                        </div>
+                                        <span class="font-medium text-gray-400">3</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="font-mono text-xs text-gray-500">ORD-93847561</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-gray-900">Collection</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex items-center gap-1 font-medium text-green-600">
+                                        +2,500
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <span class="status-badge status-settled">Settled</span>
+                                </td>
+                                <td class="px-6 py-4 col-from align-top">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-1 mb-0.5">
+                                            <div class="group/entity-tooltip relative">
+    <span class="text-xs font-bold text-indigo-600 cursor-help border-b border-dashed border-indigo-300">Trading Firm A</span>
+    <div class="absolute bottom-full left-0 mb-2 hidden group-hover/entity-tooltip:block w-max min-w-[200px] p-3 bg-gray-900 text-white text-xs rounded shadow-xl z-50 text-left">
+        <div class="space-y-2">
+             <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Entity Name</span>
+                <span class="font-medium text-white">Trading Firm A</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Host VASP</span>
+                <span class="font-medium text-white">Prime Brokerage Services</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Physical Address</span>
+                <span class="font-medium text-white">789 Market Street, London UK 987654</span>
+            </div>
+        </div>
+        <div class="absolute top-full left-4 -mt-1 w-2 h-2 bg-gray-900 transform rotate-45"></div>
+    </div>
+</div>
+<span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">Verified</span>
+                                        </div>
+                                        <span class="text-xs text-gray-900 mb-0.5">Payin</span>
+                                        <div class="flex items-center gap-1 font-mono text-xs text-gray-500 group/addr relative hover:text-blue-600 transition-all duration-200">
+                                            0x12a3...9982
+                                            <div class="absolute bottom-full left-0 mb-1 hidden group-hover/addr:block px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg whitespace-nowrap z-20">
+                                                Click to Copy Full Address
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 col-to align-top">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-1 mb-0.5">
+                                            <div class="group/entity-tooltip relative">
+    <span class="text-xs font-bold text-indigo-600 cursor-help border-b border-dashed border-indigo-300">Cregis Global Ltd.</span>
+    <div class="absolute bottom-full left-0 mb-2 hidden group-hover/entity-tooltip:block w-max min-w-[200px] p-3 bg-gray-900 text-white text-xs rounded shadow-xl z-50 text-left">
+        <div class="space-y-2">
+             <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Entity Name</span>
+                <span class="font-medium text-white">Cregis Global Ltd.</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Host VASP</span>
+                <span class="font-medium text-white">Cregis Digital Custody</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Physical Address</span>
+                <span class="font-medium text-white">456 Tech Park, Hong Kong 654321</span>
+            </div>
+        </div>
+        <div class="absolute top-full left-4 -mt-1 w-2 h-2 bg-gray-900 transform rotate-45"></div>
+    </div>
+</div>
+<span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">Verified</span>
+                                        </div>
+                                        <span class="text-xs text-gray-900 mb-0.5">Payin</span>
+                                        <div class="flex items-center gap-1 font-mono text-xs text-gray-500 group/addr relative hover:text-blue-600 transition-all duration-200">
+                                            0xc4d2...7712
+                                            <div class="absolute bottom-full left-0 mb-1 hidden group-hover/addr:block px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg whitespace-nowrap z-20">
+                                                Click to Copy Full Address
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-xs text-gray-400 whitespace-nowrap align-top">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono">Today, 09:55 AM</span>
+                                        <svg class="w-4 h-4 text-gray-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/30 transition-colors group border-b border-gray-50 last:border-0 cursor-pointer">
+                                <td class="px-4 py-4 align-top">
+                                    <div class="flex items-center gap-2">
+                                        <div class="group/tooltip relative">
+                                            <div class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm cursor-help"></div>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tooltip:block px-2 py-1 bg-gray-900 text-white text-[10px] font-medium rounded shadow-lg whitespace-nowrap z-10">High Risk</div>
+                                        </div>
+                                        <span class="font-medium text-gray-400">4</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="font-mono text-xs text-gray-500">ORD-73612834</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-gray-900">Payout</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex items-center gap-1 font-medium text-red-600">
+                                        -200
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <span class="status-badge status-counterparty-reject text-left h-auto py-1">Rejected</span>
+                                </td>
+                                <td class="px-6 py-4 col-to align-top">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-1 mb-0.5">
+                                            <div class="group/entity-tooltip relative">
+    <span class="text-xs font-bold text-indigo-600 cursor-help border-b border-dashed border-indigo-300">Cregis Global Ltd.</span>
+    <div class="absolute bottom-full left-0 mb-2 hidden group-hover/entity-tooltip:block w-max min-w-[200px] p-3 bg-gray-900 text-white text-xs rounded shadow-xl z-50 text-left">
+        <div class="space-y-2">
+             <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Entity Name</span>
+                <span class="font-medium text-white">Cregis Global Ltd.</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Host VASP</span>
+                <span class="font-medium text-white">Cregis Digital Custody</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Physical Address</span>
+                <span class="font-medium text-white">456 Tech Park, Hong Kong 654321</span>
+            </div>
+        </div>
+        <div class="absolute top-full left-4 -mt-1 w-2 h-2 bg-gray-900 transform rotate-45"></div>
+    </div>
+</div>
+<span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">Verified</span>
+                                        </div>
+                                        <span class="text-xs text-gray-900 mb-0.5">Primary</span>
+                                        <div class="flex items-center gap-1 font-mono text-xs text-gray-500 group/addr relative hover:text-blue-600 transition-all duration-200">
+                                            0x3a1b...9981
+                                            <div class="absolute bottom-full left-0 mb-1 hidden group-hover/addr:block px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg whitespace-nowrap z-20">
+                                                Click to Copy Full Address
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 col-from align-top">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-1 mb-0.5">
+                                            <div class="group/entity-tooltip relative">
+    <span class="text-xs font-bold text-indigo-600 cursor-help border-b border-dashed border-indigo-300">Marketplace Inc.</span>
+    <div class="absolute bottom-full left-0 mb-2 hidden group-hover/entity-tooltip:block w-max min-w-[200px] p-3 bg-gray-900 text-white text-xs rounded shadow-xl z-50 text-left">
+        <div class="space-y-2">
+             <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Entity Name</span>
+                <span class="font-medium text-white">Marketplace Inc.</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Host VASP</span>
+                <span class="font-medium text-white">Global Marketplace VASP</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Physical Address</span>
+                <span class="font-medium text-white">999 Digital Avenue, Silicon Valley USA</span>
+            </div>
+        </div>
+        <div class="absolute top-full left-4 -mt-1 w-2 h-2 bg-gray-900 transform rotate-45"></div>
+    </div>
+</div>
+<span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">Verified</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400 mb-0.5">Marketplace Payout</span>
+                                        <div class="flex items-center gap-1 font-mono text-xs text-gray-500 group/addr relative hover:text-blue-600 transition-all duration-200">
+                                            0x88e1...2291
+                                            <div class="absolute bottom-full left-0 mb-1 hidden group-hover/addr:block px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg whitespace-nowrap z-20">
+                                                Click to Copy Full Address
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-xs text-gray-400 whitespace-nowrap align-top">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono">Today, 09:42 AM</span>
+                                        <svg class="w-4 h-4 text-gray-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/30 transition-colors group border-b border-gray-50 last:border-0 cursor-pointer">
+                                <td class="px-4 py-4 align-top">
+                                    <div class="flex items-center gap-2">
+                                        <div class="group/tooltip relative">
+                                            <div class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm cursor-help"></div>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tooltip:block px-2 py-1 bg-gray-900 text-white text-[10px] font-medium rounded shadow-lg whitespace-nowrap z-10">Medium Risk</div>
+                                        </div>
+                                        <span class="font-medium text-gray-400">5</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="font-mono text-xs text-gray-500">ORD-12837461</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-gray-900">Payout</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex items-center gap-1 font-medium text-red-600">
+                                        -300
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex flex-col leading-tight">
+                                        <span class="status-badge status-approver-reject text-left h-auto py-1">Rejected</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 col-to align-top">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-1 mb-0.5">
+                                            <div class="group/entity-tooltip relative">
+    <span class="text-xs font-bold text-indigo-600 cursor-help border-b border-dashed border-indigo-300">Cregis Global Ltd.</span>
+    <div class="absolute bottom-full left-0 mb-2 hidden group-hover/entity-tooltip:block w-max min-w-[200px] p-3 bg-gray-900 text-white text-xs rounded shadow-xl z-50 text-left">
+        <div class="space-y-2">
+             <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Entity Name</span>
+                <span class="font-medium text-white">Cregis Global Ltd.</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Host VASP</span>
+                <span class="font-medium text-white">Cregis Digital Custody</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Physical Address</span>
+                <span class="font-medium text-white">456 Tech Park, Hong Kong 654321</span>
+            </div>
+        </div>
+        <div class="absolute top-full left-4 -mt-1 w-2 h-2 bg-gray-900 transform rotate-45"></div>
+    </div>
+</div>
+<span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">Verified</span>
+                                        </div>
+                                        <span class="text-xs text-gray-900 mb-0.5">Primary</span>
+                                        <div class="flex items-center gap-1 font-mono text-xs text-gray-500 group/addr relative hover:text-blue-600 transition-all duration-200">
+                                            0x3a1b...9981
+                                            <div class="absolute bottom-full left-0 mb-1 hidden group-hover/addr:block px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg whitespace-nowrap z-20">
+                                                Click to Copy Full Address
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 col-from align-top">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-1 mb-0.5">
+                                            <div class="group/entity-tooltip relative">
+    <span class="text-xs font-bold text-gray-500 cursor-help border-b border-dashed border-gray-300">Unknown Entity</span>
+    <div class="absolute bottom-full left-0 mb-2 hidden group-hover/entity-tooltip:block w-max min-w-[200px] p-3 bg-gray-900 text-white text-xs rounded shadow-xl z-50 text-left">
+        <div class="space-y-2">
+             <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Entity Name</span>
+                <span class="font-medium text-white">Unknown Entity</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Host VASP</span>
+                <span class="font-medium text-white">Unknown VASP</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Physical Address</span>
+                <span class="font-medium text-white">Unknown Address</span>
+            </div>
+        </div>
+        <div class="absolute top-full left-4 -mt-1 w-2 h-2 bg-gray-900 transform rotate-45"></div>
+    </div>
+</div>
+                                        </div>
+                                        <span class="text-xs text-gray-400 mb-0.5">No Alias</span>
+                                        <div class="flex items-center gap-1 font-mono text-xs text-gray-500 group/addr relative hover:text-blue-600 transition-all duration-200">
+                                            0x88e1...2291
+                                            <div class="absolute bottom-full left-0 mb-1 hidden group-hover/addr:block px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg whitespace-nowrap z-20">
+                                                Click to Copy Full Address
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-xs text-gray-400 whitespace-nowrap align-top">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono">Yesterday, 05:30 PM</span>
+                                        <svg class="w-4 h-4 text-gray-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/30 transition-colors group border-b border-gray-50 last:border-0 cursor-pointer">
+                                <td class="px-4 py-4 align-top">
+                                    <div class="flex items-center gap-2">
+                                        <div class="group/tooltip relative">
+                                            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm cursor-help"></div>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tooltip:block px-2 py-1 bg-gray-900 text-white text-[10px] font-medium rounded shadow-lg whitespace-nowrap z-10">Low Risk</div>
+                                        </div>
+                                        <span class="font-medium text-gray-400">6</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="font-mono text-xs text-gray-500">ORD-99887766</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-gray-900">Release</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex items-center gap-1 font-medium text-green-600">
+                                        +150
+                                        <!-- <svg class="w-3 h-3 text-blue-500 cursor-pointer hover:text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> -->
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <span class="status-badge status-settled">Settled</span>
+                                </td>
+                                <td class="px-6 py-4 col-from align-top">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-1 mb-0.5">
+                                            <div class="group/entity-tooltip relative">
+    <span class="text-xs font-bold text-indigo-600 cursor-help border-b border-dashed border-indigo-300">Cregis Global Ltd.</span>
+    <div class="absolute bottom-full left-0 mb-2 hidden group-hover/entity-tooltip:block w-max min-w-[200px] p-3 bg-gray-900 text-white text-xs rounded shadow-xl z-50 text-left">
+        <div class="space-y-2">
+             <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Entity Name</span>
+                <span class="font-medium text-white">Cregis Global Ltd.</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Host VASP</span>
+                <span class="font-medium text-white">Cregis Digital Custody</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Physical Address</span>
+                <span class="font-medium text-white">456 Tech Park, Hong Kong 654321</span>
+            </div>
+        </div>
+        <div class="absolute top-full left-4 -mt-1 w-2 h-2 bg-gray-900 transform rotate-45"></div>
+    </div>
+</div>
+<span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">Verified</span>
+                                        </div>
+                                        <span class="text-xs text-gray-900 mb-0.5">Quarantine</span>
+                                        <div class="flex items-center gap-1 font-mono text-xs text-gray-500 group/addr relative hover:text-blue-600 transition-all duration-200">
+                                            0x99e1...4432
+                                            <div class="absolute bottom-full left-0 mb-1 hidden group-hover/addr:block px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg whitespace-nowrap z-20">
+                                                Click to Copy Full Address
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 col-to align-top">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-1 mb-0.5">
+                                            <div class="group/entity-tooltip relative">
+    <span class="text-xs font-bold text-indigo-600 cursor-help border-b border-dashed border-indigo-300">Cregis Global Ltd.</span>
+    <div class="absolute bottom-full left-0 mb-2 hidden group-hover/entity-tooltip:block w-max min-w-[200px] p-3 bg-gray-900 text-white text-xs rounded shadow-xl z-50 text-left">
+        <div class="space-y-2">
+             <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Entity Name</span>
+                <span class="font-medium text-white">Cregis Global Ltd.</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Host VASP</span>
+                <span class="font-medium text-white">Cregis Digital Custody</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Physical Address</span>
+                <span class="font-medium text-white">456 Tech Park, Hong Kong 654321</span>
+            </div>
+        </div>
+        <div class="absolute top-full left-4 -mt-1 w-2 h-2 bg-gray-900 transform rotate-45"></div>
+    </div>
+</div>
+<span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">Verified</span>
+                                        </div>
+                                        <span class="text-xs text-gray-900 mb-0.5">Primary</span>
+                                        <div class="flex items-center gap-1 font-mono text-xs text-gray-500 group/addr relative hover:text-blue-600 transition-all duration-200">
+                                            0x3a1b...9981
+                                            <div class="absolute bottom-full left-0 mb-1 hidden group-hover/addr:block px-2 py-1 bg-gray-900 text-white text-[10px] rounded shadow-lg whitespace-nowrap z-20">
+                                                Click to Copy Full Address
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-xs text-gray-400 whitespace-nowrap align-top">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono">Yesterday, 04:20 PM</span>
+                                        <svg class="w-4 h-4 text-gray-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Empty State / Pagination Mock -->
+                    <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+                        <div class="text-sm text-gray-500">
+                            Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">50</span> entries
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="relative">
+                                <select class="appearance-none bg-white border border-gray-200 text-gray-700 py-1 pl-3 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer transition-all duration-200">
+                                    <option>10</option>
+                                    <option>30</option>
+                                    <option>50</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-1 flex items-center px-2 text-gray-500">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                            <div class="flex gap-1">
+                                <button class="px-3 py-1 border border-gray-200 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Previous</button>
+                                <button class="px-3 py-1 bg-blue-50 border border-blue-100 rounded-lg text-sm font-medium text-blue-600">1</button>
+                                <button class="px-3 py-1 border border-gray-200 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-50">2</button>
+                                <button class="px-3 py-1 border border-gray-200 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-50">3</button>
+                                <button class="px-3 py-1 border border-gray-200 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-50">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                            </div>
                             <!-- Transaction History View -->
-                            <div id="view-transaction-history">
+                            <div id="view-transaction-history" class="hidden">
                                 <div class="overflow-x-auto">
                                 <table class="w-full text-sm text-left">
                                     <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
@@ -979,10 +1584,271 @@
         </div>
     </main>
 
+    <!-- Activity Detail Modal -->
+    <div id="activity-modal" class="hidden fixed inset-0 z-50 overflow-hidden" role="dialog" aria-modal="true">
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" id="activity-modal-overlay"></div>
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden transform transition-all border border-gray-100">
+                <!-- Header -->
+                <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                    <div class="flex items-center gap-3">
+                        <div id="activity-modal-icon" class="w-10 h-10 rounded-full flex items-center justify-center bg-emerald-100 text-emerald-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900" id="activity-modal-title">Activity Details</h3>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button id="close-activity-modal" class="text-slate-400 hover:text-slate-600 transition-all duration-200">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="px-6 py-6 space-y-6 max-h-[70vh] overflow-y-auto">
+                    <!-- Amount & Status Section -->
+                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Amount</label>
+                            <div class="flex items-center gap-2">
+                                <span id="activity-modal-amount" class="text-2xl font-bold text-emerald-600">+1,000 USDT-Ethereum</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Status</label>
+                            <span id="activity-modal-status" class="status-badge status-settled">Settled</span>
+                            <div id="activity-modal-approvals" class="flex items-center justify-end gap-1 mt-1"></div>
+                        </div>
+                    </div>
+
+                    <!-- From & To Section -->
+                    <div id="single-layout" class="grid grid-cols-2 gap-4">
+                        <!-- From -->
+                        <div class="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100">
+                            <label class="block text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-3">From</label>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-2">
+                                    <span id="activity-modal-from-name" class="text-sm font-bold text-indigo-700"></span>
+                                    <span id="activity-modal-from-badge"></span>
+                                </div>
+                                <div class="space-y-1">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-indigo-600">Host VASP</span>
+                                        <span class="font-medium text-indigo-800" id="activity-modal-from-vasp"></span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-indigo-600">Account</span>
+                                        <span class="font-medium text-indigo-800" id="activity-modal-from-account"></span>
+                                    </div>
+                                </div>
+                                <div class="pt-2 border-t border-indigo-100">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[10px] text-indigo-500">Wallet Address</span>
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-xs font-mono text-indigo-700" id="activity-modal-from-address"></span>
+                                            <button class="text-indigo-400 hover:text-indigo-600" title="Copy Address">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- To -->
+                        <div class="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100">
+                            <label class="block text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-3">To</label>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-2">
+                                    <span id="activity-modal-to-name" class="text-sm font-bold text-emerald-700"></span>
+                                    <span id="activity-modal-to-badge"></span>
+                                </div>
+                                <div class="space-y-1">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-emerald-600">Host VASP</span>
+                                        <span class="font-medium text-emerald-800" id="activity-modal-to-vasp"></span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-emerald-600">Account</span>
+                                        <span class="font-medium text-emerald-800" id="activity-modal-to-account"></span>
+                                    </div>
+                                </div>
+                                <div class="pt-2 border-t border-emerald-100">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[10px] text-emerald-500">Wallet Address</span>
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-xs font-mono text-emerald-700" id="activity-modal-to-address"></span>
+                                            <button class="text-emerald-400 hover:text-emerald-600" title="Copy Address">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transaction Details -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Transaction Details</label>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-500">Activity Type</span>
+                                <span class="font-medium text-slate-700" id="activity-modal-type"></span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-500">Created At</span>
+                                <span class="font-medium text-slate-700" id="activity-modal-created"></span>
+                            </div>
+                            <div id="txid-row" class="flex justify-between text-xs">
+                                <span class="text-slate-500">TXID</span>
+                                <div class="flex items-center gap-1">
+                                    <span class="font-mono text-slate-700" id="activity-modal-txid"></span>
+                                    <button class="text-slate-400 hover:text-slate-600" title="Copy TXID">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="orderid-row" class="flex justify-between text-xs">
+                                <span class="text-slate-500">Order ID</span>
+                                <span class="font-mono text-slate-700" id="activity-modal-orderid"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+                    <button id="close-activity-modal-btn" class="px-6 py-2 text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Shared Scripts -->
     <script src="assets/layout.js"></script>
 
     <script>
+        // Activity Modal
+        const activityModal = document.getElementById('activity-modal');
+        const closeActivityModal = document.getElementById('close-activity-modal');
+        const closeActivityModalBtn = document.getElementById('close-activity-modal-btn');
+        const activityModalOverlay = document.getElementById('activity-modal-overlay');
+
+        // Order data (first table) - maps row number to full detail
+        const orderData = [
+            null, // 0-index placeholder
+            { type: 'Receive', amount: '+1,000', currency: 'USDT', chain: 'Ethereum', status: 'Settled', statusClass: 'status-settled', risk: 'Low Risk', riskClass: 'bg-emerald-50 text-emerald-700 border border-emerald-200', orderId: 'ORD-83920174', txid: '0x9527e8b9a15fc1c2d', fromName: 'Liquidity Provider Ltd.', fromVasp: 'FinSecure Bank', fromAccount: 'OTC Desk #3', fromAddress: '0x752d...1169', fromVerified: true, toName: 'Cregis Global Ltd.', toVasp: 'Cregis Digital Custody', toAccount: 'Primary', toAddress: '0xa4e7...bf17', toVerified: true, created: 'Today, 10:24 AM', approvals: [{initials: 'JC', signed: true}, {initials: 'SM', signed: true}, {initials: 'RW', signed: false}] },
+            { type: 'Payout', amount: '-500', currency: 'USDT', chain: 'Ethereum', status: 'Reviewing', statusClass: 'status-reviewing', risk: 'Medium Risk', riskClass: 'bg-amber-50 text-amber-700 border border-amber-200', orderId: 'ORD-98237412', txid: '0xbd7c...88ef', fromName: 'Cregis Global Ltd.', fromVasp: 'Cregis Digital Custody', fromAccount: 'Primary', fromAddress: '0x3a1b...9981', fromVerified: true, toName: 'Global Suppliers Inc.', toVasp: 'Global Payments Corp', toAccount: 'Supplier Wallet', toAddress: '0x88e1...2291', toVerified: true, created: 'Today, 10:18 AM', approvals: [{initials: 'JC', signed: false}, {initials: 'SM', signed: false}, {initials: 'RW', signed: false}] },
+            { type: 'Collection', amount: '+2,500', currency: 'USDT', chain: 'Ethereum', status: 'Settled', statusClass: 'status-settled', risk: 'Low Risk', riskClass: 'bg-emerald-50 text-emerald-700 border border-emerald-200', orderId: 'ORD-93847561', txid: '0x45d1...aa39', fromName: 'Trading Firm A', fromVasp: 'Prime Brokerage Services', fromAccount: 'Payin', fromAddress: '0x12a3...9982', fromVerified: true, toName: 'Cregis Global Ltd.', toVasp: 'Cregis Digital Custody', toAccount: 'Payin', toAddress: '0xc4d2...7712', toVerified: true, created: 'Today, 09:55 AM', approvals: [{initials: 'JC', signed: true}, {initials: 'SM', signed: true}, {initials: 'RW', signed: true}] },
+            { type: 'Payout', amount: '-200', currency: 'USDT', chain: 'Ethereum', status: 'Rejected', statusClass: 'status-counterparty-reject text-left h-auto py-1', risk: 'High Risk', riskClass: 'bg-red-50 text-red-700 border border-red-200', orderId: 'ORD-73612834', txid: '0xe2f9...77cd', fromName: 'Cregis Global Ltd.', fromVasp: 'Cregis Digital Custody', fromAccount: 'Primary', fromAddress: '0x3a1b...9981', fromVerified: true, toName: 'Marketplace Inc.', toVasp: 'Global Marketplace VASP', toAccount: 'Marketplace Payout', toAddress: '0x88e1...2291', toVerified: true, created: 'Today, 09:42 AM', approvals: [{initials: 'JC', signed: true}, {initials: 'SM', signed: false}, {initials: 'RW', signed: false}] },
+            { type: 'Payout', amount: '-300', currency: 'USDT', chain: 'Ethereum', status: 'Rejected', statusClass: 'status-approver-reject text-left h-auto py-1', risk: 'Medium Risk', riskClass: 'bg-amber-50 text-amber-700 border border-amber-200', orderId: 'ORD-12837461', txid: '0x3e7b...c901', fromName: 'Cregis Global Ltd.', fromVasp: 'Cregis Digital Custody', fromAccount: 'Primary', fromAddress: '0x3a1b...9981', fromVerified: true, toName: 'Unknown Entity', toVasp: 'Unknown VASP', toAccount: 'No Alias', toAddress: '0x88e1...2291', toVerified: false, created: 'Yesterday, 05:30 PM', approvals: [{initials: 'JC', signed: true}, {initials: 'SM', signed: false}, {initials: 'RW', signed: false}] },
+            { type: 'Release', amount: '+150', currency: 'USDT', chain: 'Ethereum', status: 'Settled', statusClass: 'status-settled', risk: 'Low Risk', riskClass: 'bg-emerald-50 text-emerald-700 border border-emerald-200', orderId: 'ORD-99887766', txid: '0x99e1...4432', fromName: 'Cregis Global Ltd.', fromVasp: 'Cregis Digital Custody', fromAccount: 'Quarantine', fromAddress: '0x99e1...4432', fromVerified: true, toName: 'Cregis Global Ltd.', toVasp: 'Cregis Digital Custody', toAccount: 'Primary', toAddress: '0x3a1b...9981', toVerified: true, created: 'Yesterday, 04:20 PM', approvals: [{initials: 'JC', signed: true}, {initials: 'SM', signed: true}, {initials: 'RW', signed: true}] }
+        ];
+
+        function openActivityModal(rowNum) {
+            const data = orderData[rowNum];
+            if (!data) return;
+
+            // Set modal content
+            document.getElementById('activity-modal-amount').textContent = data.amount + ' ' + data.currency + '-' + data.chain;
+            document.getElementById('activity-modal-from-name').textContent = data.fromName;
+            document.getElementById('activity-modal-from-vasp').textContent = data.fromVasp;
+            document.getElementById('activity-modal-from-account').textContent = data.fromAccount;
+            document.getElementById('activity-modal-from-address').textContent = data.fromAddress;
+            document.getElementById('activity-modal-to-name').textContent = data.toName;
+            document.getElementById('activity-modal-to-vasp').textContent = data.toVasp;
+            document.getElementById('activity-modal-to-account').textContent = data.toAccount;
+            document.getElementById('activity-modal-to-address').textContent = data.toAddress;
+            document.getElementById('activity-modal-type').textContent = data.type;
+            document.getElementById('activity-modal-created').textContent = data.created;
+            document.getElementById('activity-modal-txid').textContent = data.txid;
+
+            // Show/hide Order ID row
+            const orderidRow = document.getElementById('orderid-row');
+            if (data.orderId) {
+                orderidRow.classList.remove('hidden');
+                document.getElementById('activity-modal-orderid').textContent = data.orderId;
+            } else {
+                orderidRow.classList.add('hidden');
+            }
+
+            // Set status badge
+            const statusEl = document.getElementById('activity-modal-status');
+            statusEl.className = data.statusClass;
+            statusEl.textContent = data.status;
+
+            // Set risk icon color
+            const iconEl = document.getElementById('activity-modal-icon');
+            if (data.risk === 'Low Risk') {
+                iconEl.className = 'w-10 h-10 rounded-full flex items-center justify-center bg-emerald-100 text-emerald-600';
+            } else if (data.risk === 'Medium Risk') {
+                iconEl.className = 'w-10 h-10 rounded-full flex items-center justify-center bg-amber-100 text-amber-600';
+            } else {
+                iconEl.className = 'w-10 h-10 rounded-full flex items-center justify-center bg-red-100 text-red-600';
+            }
+
+            // Set amount color
+            const amountEl = document.getElementById('activity-modal-amount');
+            if (data.amount.startsWith('+')) {
+                amountEl.className = 'text-2xl font-bold text-emerald-600';
+            } else if (data.amount.startsWith('-')) {
+                amountEl.className = 'text-2xl font-bold text-red-600';
+            }
+
+            // Set approvals
+            const approvalsEl = document.getElementById('activity-modal-approvals');
+            if (data.approvals && data.approvals.length > 0) {
+                let approvalsHtml = '';
+                const signedCount = data.approvals.filter(a => a.signed).length;
+                data.approvals.forEach(a => {
+                    if (a.signed) {
+                        approvalsHtml += '<div class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-[9px] font-bold" title="Signed">' + a.initials + '</div>';
+                    } else {
+                        approvalsHtml += '<div class="w-5 h-5 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-[9px]" title="Pending">' + a.initials + '</div>';
+                    }
+                });
+                approvalsHtml += '<span class="text-[10px] text-gray-500 ml-0.5">' + signedCount + '/' + data.approvals.length + '</span>';
+                approvalsEl.innerHTML = approvalsHtml;
+                approvalsEl.parentElement.parentElement.style.display = '';
+            } else {
+                approvalsEl.innerHTML = '';
+                // Hide approvals area for transactions without approvals
+                approvalsEl.parentElement.parentElement.style.display = 'none';
+            }
+
+            // Set verification badges
+            document.getElementById('activity-modal-from-badge').innerHTML = data.fromVerified
+                ? '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">Verified</span>'
+                : '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">Unverified</span>';
+            document.getElementById('activity-modal-to-badge').innerHTML = data.toVerified
+                ? '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">Verified</span>'
+                : '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">Unverified</span>';
+
+            activityModal.classList.remove('hidden');
+        }
+
+        function hideActivityModal() {
+            if (activityModal) activityModal.classList.add('hidden');
+        }
+
+        if (closeActivityModal) closeActivityModal.addEventListener('click', hideActivityModal);
+        if (closeActivityModalBtn) closeActivityModalBtn.addEventListener('click', hideActivityModal);
+        if (activityModalOverlay) activityModalOverlay.addEventListener('click', hideActivityModal);
+
+        // Add click handlers to order table rows only (no popup for transactions table)
+        document.querySelectorAll('#activities-table-container tbody tr').forEach((row) => {
+            row.style.cursor = 'pointer';
+            row.addEventListener('click', () => {
+                const numSpan = row.querySelector('td:first-child span');
+                const rowNum = numSpan ? parseInt(numSpan.textContent) : 1;
+                openActivityModal(rowNum);
+            });
+        });
+
         // ============ OFF-RAMP FLOW PANEL ============
         function openOffRampFor(assetKey) {
             const panel = document.getElementById('offramp-modal');
@@ -1175,24 +2041,21 @@
 
         // ============ HISTORY TOGGLE ============
         function switchHistory(view) {
+            const activitiesView = document.getElementById('view-activities-history');
             const txView = document.getElementById('view-transaction-history');
             const offrampView = document.getElementById('view-offramp-history');
+            const activitiesBtn = document.getElementById('toggle-activities');
             const txBtn = document.getElementById('toggle-transaction');
             const offrampBtn = document.getElementById('toggle-offramp');
             const activeBtn = 'px-4 py-1.5 text-sm font-semibold rounded-md bg-white text-slate-800 shadow-sm transition-all';
             const inactiveBtn = 'px-4 py-1.5 text-sm font-medium rounded-md text-gray-500 hover:text-slate-700 transition-all';
 
-            if (view === 'transaction') {
-                txView.classList.remove('hidden');
-                offrampView.classList.add('hidden');
-                txBtn.className = activeBtn;
-                offrampBtn.className = inactiveBtn;
-            } else {
-                txView.classList.add('hidden');
-                offrampView.classList.remove('hidden');
-                txBtn.className = inactiveBtn;
-                offrampBtn.className = activeBtn;
-            }
+            activitiesView.classList.toggle('hidden', view !== 'activities');
+            txView.classList.toggle('hidden', view !== 'transaction');
+            offrampView.classList.toggle('hidden', view !== 'offramp');
+            activitiesBtn.className = view === 'activities' ? activeBtn : inactiveBtn;
+            txBtn.className = view === 'transaction' ? activeBtn : inactiveBtn;
+            offrampBtn.className = view === 'offramp' ? activeBtn : inactiveBtn;
         }
 
         // ============ TREASURY: Mock Data for Plans ============
